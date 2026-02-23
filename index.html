@@ -133,24 +133,41 @@
 </head>
 <body>
 
- <div class="container">
-  <h1>Belum ada Informasi terbaru.</h1>
-
+  <div class="container">
+    <h1>Informasi Kontak Backup</h1>
+    <div class="number">
+  Nomor backup 
+  <span id="backupNumber">08953428924</span>
 </div>
 
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6923d4b6b0473f1964e6f471/1japvdr5o';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
+<button onclick="salinNomor()" class="btn-salin-modern">
+  <span class="icon">📋</span>
+  <span class="text">Salin Nomor</span>
+</button>
+
+<div id="popupCopy" class="popup-copy">
+  Nomor sudah tersalin ✅
+</div>
+    <div class="info">
+      Silakan hubungi nomor di atas apabila nomor utama tidak dapat dihubungi.
+    </div>
+    <a href="https://wa.me/628953428924" class="btn">Hubungi Sekarang</a>
+  </div>
+
+  <script>
+function salinNomor() {
+  const nomor = document.getElementById("backupNumber").textContent;
+  
+  navigator.clipboard.writeText(nomor).then(() => {
+    const popup = document.getElementById("popupCopy");
+    popup.classList.add("show");
+
+    setTimeout(() => {
+      popup.classList.remove("show");
+    }, 2000);
+  });
+}
 </script>
-<!--End of Tawk.to Script-->
 
 </body>
 </html>
