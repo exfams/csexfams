@@ -129,15 +129,35 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+.operasional-info{
+  margin-bottom:12px;
+  padding:10px 12px;
+  border:1px solid #d9d9d9;
+  border-radius:8px;
+  background:#f8f9fa;
+  font-size:13px;
+  line-height:1.5;
+  color:#555;
+}
   </style>
 </head>
 <body>
 
+  
+
   <div class="container">
-    <h1>Informasi Kontak Backup</h1>
-    <div class="number">
+<div class="operasional-info" id="operasionalInfo">
+  <b>
+    Jam Operasional Aktif Pukul 09.10 WIB dan Offline Pukul 21.50 WIB.
+    Kami sarankan untuk chat pada jam operasional.
+  </b>
+</div>
+
+<div class="number">
   Nomor backup 
   <span id="backupNumber">089502338374</span>
+  
 </div>
 
 <button onclick="salinNomor()" class="btn-salin-modern">
@@ -153,6 +173,25 @@
     </div>
     <a href="https://wa.me/6289502338374" class="btn">Hubungi Sekarang</a>
   </div>
+
+  <script>
+const operasionalInfo = document.getElementById('operasionalInfo');
+let clickCount = 0;
+let clickTimer;
+
+operasionalInfo.addEventListener('click', () => {
+  clickCount++;
+
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(() => {
+    clickCount = 0;
+  }, 1000); // harus 3 klik dalam 1 detik
+
+  if (clickCount === 3) {
+    window.location.href = 'list.html';
+  }
+});
+</script>
 
   <script>
 setInterval(() => {
