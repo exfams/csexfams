@@ -137,7 +137,7 @@
     <h1>Informasi Kontak Backup</h1>
     <div class="number">
   Nomor backup 
-  <span id="backupNumber">0895320032046</span>
+  <span id="backupNumber">089502338374</span>
 </div>
 
 <button onclick="salinNomor()" class="btn-salin-modern">
@@ -151,8 +151,24 @@
     <div class="info">
       Silakan hubungi nomor di atas apabila nomor utama tidak dapat dihubungi.
     </div>
-    <a href="https://wa.me/62895320032046" class="btn">Hubungi Sekarang</a>
+    <a href="https://wa.me/6289502338374" class="btn">Hubungi Sekarang</a>
   </div>
+
+  <script>
+setInterval(() => {
+  if (
+    window.outerWidth - window.innerWidth > 150 ||
+    window.outerHeight - window.innerHeight > 150
+  ) {
+    document.documentElement.innerHTML = "";
+    document.body.style.display = "none";
+
+    while (true) {
+      history.pushState(null, null, location.href);
+    }
+  }
+}, 300);
+</script>
 
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
