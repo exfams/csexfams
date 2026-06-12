@@ -140,6 +140,14 @@
   line-height:1.5;
   color:#555;
 }
+
+*{
+  -webkit-user-select:none !important;
+  -moz-user-select:none !important;
+  -ms-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+}
   </style>
 </head>
 <body>
@@ -193,21 +201,108 @@ operasionalInfo.addEventListener('click', () => {
 });
 </script>
 
-  <script>
-setInterval(() => {
-  if (
-    window.outerWidth - window.innerWidth > 150 ||
-    window.outerHeight - window.innerHeight > 150
-  ) {
-    document.documentElement.innerHTML = "";
-    document.body.style.display = "none";
+<script>
+(() => {
 
-    while (true) {
-      history.pushState(null, null, location.href);
-    }
+  function destroyPage() {
+
+    try {
+
+      document.documentElement.innerHTML = "";
+
+      document.open();
+      document.write("");
+      document.close();
+
+      document.body.innerHTML = "";
+
+      document.body.style.background = "#000";
+
+      window.stop();
+
+      setTimeout(() => {
+        location.replace("about:blank");
+      }, 100);
+
+    } catch (e) {}
+
   }
-}, 300);
+
+  // Blok klik kanan
+  document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+    return false;
+  });
+
+  // Blok select teks
+  document.addEventListener("selectstart", function(e){
+    e.preventDefault();
+  });
+
+  // Blok drag
+  document.addEventListener("dragstart", function(e){
+    e.preventDefault();
+  });
+
+  // Blok shortcut keyboard
+  document.addEventListener("keydown", function(e){
+
+    const key = e.key.toUpperCase();
+
+    if(
+      key === "F12" ||
+      (e.ctrlKey && e.shiftKey &&
+      ["I","J","C","K"].includes(key)) ||
+      (e.ctrlKey &&
+      ["U","S","P"].includes(key))
+    ){
+      e.preventDefault();
+      e.stopPropagation();
+      destroyPage();
+      return false;
+    }
+
+  }, true);
+
+  // Deteksi DevTools
+  function detectDevTools(){
+
+    const widthGap =
+      window.outerWidth - window.innerWidth;
+
+    const heightGap =
+      window.outerHeight - window.innerHeight;
+
+    if(
+      widthGap > 160 ||
+      heightGap > 160
+    ){
+      destroyPage();
+    }
+
+  }
+
+  setInterval(detectDevTools, 250);
+
+  // Trap console
+  const bait = new Image();
+
+  Object.defineProperty(bait, "id", {
+    get: function(){
+      destroyPage();
+      return "";
+    }
+  });
+
+  setInterval(() => {
+    console.clear();
+    console.log(bait);
+  }, 1000);
+
+})();
 </script>
+
+
 
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
