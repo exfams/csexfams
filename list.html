@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Panduan</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#f5f7fa;
+  padding:20px;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.header h1{
+  font-size:24px;
+  color:#222;
+}
+
+.list-menu{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  max-width:500px;
+  margin:auto;
+}
+
+.menu-btn{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  text-decoration:none;
+  color:#222;
+  font-weight:600;
+  transition:.2s;
+}
+
+.menu-btn:hover{
+  transform:translateY(-2px);
+}
+
+.arrow{
+  font-size:18px;
+}
+
+#accessGate{
+  position:fixed;
+  inset:0;
+  background:#f5f7fa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+}
+
+.access-box{
+  width:100%;
+  max-width:350px;
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  text-align:center;
+}
+
+.access-box h2{
+  margin-bottom:10px;
+}
+
+.access-box p{
+  margin-bottom:15px;
+  color:#666;
+  font-size:14px;
+}
+
+.access-box input{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  outline:none;
+}
+
+.access-box button{
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#111827;
+  color:#fff;
+  font-weight:bold;
+}
+
+#accessError{
+  color:red;
+  margin-top:10px;
+  font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<div id="accessGate">
+  <div class="access-box">
+    <h2>Kode Akses</h2>
+    <p>Masukkan kode akses untuk membuka dashboard.</p>
+
+    <input
+      type="password"
+      id="accessCode"
+      placeholder="Masukkan kode akses"
+    >
+
+    <button id="btnAccess">Masuk</button>
+
+    <div id="accessError"></div>
+  </div>
+</div>
+
+<div class="header">
+  <h1>Daftar Panduan</h1>
+</div>
+
+<div class="list-menu">
+
+  <a class="menu-btn" href="/cara-topup-ewallet">
+    <span>💳 Cara Topup E-Wallet</span>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="menu-btn" href="/cara-topup-bank">
+    <span>🏦 Cara Topup Bank</span>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="menu-btn" href="/cara-deposit">
+    <span>📥 Cara Deposit</span>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="menu-btn" href="/cara-withdraw">
+    <span>📤 Cara Withdraw</span>
+    <span class="arrow">›</span>
+  </a>
+
+</div>
+
+  <script>
+setInterval(() => {
+  if (
+    window.outerWidth - window.innerWidth > 150 ||
+    window.outerHeight - window.innerHeight > 150
+  ) {
+    document.documentElement.innerHTML = "";
+    document.body.style.display = "none";
+
+    while (true) {
+      history.pushState(null, null, location.href);
+    }
+  }
+}, 300);
+</script>
+
+<script>
+const ACCESS_CODE = "5678";
+
+const gate = document.getElementById("accessGate");
+const input = document.getElementById("accessCode");
+const button = document.getElementById("btnAccess");
+const error = document.getElementById("accessError");
+
+// Sudah pernah login
+if (localStorage.getItem("dashboard_access") === "granted") {
+  gate.style.display = "none";
+}
+
+function checkAccess() {
+  if (input.value === ACCESS_CODE) {
+    localStorage.setItem("dashboard_access", "granted");
+    gate.style.display = "none";
+  } else {
+    error.textContent = "Kode akses salah.";
+    input.value = "";
+  }
+}
+
+button.addEventListener("click", checkAccess);
+
+input.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    checkAccess();
+  }
+});
+</script>
+
+</body>
+</html>
