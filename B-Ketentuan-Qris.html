@@ -210,7 +210,7 @@
   <b class="highlight-text delay-1">
     Transfer Menggunakan QRIS MerchantPay pada jam OFFLINE, libur (setiap Hari Jumat), 
     Atau adanya informasi perbaikan sistem, 
-    Adanya biaya Layanan sebesar 
+    Dikenakan biaya Layanan sebesar 
     <span id="biayaLayanan">Rp2.000,-</span>biaya tersebut akan terpotong setiap transaksi yang dikonfirmasi.
   </b> Dikarenakan transaksi tersebut tertahan oleh pihak Switching/Provider QRIS/BANK, yang dimana pihak FamsssPay yang harus menalangi terlebih dahulu transaksi yang terpending.</li>
 </div>
@@ -238,6 +238,19 @@
       <li>Sisa <b>Saldo akan dibekukan sementara ( tidak bisa dilakukan penarikan )</b> Setelah masalah yang bersangkutan sudah selesai, dengan mengisi Form yang disediakan oleh Tim Keamanan dengan <b>Memverifikasikan KTP, Alamat Pribadi, Ataupun Data yang dibutuhkan.</b> Untuk melakukan Penarikan Saldo yang dibekukan / Pembukaan Akun yang di Blokir.</li>
     </ul>
   </div>
+
+  <script>
+window.addEventListener("load", function() {
+  const target = document.querySelector(".highlight-text.delay-1");
+
+  if (target) {
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+});
+</script>
 
     <script>
 if (location.pathname.endsWith('.html')) {
@@ -283,8 +296,6 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener('scroll', updateScrollButton);
   window.addEventListener('load', updateScrollButton);
 </script>
-
-
 
 </body>
 </html>
