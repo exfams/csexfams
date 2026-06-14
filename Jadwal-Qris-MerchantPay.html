@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Jadwal QRIS MerchantPay</title>
+
+  <style>
+    body {
+      font-family: Gabarito, sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 20px;
+      -webkit-tap-highlight-color: transparent; /* Hilangkan efek tap Android */
+    }
+    
+      /* Tidak ada highlight ketika user tahan dan block teks */
+  *::selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  /* Matikan drag image/text */
+  img, a, span, div, p {
+    -webkit-user-drag: none;
+    pointer-events: auto;
+  }
+
+    /* Container */
+    .container {
+      max-width: 420px;
+      margin: auto;
+    }
+
+    /* Card utama */
+    .card {
+      background: #2196f3;
+      padding: 15px;
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Judul */
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    /* Table box */
+    .table-box {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    /* Header */
+    thead {
+      background: #f0f0f0;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* Row */
+    td {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      color: #333;
+    }
+
+    /* Zebra effect */
+    tbody tr:nth-child(even) {
+      background: #f7f7f7;
+    }
+
+    /* Title bawah */
+    .title {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Info box */
+    .info-box {
+      background: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.5;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Card -->
+  <div class="card">
+    <h2>Jadwal<br>Aktif,Offline & Libur QRIS MerchantPay</h2>
+
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th>Hari</th>
+            <th>Jadwal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Senin</td><td>08.30 S/d 17.05 WIB</td></tr>
+          <tr><td>Selasa</td><td>08.30 S/d 17.05 WIB</td></tr>
+          <tr><td>Rabu</td><td>08.30 S/d 17.05 WIB</td></tr>
+          <tr><td>Kamis</td><td>08.30 S/d 17.05 WIB</td></tr>
+          <tr><td><b>Jumat</td><td><b>CLOSE / LIBUR.</b></td></tr>
+          <tr><td>Sabtu</td><td>08.30 S/d 17.05 WIB</td></tr>
+          <tr><td>Minggu</td><td>08.30 S/d 17.05 WIB</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- List Admin -->
+  <h3 class="title">Keterangan Harap dibaca :</h3>
+<div class="info-box">
+  <b>
+    Transaksi menggunakan QRIS MerchantPay pada jam OFFLINE, libur (setiap Hari Jumat), 
+    dikenakan biaya layanan sebesar Rp2.000,-. 
+    Biaya tersebut akan terpotong setiap transaksi yang dikonfirmasi.
+  </b>
+  <br><br>
+  Dikarenakan transaksi tertahan oleh pihak Switching/Provider QRIS/BANK, 
+  pihak FamsssPay akan menalangi terlebih dahulu transaksi yang terpending.
+</div>
+
+<br>
+
+<div class="info-box">
+  <b>
+    Deposit saldo / transfer menggunakan QRIS MerchantPay yang tidak melakukan konfirmasi 
+    atau upload bukti transaksi selama 2 - 3 hari (atau lebih) tidak dapat diproses.
+  </b>
+  <br><br>
+  Dikarenakan riwayat transaksi yang selalu berubah setiap harinya, 
+  hal ini dapat mempersulit proses pencarian transaksi.
+</div>
+
+<br>
+
+  </div>
+          <!-- Tambahan teks -->
+<div style="margin-top:20px; text-align:center;">
+  <strong style="font-size:16px;">FamsssPay Merchant</strong><br>
+  <span style="font-size:13px; color:#777;">Transaksi digital aman & nyaman.</span>
+</div>
+
+      <script>
+if (location.pathname.endsWith('.html')) {
+  history.replaceState(
+    {},
+    '',
+    location.pathname.replace('.html', '')
+  );
+}
+</script>
+
+</body>
+</html>
