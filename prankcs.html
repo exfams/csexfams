@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Chat Gimik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#0a6cb8;
+    --primary-dark:#085a99;
+    --bg:#eef1f4;
+    --panel:#ffffff;
+    --bubble-left:#ffffff;
+    --bubble-right:#0a6cb8;
+    --text-dark:#1c1e21;
+    --text-muted:#8a93a1;
+    --border:#e3e7ec;
+    --danger:#e53935;
+    --warn:#ff9800;
+    --radius-lg:16px;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#dfe3e8;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px 0;
+}
+
+.phone-shell{
+    width:100%;
+    max-width:430px;
+    background:var(--panel);
+    border-radius:24px;
+    box-shadow:0 25px 60px -10px rgba(20,40,70,.3),0 0 0 1px rgba(255,255,255,.4) inset;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    height:90vh;
+    max-height:860px;
+}
+
+/* ===== HEADER ===== */
+.header{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-shrink:0;
+    position:relative;
+    z-index:5;
+}
+
+.header .back-arrow{
+    font-size:22px;
+    opacity:.9;
+    cursor:default;
+}
+
+.avatar-wrap{
+    position:relative;
+    width:44px;
+    height:44px;
+    flex-shrink:0;
+}
+
+.avatar-wrap img{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid rgba(255,255,255,.5);
+}
+
+.online-dot{
+    position:absolute;
+    bottom:-2px;
+    right:-2px;
+    width:12px;
+    height:12px;
+    background:#3ddc6a;
+    border:2px solid var(--primary-dark);
+    border-radius:50%;
+}
+
+.header-info{
+    flex:1;
+    min-width:0;
+}
+
+.header-info h2{
+    font-size:17px;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    letter-spacing:.2px;
+}
+
+.header-info p{
+    font-size:12.5px;
+    opacity:.85;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.header-icons{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    font-size:18px;
+    flex-shrink:0;
+}
+
+.header-icons button{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:18px;
+    cursor:pointer;
+    opacity:.9;
+    padding:4px;
+    border-radius:50%;
+    line-height:1;
+}
+.header-icons button:hover{ background:rgba(255,255,255,.15); }
+
+/* ===== CHAT AREA ===== */
+#captureArea{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+}
+
+.chat-area{
+    flex:1;
+    overflow-y:auto;
+    padding:16px 12px 8px;
+    background-color:#eef1f4;
+}
+
+.chat-area::-webkit-scrollbar{ width:6px; }
+.chat-area::-webkit-scrollbar-thumb{ background:#c2cbd6; border-radius:10px; }
+
+.date-label{
+    text-align:center;
+    margin:6px 0 18px;
+}
+
+.date-label span{
+    background:#fff;
+    padding:6px 16px;
+    border-radius:30px;
+    color:#7a8392;
+    font-size:12.5px;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+    cursor:text;
+    outline:none;
+}
+
+.message-row{
+    margin-bottom:4px;
+    animation:slideIn .2s ease;
+    position:relative;
+}
+
+.message-row.grouped{ margin-bottom:2px; }
+.message-row + .message-row{ margin-top:2px; }
+.message-row.spaced{ margin-top:12px; }
+
+@keyframes slideIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
+.row-left{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+}
+
+.avatar-slot{
+    width:30px;
+    flex-shrink:0;
+}
+
+.avatar-slot img{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+}
+
+.bubble-col{ max-width:78%; }
+
+.bubble-left{
+    background:var(--bubble-left);
+    padding:10px 14px;
+    border-radius:var(--radius-lg);
+    border-bottom-left-radius:4px;
+    font-size:15px;
+    line-height:1.45;
+    color:var(--text-dark);
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    border:1px solid var(--border);
+}
+
+.row-right{
+    display:flex;
+    justify-content:flex-end;
+}
+
+.bubble-col-right{
+    max-width:78%;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+}
+
+.bubble-right{
+    background:var(--bubble-right);
+    color:#fff;
+    padding:10px 14px;
+    border-radius:var(--radius-lg);
+    border-bottom-right-radius:4px;
+    font-size:15px;
+    line-height:1.45;
+    box-shadow:0 1px 2px rgba(0,0,0,.1);
+    white-space:pre-wrap;
+    word-wrap:break-word;
+}
+
+.meta{
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-top:4px;
+    padding:0 4px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+}
+
+.meta-right{ justify-content:flex-end; }
+
+/* delete-on-hover */
+.row-delete{
+    position:absolute;
+    top:2px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:rgba(0,0,0,.45);
+    color:#fff;
+    border:none;
+    font-size:12px;
+    line-height:20px;
+    text-align:center;
+    cursor:pointer;
+    opacity:0;
+    transition:opacity .15s;
+}
+.message-row:hover .row-delete{ opacity:1; }
+.row-left .row-delete{ right:-26px; }
+.row-right .row-delete{ left:-26px; }
+
+/* typing indicator */
+.typing-bubble{
+    background:var(--bubble-left);
+    padding:12px 16px;
+    border-radius:var(--radius-lg);
+    border-bottom-left-radius:4px;
+    display:inline-flex;
+    gap:4px;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+    border:1px solid var(--border);
+}
+.typing-bubble span{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#a9b2bd;
+    animation:bounce 1.1s infinite;
+}
+.typing-bubble span:nth-child(2){ animation-delay:.15s; }
+.typing-bubble span:nth-child(3){ animation-delay:.3s; }
+@keyframes bounce{
+    0%,60%,100%{ transform:translateY(0); opacity:.5; }
+    30%{ transform:translateY(-5px); opacity:1; }
+}
+
+/* ===== CONTROLS ===== */
+.controls{
+    padding:10px 12px 12px;
+    border-top:1px solid var(--border);
+    background:#fff;
+    flex-shrink:0;
+}
+
+.input-row{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+}
+
+textarea#pesan{
+    flex:1;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:11px 16px;
+    font-size:15px;
+    outline:none;
+    resize:none;
+    max-height:110px;
+    line-height:1.4;
+    font-family:inherit;
+    background:#f4f6f8;
+    transition:border-color .15s;
+}
+textarea#pesan:focus{ border-color:var(--primary); background:#fff; }
+
+.hint{
+    font-size:11px;
+    color:var(--text-muted);
+    margin:6px 2px 8px;
+}
+
+.btn-group{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.btn-group2{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+    margin-top:8px;
+}
+
+button.action{
+    border:none;
+    border-radius:10px;
+    padding:11px;
+    color:#fff;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    font-family:inherit;
+    transition:filter .15s,transform .05s;
+}
+button.action:active{ transform:scale(.97); }
+button.action:hover{ filter:brightness(1.07); }
+
+.leftBtn{ background:#6b7785; }
+.rightBtn{ background:var(--primary); }
+.typingBtn{ background:#7a6bb0; }
+.deleteBtn{ background:var(--warn); }
+.clearBtn{ background:var(--danger); }
+.shotBtn{ background:#2bab6e; }
+.settingsBtn{ background:#475569; }
+
+/* ===== SETTINGS MODAL ===== */
+.modal-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(15,23,35,.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:20px;
+}
+.modal-overlay.open{ display:flex; }
+
+.modal-box{
+    background:#fff;
+    width:100%;
+    max-width:340px;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);
+}
+.modal-box h3{
+    font-size:16px;
+    margin-bottom:14px;
+    color:var(--text-dark);
+}
+.field{ margin-bottom:12px; }
+.field label{
+    display:block;
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin-bottom:4px;
+}
+.field input[type="text"]{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:14px;
+    outline:none;
+    font-family:inherit;
+}
+.field input[type="text"]:focus{ border-color:var(--primary); }
+.field input[type="file"]{ font-size:12.5px; }
+
+.modal-actions{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+}
+.modal-actions button{
+    flex:1;
+    border:none;
+    border-radius:10px;
+    padding:10px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+}
+.btn-save{ background:var(--primary); color:#fff; }
+.btn-cancel{ background:#eef1f4; color:#444; }
+
+.shell-wrap{ position:relative; height:100%; display:flex; flex-direction:column; }
+
+@media(max-width:430px){
+    body{ padding:0; align-items:stretch; }
+    .phone-shell{ height:100vh; max-height:none; border-radius:0; }
+}
+</style>
+</head>
+<body>
+
+<div class="phone-shell">
+<div class="shell-wrap">
+
+    <div id="captureArea">
+        <div class="header">
+            <div class="back-arrow">&#8592;</div>
+
+            <div class="avatar-wrap">
+                <img id="headerAvatar" src="https://i.imgur.com/L7VQY7N.png" crossorigin="anonymous">
+                <div class="online-dot"></div>
+            </div>
+
+            <div class="header-info">
+                <h2 id="headerName">DIANA</h2>
+                <p id="headerStatus">Online</p>
+            </div>
+
+            <div class="header-icons">
+                <button title="Telepon">&#128222;</button>
+                <button title="Video call">&#128249;</button>
+                <button id="settingsToggle" title="Pengaturan kontak">&#9881;</button>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="date-label">
+                <span contenteditable="true" spellcheck="false">Hari ini</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="input-row">
+            <textarea id="pesan" rows="1" placeholder="Ketik pesan... (Shift+Enter = baris baru)"></textarea>
+        </div>
+        <div class="hint">Enter = kirim ke kanan &nbsp;•&nbsp; Shift+Enter = baris baru &nbsp;•&nbsp; klik 2x pesan untuk edit</div>
+
+        <div class="btn-group">
+            <button class="action leftBtn" onclick="kirimKiri()">Kirim Kiri</button>
+            <button class="action rightBtn" onclick="kirimKanan()">Kirim Kanan</button>
+        </div>
+
+        <div class="btn-group2">
+            <button class="action typingBtn" onclick="simulasiTyping()">Ketik...</button>
+            <button class="action deleteBtn" onclick="hapusTerakhir()">Hapus Akhir</button>
+            <button class="action clearBtn" onclick="clearChat()">Clear</button>
+        </div>
+
+        <div class="btn-group" style="margin-top:8px;">
+            <button class="action shotBtn" onclick="downloadScreenshot()">Screenshot</button>
+            <button class="action settingsBtn" onclick="openSettings()">Edit Kontak</button>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <h3>Edit Kontak</h3>
+
+            <div class="field">
+                <label>Nama kontak</label>
+                <input type="text" id="inputNama" placeholder="Nama">
+            </div>
+
+            <div class="field">
+                <label>Status (mis. Online / Terakhir dilihat...)</label>
+                <input type="text" id="inputStatus" placeholder="Online">
+            </div>
+
+            <div class="field">
+                <label>Foto profil (URL)</label>
+                <input type="text" id="inputFotoUrl" placeholder="https://...">
+            </div>
+
+            <div class="field">
+                <label>atau upload dari perangkat</label>
+                <input type="file" id="inputFotoFile" accept="image/*">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeSettings()">Batal</button>
+                <button class="btn-save" onclick="saveSettings()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+
+let profileBot = "https://i.imgur.com/L7VQY7N.png";
+let botName = "DIANA";
+let botStatus = "Online";
+let lastSide = null; // 'left' | 'right' | null, untuk grouping avatar
+
+const chatArea = document.getElementById("chatArea");
+const pesanInput = document.getElementById("pesan");
+
+/* ===== util ===== */
+function jamSekarang(){
+    const now = new Date();
+    return now.toLocaleTimeString("id-ID",{ hour:'2-digit', minute:'2-digit' });
+}
+
+function scrollBawah(){
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function hapusTypingRow(){
+    const typing = chatArea.querySelector(".typing-row");
+    if(typing) typing.remove();
+}
+
+/* ===== kirim pesan ===== */
+function kirimKiri(){
+    const teks = pesanInput.value;
+    if(teks.trim()==="") return;
+
+    hapusTypingRow();
+
+    const tampilkanAvatar = lastSide !== "left";
+    const row = document.createElement("div");
+    row.className = "message-row" + (tampilkanAvatar ? " spaced" : " grouped");
+    row.dataset.side = "left";
+
+    row.innerHTML = `
+        <button class="row-delete" onclick="hapusRowIni(this)">&times;</button>
+        <div class="row-left">
+            <div class="avatar-slot">${tampilkanAvatar ? `<img src="${profileBot}" crossorigin="anonymous">` : ""}</div>
+            <div class="bubble-col">
+                <div class="bubble-left" ondblclick="editBubble(this)">${escapeHtml(teks)}</div>
+                <div class="meta">${jamSekarang()}</div>
+            </div>
+        </div>
+    `;
+
+    chatArea.appendChild(row);
+    lastSide = "left";
+    pesanInput.value = "";
+    resizeTextarea();
+    scrollBawah();
+}
+
+function kirimKanan(){
+    const teks = pesanInput.value;
+    if(teks.trim()==="") return;
+
+    hapusTypingRow();
+
+    const row = document.createElement("div");
+    row.className = "message-row row-right";
+    row.dataset.side = "right";
+
+    row.innerHTML = `
+        <button class="row-delete" onclick="hapusRowIni(this)">&times;</button>
+        <div class="bubble-col-right">
+            <div class="bubble-right" ondblclick="editBubble(this)">${escapeHtml(teks)}</div>
+            <div class="meta meta-right">
+                <span>${jamSekarang()}</span>
+            </div>
+        </div>
+    `;
+
+    chatArea.appendChild(row);
+    lastSide = "right";
+    pesanInput.value = "";
+    resizeTextarea();
+    scrollBawah();
+}
+
+/* ===== simulasi mengetik ===== */
+function simulasiTyping(){
+    hapusTypingRow();
+
+    const tampilkanAvatar = lastSide !== "left";
+    const row = document.createElement("div");
+    row.className = "message-row typing-row" + (tampilkanAvatar ? " spaced" : " grouped");
+
+    row.innerHTML = `
+        <div class="row-left">
+            <div class="avatar-slot">${tampilkanAvatar ? `<img src="${profileBot}" crossorigin="anonymous">` : ""}</div>
+            <div class="bubble-col">
+                <div class="typing-bubble"><span></span><span></span><span></span></div>
+            </div>
+        </div>
+    `;
+
+    chatArea.appendChild(row);
+    scrollBawah();
+}
+
+/* ===== hapus pesan ===== */
+function hapusTerakhir(){
+    hapusTypingRow();
+    const pesan = chatArea.querySelectorAll(".message-row");
+    if(pesan.length){
+        pesan[pesan.length-1].remove();
+        const sisa = chatArea.querySelectorAll(".message-row");
+        lastSide = sisa.length ? sisa[sisa.length-1].dataset.side : null;
+    }
+}
+
+function hapusRowIni(btn){
+    const row = btn.closest(".message-row");
+    row.remove();
+    const sisa = chatArea.querySelectorAll(".message-row");
+    lastSide = sisa.length ? sisa[sisa.length-1].dataset.side : null;
+}
+
+function clearChat(){
+    chatArea.innerHTML = `
+        <div class="date-label">
+            <span contenteditable="true" spellcheck="false">Hari ini</span>
+        </div>
+    `;
+    lastSide = null;
+}
+
+/* ===== edit pesan langsung di bubble ===== */
+function editBubble(el){
+    el.contentEditable = "true";
+    el.focus();
+
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    function selesai(){
+        el.contentEditable = "false";
+        el.removeEventListener("blur", selesai);
+    }
+    el.addEventListener("blur", selesai);
+}
+
+/* ===== textarea auto-resize + shortcut ===== */
+function resizeTextarea(){
+    pesanInput.style.height = "auto";
+    pesanInput.style.height = Math.min(pesanInput.scrollHeight, 110) + "px";
+}
+
+pesanInput.addEventListener("input", resizeTextarea);
+
+pesanInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        kirimKanan();
+    }
+});
+
+/* ===== settings modal ===== */
+const modalOverlay = document.getElementById("modalOverlay");
+
+function openSettings(){
+    document.getElementById("inputNama").value = botName;
+    document.getElementById("inputStatus").value = botStatus;
+    document.getElementById("inputFotoUrl").value = "";
+    document.getElementById("inputFotoFile").value = "";
+    modalOverlay.classList.add("open");
+}
+
+function closeSettings(){
+    modalOverlay.classList.remove("open");
+}
+
+document.getElementById("settingsToggle").addEventListener("click", openSettings);
+
+function applyAvatar(url){
+    profileBot = url;
+    document.getElementById("headerAvatar").src = url;
+    document.querySelectorAll(".row-left .avatar-slot img").forEach(img => img.src = url);
+}
+
+function saveSettings(){
+    const nama = document.getElementById("inputNama").value.trim();
+    const status = document.getElementById("inputStatus").value.trim();
+    const url = document.getElementById("inputFotoUrl").value.trim();
+    const file = document.getElementById("inputFotoFile").files[0];
+
+    if(nama){
+        botName = nama;
+        document.getElementById("headerName").textContent = nama;
+    }
+    if(status){
+        botStatus = status;
+        document.getElementById("headerStatus").textContent = status;
+    }
+
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            applyAvatar(e.target.result);
+            closeSettings();
+        };
+        reader.readAsDataURL(file);
+    } else {
+        if(url) applyAvatar(url);
+        closeSettings();
+    }
+}
+
+/* ===== screenshot (download sebagai PNG) ===== */
+function downloadScreenshot(){
+    const target = document.getElementById("captureArea");
+
+    html2canvas(target, { useCORS:true, backgroundColor:"#ffffff", scale:2 }).then(function(canvas){
+        const link = document.createElement("a");
+        link.download = "chat-" + Date.now() + ".png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    }).catch(function(err){
+        alert("Gagal membuat screenshot otomatis (biasanya karena foto profil dari URL luar diblokir CORS). Coba ganti foto profil dengan upload file, atau gunakan screenshot manual perangkatmu.");
+        console.error(err);
+    });
+}
+
+</script>
+
+</body>
+</html>
