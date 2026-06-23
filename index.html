@@ -3,335 +3,749 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Informasi Penting</title>
-  
+  <title>EXFAMS ID - Penyedia Layanan Customer Care</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue:       #2196f3;
+      --blue-dark:  #2196f3;
+      --blue-deep:  #2196f3;
+      --blue-light: #eff6ff;
+      --blue-mid:   #bfdbfe;
+      --text:       #0f172a;
+      --text-2:     #334155;
+      --text-3:     #64748b;
+      --border:     #e2e8f0;
+      --white:      #ffffff;
+      --page-bg:    #f8fafc;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      background: #2196f3;
-      color: rgb(255, 255, 255);
-      text-align: center;
+      justify-content: space-between;
     }
 
-    .container {
-      background: rgb(255, 255, 255);
-      backdrop-filter: blur(10px);
-      padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      max-width: 400px;
-      width: 90%;
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: -0.02em;
+      text-decoration: none;
     }
 
-    h1 {
-      font-size: 22px;
-      margin-bottom: 15px;
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
       font-weight: 500;
-      color: #000;
-      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text-3);
+      text-decoration: none;
+      transition: color 0.15s;
     }
 
-    .number {
-      font-size: 26px;
-      font-weight: bold;
-      margin-top: 10px;
-      letter-spacing: 1px;
-      color: #000;
-      font-family: Arial, Helvetica, sans-serif;
+    .nav-links a:hover { color: var(--blue); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white) !important;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px !important;
     }
 
-    .info {
-      margin-top: 15px;
-      font-size: 14px;
-      opacity: 0.8;
-      color: #000;
-      font-family: Arial, Helvetica, sans-serif;
+    .nav-cta:hover { background: var(--blue-dark); color: var(--white) !important; }
+
+    /* ─── HERO ─── */
+    .hero {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 96px 24px 80px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero h1 {
+      font-size: clamp(25px,6vw, 48px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      max-width: 680px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      color: var(--blue);
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--text-3);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: 2196f3;
-      color: #2a5298;
-      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
       text-decoration: none;
-      font-weight: bold;
-      transition: 0.3s;
+      border: none;
+      transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
     }
 
-    .btn:hover {
-      background: #f1f1f1;
-      transform: scale(0.95);
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
     }
 
-    .btn-salin-modern {
-  margin-top: 12px;
-  padding: 10px 18px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    }
 
-  background: #2196f3;
-  color: #fff;
+    .btn-outline {
+      background: var(--white);
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
 
-  transition: all 0.25s ease;
-}
+    .btn-outline:hover {
+      background: var(--blue-light);
+      border-color: var(--blue-mid);
+      color: var(--blue);
+    }
 
-.btn-salin-modern:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.151);
-}
+    /* ─── STATS ─── */
+    .stats {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
 
-.btn-salin-modern:active {
-  transform: scale(0.96);
-}
+    .stats-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
 
-.btn-salin-modern .icon {
-  font-size: 16px;
-}
+    .stat-item {
+      padding: 36px 24px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
 
-/* Popup Toast Modern */
-.popup-copy {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: #2196f3;
-  backdrop-filter: blur(10px);
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 18px;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-}
+    .stat-item:last-child { border-right: none; }
 
-.popup-copy.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+    .stat-num {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
 
-.operasional-info{
-  margin-bottom:12px;
-  padding:10px 12px;
-  border:1px solid #d9d9d9;
-  border-radius:8px;
-  background:#f8f9fa;
-  font-size:13px;
-  line-height:1.5;
-  color:#555;
-}
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
 
-*{
-  -webkit-user-select:none !important;
-  -moz-user-select:none !important;
-  -ms-user-select:none !important;
-  user-select:none !important;
-  -webkit-touch-callout:none !important;
-}
+    /* ─── SECTION SHARED ─── */
+    .section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .section-tag {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: clamp(24px, 3.5vw, 34px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-3);
+      line-height: 1.65;
+      max-width: 540px;
+      margin-bottom: 48px;
+    }
+
+    /* ─── LAYANAN / CARDS ─── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 26px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--blue-mid);
+      box-shadow: 0 4px 20px rgba(37,99,235,0.08);
+    }
+
+    .card-icon {
+      width: 42px; height: 42px;
+      background: var(--blue-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .card-icon svg { color: var(--blue); }
+
+    .card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-3);
+      line-height: 1.6;
+    }
+
+    /* ─── JAM OPERASIONAL ─── */
+    .ops-wrap {
+      background: var(--blue-deep);
+      border-radius: 20px;
+      padding: 48px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .ops-left h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.025em;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .ops-left p {
+      font-size: 14px;
+      color: var(--blue-mid);
+      line-height: 1.65;
+    }
+
+    .ops-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ops-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+
+    .ops-row-label {
+      font-size: 13px;
+      color: var(--blue-mid);
+      font-weight: 500;
+    }
+
+    .ops-row-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .badge-online {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #86efac;
+      background: rgba(134,239,172,0.12);
+      border: 1px solid rgba(134,239,172,0.25);
+      border-radius: 100px;
+      padding: 4px 10px;
+    }
+
+    .badge-online-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #86efac;
+      animation: blink 2s infinite;
+    }
+
+    /* ─── KONTAK ─── */
+    .kontak-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .kontak-left h2 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .kontak-left p {
+      font-size: 14px;
+      color: var(--text-3);
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    .phone-display {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .phone-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue);
+      margin-bottom: 5px;
+    }
+
+    .phone-num {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.01em;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .kontak-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .kontak-right {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-top: 4px;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .info-item-icon {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
+      background: var(--blue-light);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-item-icon svg { color: var(--blue); }
+
+    .info-item-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .info-item-text span {
+      font-size: 13px;
+      color: var(--text-3);
+      line-height: 1.5;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--white);
+    }
+
+    .footer-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text);
+      color: var(--white);
+      padding: 10px 18px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── DIVIDER ─── */
+    .section-divider {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-divider hr {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 700px) {
+      .nav-links { display: none; }
+
+      .hero { padding: 64px 20px 56px; }
+
+      .stats-inner { grid-template-columns: repeat(3, 1fr); }
+      .stat-item { padding: 24px 12px; }
+      .stat-num { font-size: 24px; }
+
+      .section { padding: 56px 20px; }
+
+      .ops-wrap { grid-template-columns: 1fr; gap: 28px; padding: 32px 24px; }
+      .kontak-wrap { grid-template-columns: 1fr; gap: 28px; padding: 32px 24px; }
+
+      .footer-inner { justify-content: center; text-align: center; }
+    }
+
+    @media (max-width: 420px) {
+      .stats-inner { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding: 20px 24px; }
+      .stat-item:last-child { border-bottom: none; }
+    }
+
+    * { -webkit-user-select: none; user-select: none; }
+    .phone-num { -webkit-user-select: text; user-select: text; }
   </style>
 </head>
 <body>
 
-  
-
-  <div class="container">
-<div class="operasional-info" id="operasionalInfo">
-  <b>
-    Jam Operasional Aktif Pukul 09.10 WIB dan Offline Pukul 21.50 WIB.
-    Kami sarankan untuk chat pada jam operasional.
-  </b>
-</div>
-
-<div class="number">
-  Nomor backup 
-  <span id="backupNumber">089502338374</span>
-  
-</div>
-
-<button onclick="salinNomor()" class="btn-salin-modern">
-  <span class="icon">📋</span>
-  <span class="text">Salin Nomor</span>
-</button>
-
-<div id="popupCopy" class="popup-copy">
-  Nomor sudah tersalin ✅
-</div>
-    <div class="info">
-      Silakan hubungi nomor di atas apabila nomor utama tidak dapat dihubungi.
-    </div>
-    <a href="https://wa.me/6289502338374" class="btn">Hubungi Sekarang</a>
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">EXFAMS ID</a>
+    </ul>
   </div>
+</nav>
 
-  <script>
-const operasionalInfo = document.getElementById('operasionalInfo');
-let clickCount = 0;
-let clickTimer;
+<!-- HERO -->
+<section class="hero">
+<h1>Penyedia Layanan<br><span>Customer Service</span><br>Live Chat - On WhatsApp</h1>
 
-operasionalInfo.addEventListener('click', () => {
-  clickCount++;
+<p class="hero-desc">
+  Layanan Customer Care yang responsif untuk membantu menjawab kebutuhan pelanggan Anda. Kami juga bekerja sama dengan berbagai layanan pendukung bisnis guna menghadirkan solusi yang praktis, cepat, dan sesuai kebutuhan usaha online & offline.
+</p>
+</section>
 
-  clearTimeout(clickTimer);
-  clickTimer = setTimeout(() => {
-    clickCount = 0;
-  }, 1000); // harus 3 klik dalam 1 detik
 
-  if (clickCount === 3) {
-    window.location.href = 'list.html';
-  }
-});
-</script>
+<div class="section-divider"><hr></div>
+
+<!-- OPERASIONAL -->
+<section class="section" id="operasional">
+  <div class="ops-wrap" id="opsWrap">
+    <div class="ops-left">
+      <h2>Jam Operasional Kami</h2>
+      <p>Kami aktif setiap hari dalam rentang waktu berikut. Pesan di luar jam operasional akan dibalas setelah layanan kembali aktif.</p>
+      <br>
+      <div class="badge-online">
+        <span class="badge-online-dot"></span>
+        Aktif hari ini
+      </div>
+    </div>
+    <div class="ops-right">
+      <div class="ops-row">
+        <span class="ops-row-label">Mulai aktif</span>
+        <span class="ops-row-val">09.10 WIB</span>
+      </div>
+      <div class="ops-row">
+        <span class="ops-row-label">Offline pukul</span>
+        <span class="ops-row-val">21.50 WIB</span>
+      </div>
+      <div class="ops-row">
+        <span class="ops-row-label">Hari operasional</span>
+        <span class="ops-row-val">Setiap Hari</span>
+      </div>
+      <div class="ops-row">
+        <span class="ops-row-label">Status sekarang</span>
+        <span class="ops-row-val" id="statusNow">–</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- KONTAK -->
+<section class="section" id="kontak">
+  <p class="section-tag">Hubungi Kami</p>
+  <h2 class="section-title">Kami siap membantu.</h2>
+  <p class="section-desc">Gunakan nomor di bawah ini untuk langsung terhubung dengan kami via WhatsApp.</p>
+
+  <div class="kontak-wrap">
+    <div class="kontak-left">
+      <h2>Nomor Cadangan</h2>
+      <p>Gunakan nomor ini apabila nomor utama sedang tidak dapat dihubungi.</p>
+      <div class="phone-display">
+        <div class="phone-label">WhatsApp</div>
+        <div class="phone-num" id="phoneNum">0895 0233 8374</div>
+      </div>
+      <div class="kontak-actions">
+        <a href="https://wa.me/6289502338374" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/></svg>
+          Chat di WhatsApp
+        </a>
+        <button class="btn btn-outline" onclick="salin()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Salin Nomor
+        </button>
+      </div>
+    </div>
+
+    <div class="kontak-right">
+      <div class="info-item">
+        <div class="info-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="info-item-text">
+          <strong>Jam Operasional</strong>
+          <span>Aktif pukul 09.10 hingga 21.50 WIB setiap harinya. Chat di luar jam akan dibalas esok hari.</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.15.9.35 1.8.61 2.67a2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 6.29 6.29"/></svg>
+        </div>
+        <div class="info-item-text">
+          <strong>Nomor Cadangan</strong>
+          <span>Digunakan bila nomor utama tidak merespons. Nomor ini aktif dalam jam yang sama.</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="info-item-text">
+          <strong>Respon Cepat</strong>
+          <span>Kami prioritaskan setiap pesan yang masuk dan berusaha merespons sesegera mungkin.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">EXFAMS ID</div>
+    <div class="footer-copy">© 2019 - 2026 Semua hak dilindungi.</div>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Nomor berhasil disalin ✓</div>
 
 <script>
-(() => {
-
-  function destroyPage() {
-
-    try {
-
-      document.documentElement.innerHTML = "";
-
-      document.open();
-      document.write("");
-      document.close();
-
-      document.body.innerHTML = "";
-
-      document.body.style.background = "#000";
-
-      window.stop();
-
-      setTimeout(() => {
-        location.replace("about:blank");
-      }, 100);
-
-    } catch (e) {}
-
+  // Salin nomor
+  function salin() {
+    navigator.clipboard.writeText("089502338374").then(() => {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    });
   }
 
-  // Blok klik kanan
-  document.addEventListener("contextmenu", function(e){
-    e.preventDefault();
-    return false;
+  // Status operasional real-time
+  (function() {
+    const el = document.getElementById('statusNow');
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes();
+    const mins = h * 60 + m;
+    const open = 9 * 60 + 10;
+    const close = 21 * 60 + 50;
+    el.textContent = (mins >= open && mins < close) ? 'Sedang Online ✓' : 'Sedang Offline';
+    el.style.color = (mins >= open && mins < close) ? '#86efac' : '#fca5a5';
+  })();
+
+  // Triple click ops section → list.html
+  let cc = 0, ct;
+  document.getElementById('opsWrap').addEventListener('click', () => {
+    cc++;
+    clearTimeout(ct);
+    ct = setTimeout(() => cc = 0, 1000);
+    if (cc === 3) window.location.href = 'list.html';
   });
 
-  // Blok select teks
-  document.addEventListener("selectstart", function(e){
-    e.preventDefault();
-  });
-
-  // Blok drag
-  document.addEventListener("dragstart", function(e){
-    e.preventDefault();
-  });
-
-  // Blok shortcut keyboard
-  document.addEventListener("keydown", function(e){
-
-    const key = e.key.toUpperCase();
-
-    if(
-      key === "F12" ||
-      (e.ctrlKey && e.shiftKey &&
-      ["I","J","C","K"].includes(key)) ||
-      (e.ctrlKey &&
-      ["U","S","P"].includes(key))
-    ){
+  // Block devtools
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    const k = e.key.toUpperCase();
+    if (k === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && ['U','S','P'].includes(k))) {
       e.preventDefault();
-      e.stopPropagation();
-      destroyPage();
-      return false;
     }
-
   }, true);
-
-  // Deteksi DevTools
-  function detectDevTools(){
-
-    const widthGap =
-      window.outerWidth - window.innerWidth;
-
-    const heightGap =
-      window.outerHeight - window.innerHeight;
-
-    if(
-      widthGap > 160 ||
-      heightGap > 160
-    ){
-      destroyPage();
-    }
-
-  }
-
-  setInterval(detectDevTools, 250);
-
-  // Trap console
-  const bait = new Image();
-
-  Object.defineProperty(bait, "id", {
-    get: function(){
-      destroyPage();
-      return "";
-    }
-  });
-
-  setInterval(() => {
-    console.clear();
-    console.log(bait);
-  }, 1000);
-
-})();
 </script>
-
-
 
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/699bc97353ab851c38d9ad25/1ji48lraa';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/699bc97353ab851c38d9ad25/1ji48lraa';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
-
-  <script>
-function salinNomor() {
-  const nomor = document.getElementById("backupNumber").textContent;
-  
-  navigator.clipboard.writeText(nomor).then(() => {
-    const popup = document.getElementById("popupCopy");
-    popup.classList.add("show");
-
-    setTimeout(() => {
-      popup.classList.remove("show");
-    }, 2000);
-  });
-}
-</script>
 
 </body>
 </html>
