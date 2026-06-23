@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informasi Penting</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2196f3;
+      color: rgb(255, 255, 255);
+      text-align: center;
+    }
+
+    .container {
+      background: rgb(255, 255, 255);
+      backdrop-filter: blur(10px);
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      font-weight: 500;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .number {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 10px;
+      letter-spacing: 1px;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .info {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.8;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: 2196f3;
+      color: #2a5298;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #f1f1f1;
+      transform: scale(0.95);
+    }
+
+    .btn-salin-modern {
+  margin-top: 12px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  background: #2196f3;
+  color: #fff;
+
+  transition: all 0.25s ease;
+}
+
+.btn-salin-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.151);
+}
+
+.btn-salin-modern:active {
+  transform: scale(0.96);
+}
+
+.btn-salin-modern .icon {
+  font-size: 16px;
+}
+
+/* Popup Toast Modern */
+.popup-copy {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #2196f3;
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+.popup-copy.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.operasional-info{
+  margin-bottom:12px;
+  padding:10px 12px;
+  border:1px solid #d9d9d9;
+  border-radius:8px;
+  background:#f8f9fa;
+  font-size:13px;
+  line-height:1.5;
+  color:#555;
+}
+
+*{
+  -webkit-user-select:none !important;
+  -moz-user-select:none !important;
+  -ms-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+}
+  </style>
+</head>
+<body>
+
+  
+
+  <div class="container">
+<div class="operasional-info" id="operasionalInfo">
+  <b>
+    Jam Operasional Aktif Pukul 09.10 WIB dan Offline Pukul 21.50 WIB.
+    Kami sarankan untuk chat pada jam operasional.
+  </b>
+</div>
+
+<div class="number">
+  Nomor backup 
+  <span id="backupNumber">089502338374</span>
+  
+</div>
+
+<button onclick="salinNomor()" class="btn-salin-modern">
+  <span class="icon">📋</span>
+  <span class="text">Salin Nomor</span>
+</button>
+
+<div id="popupCopy" class="popup-copy">
+  Nomor sudah tersalin ✅
+</div>
+    <div class="info">
+      Silakan hubungi nomor di atas apabila nomor utama tidak dapat dihubungi.
+    </div>
+    <a href="https://wa.me/6289502338374" class="btn">Hubungi Sekarang</a>
+  </div>
+
+  <script>
+const operasionalInfo = document.getElementById('operasionalInfo');
+let clickCount = 0;
+let clickTimer;
+
+operasionalInfo.addEventListener('click', () => {
+  clickCount++;
+
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(() => {
+    clickCount = 0;
+  }, 1000); // harus 3 klik dalam 1 detik
+
+  if (clickCount === 3) {
+    window.location.href = 'list.html';
+  }
+});
+</script>
+
+<script>
+(() => {
+
+  function destroyPage() {
+
+    try {
+
+      document.documentElement.innerHTML = "";
+
+      document.open();
+      document.write("");
+      document.close();
+
+      document.body.innerHTML = "";
+
+      document.body.style.background = "#000";
+
+      window.stop();
+
+      setTimeout(() => {
+        location.replace("about:blank");
+      }, 100);
+
+    } catch (e) {}
+
+  }
+
+  // Blok klik kanan
+  document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+    return false;
+  });
+
+  // Blok select teks
+  document.addEventListener("selectstart", function(e){
+    e.preventDefault();
+  });
+
+  // Blok drag
+  document.addEventListener("dragstart", function(e){
+    e.preventDefault();
+  });
+
+  // Blok shortcut keyboard
+  document.addEventListener("keydown", function(e){
+
+    const key = e.key.toUpperCase();
+
+    if(
+      key === "F12" ||
+      (e.ctrlKey && e.shiftKey &&
+      ["I","J","C","K"].includes(key)) ||
+      (e.ctrlKey &&
+      ["U","S","P"].includes(key))
+    ){
+      e.preventDefault();
+      e.stopPropagation();
+      destroyPage();
+      return false;
+    }
+
+  }, true);
+
+  // Deteksi DevTools
+  function detectDevTools(){
+
+    const widthGap =
+      window.outerWidth - window.innerWidth;
+
+    const heightGap =
+      window.outerHeight - window.innerHeight;
+
+    if(
+      widthGap > 160 ||
+      heightGap > 160
+    ){
+      destroyPage();
+    }
+
+  }
+
+  setInterval(detectDevTools, 250);
+
+  // Trap console
+  const bait = new Image();
+
+  Object.defineProperty(bait, "id", {
+    get: function(){
+      destroyPage();
+      return "";
+    }
+  });
+
+  setInterval(() => {
+    console.clear();
+    console.log(bait);
+  }, 1000);
+
+})();
+</script>
+
+
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/699bc97353ab851c38d9ad25/1ji48lraa';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
+  <script>
+function salinNomor() {
+  const nomor = document.getElementById("backupNumber").textContent;
+  
+  navigator.clipboard.writeText(nomor).then(() => {
+    const popup = document.getElementById("popupCopy");
+    popup.classList.add("show");
+
+    setTimeout(() => {
+      popup.classList.remove("show");
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
