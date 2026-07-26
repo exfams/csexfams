@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Syarat & Ketentuan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'gabarito', sans-serif;
+    }
+
+    body {
+      background-color: #fff;
+      color: #222;
+      padding: 20px;
+      position: relative;
+      -webkit-tap-highlight-color: transparent; /* Hilangkan efek tap Android */
+      user-select: none;           /* Nonaktifkan seleksi teks */
+      -webkit-user-select: none;   /* Safari/Chrome */
+      -ms-user-select: none;       /* Internet Explorer */
+      -moz-user-select: none;      /* Firefox */
+      -webkit-touch-callout: none; /* Nonaktifkan menu pop-up saat tap di HP */
+    }
+
+    /* Tidak ada highlight ketika user tahan dan block teks */
+  *::selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  /* Matikan drag image/text */
+  img, a, span, div, p {
+    -webkit-user-drag: none;
+    pointer-events: auto;
+  }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .header img {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 12px 0 24px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .section ul {
+      list-style: disc;
+      padding-left: 20px;
+    }
+
+    .section ul li {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.12;
+      z-index: 1;
+      max-width: 300px;
+      background-position: center 150px;
+  background-size: 300px;
+    }
+
+    @media screen and (max-width: 500px) {
+      body {
+        padding: 16px;
+      }
+
+      .header h1 {
+        font-size: 16px;
+      }
+
+      .section h2 {
+        font-size: 14px;
+      }
+
+      .section ul li {
+        font-size: 13px;
+      }
+    }
+    
+    .scroll-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 185px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(33, 33, 33, 0.185); /* soft dark */
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-btn:hover {
+  transform: scale(1.1);
+  background-color:  rgba(33, 33, 33, 0.185);
+}
+
+.scroll-btn:active {
+  transform: scale(0.95);
+}
+
+
+  </style>
+</head>
+<body>
+ <button id="scrollToggleBtn" aria-label="Scroll" class="scroll-btn">
+  <i class="fas fa-arrow-down"></i>
+</button>
+
+
+  <!-- Watermark background -->
+  <img src="https://images.bukaolshop.com/2025-06/191835/2fc01ed8ce59440356.png" class="watermark" alt="logo">
+
+  <!-- Header -->
+<div class="header">
+  <h1>
+    Syarat & Ketentuan Pengguna FamsssPay
+    <small style="display:block; margin-top:6px; font-size:11px; color:#777; font-weight:500;">
+      Diupdate Pada Tanggal 30/06/2026 Pukul 10:40:25 WIB.
+    </small>
+  </h1>
+</div>
+  <hr>
+
+  <!-- Section A -->
+  <div class="section">
+    <h2>A. Pengenalan</h2>
+    <ul>
+      <li>Fitur QRIS FamsssPay bertujuan agar Pengguna dapat menerima pembayaran Uang Elektronik dan dapat memudahkan dalam topup saldo Akun.</li>
+      <li>Uang Elektronik diantara lain DANA, OVO, Gopay, Link Aja, ShopeePay, Untuk Bank antara lain BCA, Permata, Cimb Niaga, Sinarmas, BTPN, Jenius, BRI Syariah, Mandiri Syariah, Maybank.</li>
+      <li>Daftar Uang Elektronik dan Bank yang disebutkan diatas dapat bertambah dari waktu ke waktu sesuai dengan perkembangan dan kebijakan Ketentuan QRIS.</li>
+
+    </ul>
+  </div>
+
+  <!-- Section B -->
+  <div class="section">
+    <h2>B. Ketentuan Qris</h2>
+    <ul>
+      <li>Syarat dan Ketentuan QRIS FamsssPay diawasi oleh Bank Indonesia (Nobu BANK) & OJK, Transaksi dipantau oleh pusat keamanan Bank maupun Exfams Cotery (enkripsi data keamanan) </li>
+      <li>Apabila terjadi kejanggalan dalam pelaksanaan Syarat dan Ketentuan QRIS, maka setuju untuk menyelesaikan Permasalahan tersebut melalui jalan musyawarah untuk mufakat / Jalur Hukum yang berlaku.</li>
+    <li><b>Minimal Topup saldo/Transaksi menggunakan alat pembayaran QRIS dari aplikasi FamsssPay adalah Rp1.000. Dan untuk pengguna baru mendaftar Minimal Transaksi / Topup saldo Rp2.000,- dengan Maximal tergantung pada kebutuhan Topup saldo / ketentuan yang berlaku berubah-rubah, seiring perjalanan waktu ketentuan Bank Indonesia & Aplikasi FamsssPay.</b></li>
+<li>Topup saldo scan Menggunakan QRIS FamsssPay dibawah nominal yang ditentukan, atau tidak mengikuti syarat & ketentuan yang sudah tertulis, Saldo tidak akan diproses masuk ke akun. Harap Pengguna/Mitra/Penjual selalu membaca syarat & ketentuan atau peraturan yang sudah tertulis.</li>
+  <li><b>Deposit Saldo / Transfer menggunakan QRIS MerchantPay tidak konfirmasi Upload bukti foto transaksi selama 2 - 3 Hari bahkan lebih, tidak dapat diproses.</b> Dikarenakan riwayat transaksi yang selalu berubah setiap harinya dapat mempersulit pencarian Transaksi.</li>
+   <li>
+  <b>
+  Transfer menggunakan QRIS MerchantPay pada jam OFFLINE, hari libur (setiap Hari Jumat), atau saat terdapat informasi perbaikan sistem QRIS, dikenakan biaya layanan sebesar
+  <span id="biayaLayanan">Rp2.000</span>.
+  Biaya layanan hanya dipotong untuk transaksi dengan nominal di atas Rp5.000. Untuk transaksi di bawah Rp5.000 tidak dikenakan potongan biaya layanan.
+</b> Dikarenakan transaksi tersebut tertahan oleh pihak Switching/Provider QRIS/BANK, yang dimana pihak FamsssPay yang harus menalangi terlebih dahulu transaksi yang terpending.</li>
+</div>
+
+  <!-- Section C -->
+  <div class="section">
+    <h2>C. Pembayaran dan Transaksi</h2>
+    <ul>
+      <li>Apabila Kami (FamsssPay) menganggap ada kesalahan dalam transaksi maupun pembayaran, dapat melakukan koreksi (mendebet atau mengkredit).</li>
+      <li>Pengguna akan menyelesaikan setiap keluhan atas koreksi/klaim/refund sehubungan dengan transaksi pembayaran secara langsung dengan pengguna/pelanggan.</li>
+      <li>Setiap pembayaran QRIS yang masuk selalu dipantau 24 Jam setiap harinya oleh Tim Pusat Keamanan dari FamsssPay.</li>
+    </ul>
+  </div>
+
+  <!-- Section C -->
+  <div class="section">
+    <h2>D. Pemblokiran Akun</h2>
+    <ul>
+      <li>Apabila Pengguna melakukan Tindak kejahatan (Penipuan) dengan mempergunakan Transaksi dari Aplikasi Kami ( FamsssPay ), FamsssPay Berhak melakukan Pemblokiran kepada Akun yang bersangkutan.</li>
+      <li>Sehubungan dengan pemblokiran, <b>FamsssPay berhak untuk memblokir/membatasi Pengguna</b> yang memggunakan QRIS Oleh Pelaku Usaha Mikro maupun Retail secara sepihak dengan Pemberitahuan terlebih dahulu apabila terjadi satu atau lebih hal sebagaimana berikut : Permintaan resmi dari otoritas pemerintah atau otoritas penegak hukum yang berwenang/ Tim keamanan. Apabila Memang benar terdapat indikasi terlibat pada kegiatan yang dilarang berdasarkan peraturan perundang-undangan yang berlaku. indikasi Pengguna QRIS Pembayaran <b>dalam kegiatan Pencucian Uang, tindak pindana Terorisme, Penipuan, Perjudian (Tournament Game Online/FT), Bukti Transfer Palsu / Editan, Foto tidak sesuai, dan Transaksi bernominal yang sama terus menerus.</b> dan sebagainya. apabila terdapat indikasi Pengguna yang dilarang oleh perundang-undangan yang berlaku. Terdapat indikasi penyalahgunaan Aplikasi Pembayaran FamsssPay. Yang dapat merugikan baik secara langsung maupun tidak langsung. Yang menurut Kami ( FamsssPay )  memiliki potensi berbahaya yang lebih besar apabila tidak dilakukan Pemblokiran Akun.</li>
+      <li>Sisa <b>Saldo akan dibekukan sementara ( tidak bisa dilakukan penarikan )</b> Setelah masalah yang bersangkutan sudah selesai, dengan mengisi Form yang disediakan oleh Tim Keamanan dengan <b>Memverifikasikan KTP, Alamat Pribadi, Ataupun Data yang dibutuhkan.</b> Untuk melakukan Penarikan Saldo yang dibekukan / Pembukaan Akun yang di Blokir.</li>
+    </ul>
+  </div>
+
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const membership = "{{nama_membership}}".toLowerCase();
+  const biayaEl = document.getElementById("biayaLayanan");
+
+  // cek apakah mengandung kata "merchant qris"
+  if (membership.includes("merchant") && membership.includes("qris")) {
+    biayaEl.textContent = "Rp1.000,-";
+  } else {
+    biayaEl.textContent = "Rp2.000,-";
+  }
+});
+</script>
+
+  <script>
+  const btn = document.getElementById('scrollToggleBtn');
+  const icon = btn.querySelector('i');
+
+  function updateScrollButton() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    if (scrollTop < scrollHeight - 10) {
+      icon.className = 'fas fa-arrow-down'; // Scroll ke bawah
+      btn.onclick = () => window.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+    } else {
+      icon.className = 'fas fa-arrow-up'; // Scroll ke atas
+      btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  window.addEventListener('scroll', updateScrollButton);
+  window.addEventListener('load', updateScrollButton);
+</script>
+
+
+
+</body>
+</html>
