@@ -109,6 +109,7 @@
   .preview .txt{font-size:13px;}
   .preview .txt b{display:block;font-size:13px;}
   .preview .txt span{color:var(--muted);font-size:12px;}
+  .preview .txt .link-line{display:block;color:var(--accent);font-size:11px;margin-top:4px;word-break:break-all;}
 
   #progressWrap{display:none;}
   .stats{display:flex;gap:16px;margin-bottom:10px;font-size:13px;flex-wrap:wrap;}
@@ -236,6 +237,11 @@
       <textarea id="pesan" placeholder="mis. Isi pulsa & top up game diskon sampai jam 12 malam."></textarea>
     </div>
     <div class="field">
+      <label for="linkTujuan">Link Tujuan saat notifikasi diklik (opsional)</label>
+      <input type="text" id="linkTujuan" placeholder="mis. https://famssspaymobile.shopku.id/digital/353746">
+      <div class="hint">Kosongkan jika notifikasi tidak perlu mengarah ke halaman apa pun.</div>
+    </div>
+    <div class="field">
       <label for="gambar">URL Gambar (opsional)</label>
       <input type="text" id="gambar" placeholder="https://images.bukaolshop.com/...">
       <div class="hint warn">Menurut dokumentasi resmi bukaOlshop, URL gambar wajib berasal dari image host bawaan bukaOlshop (diunggah lewat aplikasi bukaOlshop), bukan sembarang URL luar (termasuk GitHub). URL luar kemungkinan besar ditolak atau tidak tampil di notifikasi.</div>
@@ -245,6 +251,7 @@
       <div class="txt">
         <b id="previewTitle">Judul notifikasi</b>
         <span id="previewMsg">Pesan notifikasi akan muncul di sini.</span>
+        <span class="link-line" id="previewLink" style="display:none;"></span>
       </div>
     </div>
   </div>
@@ -301,6 +308,7 @@
   var targetIdEl = document.getElementById("targetId");
   var judulEl = document.getElementById("judul");
   var pesanEl = document.getElementById("pesan");
+  var linkTujuanEl = document.getElementById("linkTujuan");
   var gambarEl = document.getElementById("gambar");
   var delayEl = document.getElementById("delayMs");
   var btnSend = document.getElementById("btnSend");
@@ -350,8 +358,15 @@
     } else {
       img.style.display = "none";
     }
+    var linkLine = document.getElementById("previewLink");
+    if (linkTujuanEl.value.trim()) {
+      linkLine.textContent = "→ " + linkTujuanEl.value.trim();
+      linkLine.style.display = "";
+    } else {
+      linkLine.style.display = "none";
+    }
   }
-  [judulEl, pesanEl, gambarEl].forEach(function(el){ el.addEventListener("input", updatePreview); });
+  [judulEl, pesanEl, gambarEl, linkTujuanEl].forEach(function(el){ el.addEventListener("input", updatePreview); });
   updatePreview();
 
   function log(msg, type){
@@ -430,7 +445,8 @@
       target: target,
       judul: judulEl.value,
       pesan: pesanEl.value,
-      gambar: gambarEl.value.trim() || undefined
+      gambar: gambarEl.value.trim() || undefined,
+      link: linkTujuanEl.value.trim() || undefined
     };
 
     try {
