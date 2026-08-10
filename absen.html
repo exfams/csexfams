@@ -1497,7 +1497,7 @@ function terapkanLinkTersimpan(dataHariIni){
     input.value = info.nilai;
     input.disabled = true;
     item.classList.add('terkirim');
-    waktuEl.textContent = `✅ Terkirim pukul ${info.jam}`;
+    waktuEl.innerHTML = `<i class="fa-solid fa-clock"></i> Terkirim pukul ${info.jam}`;
     waktuEl.style.color = '';
     waktuEl.classList.add('show');
     btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -1581,7 +1581,7 @@ async function kirimLinkCentang(nomor){
   if(ok){
     input.disabled = true;
     item.classList.add('terkirim');
-    waktuEl.textContent = `✅ Terkirim pukul ${jam}`;
+    waktuEl.innerHTML = `<i class="fa-regular fa-clock"></i> Terkirim pukul ${jam}`;
     waktuEl.classList.add('show');
     btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
     btnCek.style.display = 'none';
