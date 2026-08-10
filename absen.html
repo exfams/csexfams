@@ -952,23 +952,12 @@ body{
       </div>
 
       <h2>Absen Posting TikTok</h2>
-      <p class="sub">Males ngetik sama aja textnya baca di abses story aja</p>
+      <p class="sub">Males ngetik sama aja textnya baca di Absen story aja</p>
 
       <form id="form-posting">
         <div class="field">
           <label>Nama Ayankk</label>
           <div class="name-display" id="nama-posting">DICAANTIE NDUR GUN</div>
-        </div>
-
-        <div class="field">
-          <label class="required">Foto Absen Posting</label>
-          <div class="upload-box" id="box-posting" onclick="bukaKamera('posting')">
-            <input type="file" id="foto-posting" accept="image/*" required>
-            <div class="icon">📷</div>
-            <div class="txt">Foto absen.</div>
-          </div>
-          <div class="preview" id="preview-posting"><img alt="preview"><div class="preview-hint">kalo ulang fotonya klik lagi</div></div>
-          <div class="field-hint" id="hint-foto-posting"></div>
         </div>
 
         <div class="field">
@@ -1140,6 +1129,7 @@ async function muatUlangSemua(){
   renderKalender(dataBulan, hariIni);
   renderRiwayat(dataHariIniGlobal);
   terapkanKunci(dataHariIniGlobal);
+  terapkanLinkTersimpan(dataHariIniGlobal);
 }
 
 /* ===== Kalender ===== */
@@ -1276,7 +1266,6 @@ function setupPreview(inputId, boxId, previewId, target){
   preview.addEventListener('click', () => bukaKamera(target));
 }
 setupPreview('foto-story','box-story','preview-story','story');
-setupPreview('foto-posting','box-posting','preview-posting','posting');
 
 /* ===== Kamera browser realtime (getUserMedia) ===== */
 let kameraStream = null;
@@ -1469,6 +1458,66 @@ const INFO_LINK_POSTING = {
   5: { akun: '@Chilaawl', jadwal: '20:00 s/d 22:00 Malam (VT#3)' }
 };
 
+async function simpanLinkTersimpan(nomor, nilai, jam){
+  const hariIni = new Date();
+  const key = kunciBulan(hariIni);
+  const tgl = String(hariIni.getDate());
+
+  let data = await ambilDataBulan(hariIni);
+  if(!data[tgl]) data[tgl] = {};
+  if(!data[tgl].links) data[tgl].links = {};
+  data[tgl].links[nomor] = { nilai, jam };
+
+  try{
+    localStorage.setItem(key, JSON.stringify(data));
+  }catch(err){
+    console.error('Gagal menyimpan link posting:', err);
+  }
+}
+
+function terapkanLinkTersimpan(dataHariIni){
+  const links = (dataHariIni && dataHariIni.links) || {};
+  for(let nomor = 1; nomor <= 5; nomor++){
+    const info = links[nomor];
+    if(!info) continue;
+
+    const input = document.getElementById(`link-posting-${nomor}`);
+    const item = input.closest('.link-item');
+    const btnCek = item.querySelector('.link-btn-cek');
+    const btnHapus = item.querySelector('.link-btn-hapus');
+    const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+
+    input.value = info.nilai;
+    input.disabled = true;
+    item.classList.add('terkirim');
+    waktuEl.textContent = `✅ Terkirim pukul ${info.jam}`;
+    waktuEl.style.color = '';
+    waktuEl.classList.add('show');
+    btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
+    btnCek.style.display = 'none';
+    btnHapus.style.display = 'none';
+
+    const previewBox = document.getElementById(`tp-${nomor}`);
+    if(previewBox) ambilPreviewTikTok(info.nilai, previewBox);
+  }
+}
+
+async function cekSelesaiPosting(){
+  const semuaTerkirim = Array.from(document.querySelectorAll('#link-group-posting .link-item'))
+    .every(item => item.classList.contains('terkirim'));
+  if(semuaTerkirim && !dataHariIniGlobal.posting){
+    dataHariIniGlobal = await simpanAbsenHariIni('posting');
+    renderRiwayat(dataHariIniGlobal);
+    terapkanKunci(dataHariIniGlobal);
+    const dataBulan = await ambilDataBulan(new Date());
+    renderKalender(dataBulan, new Date());
+
+    const statusEl = document.getElementById('status-posting');
+    statusEl.className = 'status-msg ok';
+    statusEl.textContent = 'Mantap! Semua 5 link sudah dikirim, absen posting hari ini selesai.';
+  }
+}
+
 async function kirimPesanTeksTelegram(text){
   try{
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -1530,6 +1579,9 @@ async function kirimLinkCentang(nomor){
     btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
     btnCek.style.display = 'none';
     btnHapus.style.display = 'none';
+
+    await simpanLinkTersimpan(nomor, nilai, jam);
+    await cekSelesaiPosting();
   }else{
     btnCek.disabled = false;
     btnHapus.disabled = false;
@@ -1696,90 +1748,9 @@ document.getElementById('form-story').addEventListener('submit', async (e) => {
   }
 });
 
-/* ===== Submit form Posting TikTok ===== */
-document.getElementById('form-posting').addEventListener('submit', async (e) => {
+/* ===== Form Posting TikTok: tanpa tombol submit, cegah reload kalau Enter ditekan ===== */
+document.getElementById('form-posting').addEventListener('submit', (e) => {
   e.preventDefault();
-  if(dataHariIniGlobal.posting) return;
-
-  const fotoInput = document.getElementById('foto-posting');
-  const fotoBox = document.getElementById('box-posting');
-  const hintFoto = document.getElementById('hint-foto-posting');
-  const linkInputs = document.querySelectorAll('.link-posting');
-  const hintLink = document.getElementById('hint-link-posting');
-  const linkGroup = document.getElementById('link-group-posting');
-
-  let valid = true;
-  fotoBox.classList.remove('error');
-  hintFoto.textContent = '';
-  linkGroup.classList.remove('error');
-  hintLink.textContent = '';
-  linkInputs.forEach(i => i.classList.remove('error'));
-
-  if(!fotoInput.files[0]){
-    fotoBox.classList.add('error');
-    hintFoto.textContent = 'Wajib upload foto bukti terlebih dahulu.';
-    hintFoto.style.color = 'var(--danger)';
-    valid = false;
-  }
-
-  const linkValues = Array.from(linkInputs).map(i => i.value.trim());
-  const semuaTerkirim = Array.from(document.querySelectorAll('#link-group-posting .link-item'))
-    .every(item => item.classList.contains('terkirim'));
-  if(!semuaTerkirim){
-    linkGroup.classList.add('error');
-    hintLink.textContent = 'Centang (kirim) kelima link video TikTok dulu sebelum submit.';
-    hintLink.style.color = 'var(--danger)';
-    valid = false;
-  }
-
-  if(!valid) return;
-
-  const file = fotoInput.files[0];
-  const btn = document.getElementById('btn-posting');
-  const statusEl = document.getElementById('status-posting');
-
-  const isiDetail = `🔗 <b>Link Video TikTok:</b>\n`
-    + `📌 <b>@buatqrisku</b> (Jadwal 08:00 Pagi)\n`
-    + `   1. ${linkValues[0]}\n`
-    + `📌 <b>@buatqrispayment</b> (Jadwal 08:00 Pagi)\n`
-    + `   1. ${linkValues[1]}\n`
-    + `📌 <b>@Chilaawl</b> (Jadwal 20:00 s/d 22:00 Malam)\n`
-    + `   1. ${linkValues[2]}\n`
-    + `   2. ${linkValues[3]}\n`
-    + `   3. ${linkValues[4]}`;
-  const caption = buatCaption({jenis:'Posting TikTok', nama: NAMA_KARYAWAN, isiDetail});
-
-  const ok = await kirimAbsen({jenis:'Posting TikTok', nama: NAMA_KARYAWAN, file, caption, btn, statusEl});
-  if(ok){
-    e.target.reset();
-    document.getElementById('preview-posting').style.display='none';
-    fotoBox.classList.remove('has-file');
-    ['tp-1','tp-2','tp-3','tp-4','tp-5'].forEach(id => {
-      const el = document.getElementById(id);
-      el.className = 'tiktok-preview';
-      el.querySelector('img').src = '';
-    });
-    document.querySelectorAll('#link-group-posting .link-item').forEach(item => {
-      item.classList.remove('terkirim');
-      const input = item.querySelector('.link-posting');
-      const btnCek = item.querySelector('.link-btn-cek');
-      const btnHapus = item.querySelector('.link-btn-hapus');
-      const waktuEl = item.querySelector('.link-waktu-kirim');
-      input.disabled = false;
-      btnCek.disabled = false;
-      btnHapus.disabled = false;
-      btnCek.style.display = '';
-      btnHapus.style.display = '';
-      btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
-      waktuEl.textContent = '';
-      waktuEl.classList.remove('show');
-    });
-    dataHariIniGlobal = await simpanAbsenHariIni('posting');
-    renderRiwayat(dataHariIniGlobal);
-    terapkanKunci(dataHariIniGlobal);
-    const dataBulan = await ambilDataBulan(new Date());
-    renderKalender(dataBulan, new Date());
-  }
 });
 
 muatUlangSemua();
