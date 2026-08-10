@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Absensi Jadwal Posting</title>
 <style>
+
+    
 :root{
   --ink:#1b2a26;
   --paper:#f4f6f4;
@@ -34,12 +39,14 @@ html,body{margin:0;padding:0;}
 body{
   background:var(--paper);
   color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-family: 'Gabarito', sans-serif;
   min-height:100vh;
   padding:22px 16px 60px;
   transition:background .25s ease, color .25s ease;
 -webkit-tap-highlight-color: transparent; /* Hilangkan efek tap Android */
 }
+
+
 
  /* Tidak ada highlight ketika user tahan dan block teks */
   *::selection {
@@ -900,7 +907,7 @@ body{
           <label class="required">Foto Absen Story</label>
           <div class="upload-box" id="box-story" onclick="bukaKamera('story')">
             <input type="file" id="foto-story" accept="image/*" required>
-            <div class="icon">📷</div>
+            <div class="icon"><i class="fa-solid fa-camera"></i></div>
             <div class="txt">Foto absen.</div>
           </div>
           <div class="preview" id="preview-story"><img alt="preview"><div class="preview-hint">kalo ulang fotonya klik lagi</div></div>
