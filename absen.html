@@ -760,6 +760,63 @@ body{
   object-fit:contain;
   margin:0 auto 12px;
 }
+
+/* ===== Centang kirim per link posting ===== */
+.link-input-row{
+  display:flex;
+  gap:6px;
+  align-items:stretch;
+}
+.link-input-row input{
+  flex:1;
+  min-width:0;
+}
+.link-action-btn{
+  width:36px;
+  flex-shrink:0;
+  border:none;
+  border-radius:8px;
+  font-size:13px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background .2s, opacity .2s;
+}
+.link-btn-cek{
+  background:var(--accent);
+  color:#fff;
+}
+.link-btn-hapus{
+  background:#f1e6e6;
+  color:var(--danger);
+}
+.link-action-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.link-item.terkirim input{
+  background:#eceeec;
+  color:#8a938e;
+  border-color:var(--line);
+}
+.link-waktu-kirim{
+  font-size:10.5px;
+  color:var(--muted);
+  margin-top:5px;
+  display:none;
+}
+.link-waktu-kirim.show{
+  display:block;
+}
+[data-theme="dark"] .link-btn-hapus{
+  background:#3a2323;
+  color:var(--danger);
+}
+[data-theme="dark"] .link-item.terkirim input{
+  background:#242e30;
+  color:#7d8b86;
+}
 </style>
 </head>
 <body>
@@ -921,33 +978,58 @@ body{
             <div class="platform-label">@buatqrisku &middot; Jadwal konten jam 8 pagi</div>
             <div class="link-item">
               <label for="link-posting-1">Link Form VT</label>
-              <input type="url" id="link-posting-1" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+              <div class="link-input-row">
+                <input type="url" id="link-posting-1" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(1)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(1)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-1"></div>
               <div class="tiktok-preview" id="tp-1"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
             </div>
 
             <div class="platform-label">@buatqrispayment &middot; Jadwal konten jam 8 pagi</div>
             <div class="link-item">
               <label for="link-posting-2">Link Form VT</label>
-              <input type="url" id="link-posting-2" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+              <div class="link-input-row">
+                <input type="url" id="link-posting-2" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(2)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(2)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-2"></div>
               <div class="tiktok-preview" id="tp-2"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
             </div>
 
             <div class="platform-label">@Chilaawl &middot; Jadwal konten jam 20 s/d 22 malam</div>
             <div class="link-item">
               <label for="link-posting-3">Link Form VT #1</label>
-              <input type="url" id="link-posting-3" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+              <div class="link-input-row">
+                <input type="url" id="link-posting-3" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(3)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(3)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-3"></div>
               <div class="tiktok-preview" id="tp-3"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
             </div>
 
             <div class="link-item">
               <label for="link-posting-4">Link Form VT #2</label>
-              <input type="url" id="link-posting-4" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+              <div class="link-input-row">
+                <input type="url" id="link-posting-4" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(4)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(4)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-4"></div>
               <div class="tiktok-preview" id="tp-4"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
             </div>
 
             <div class="link-item">
               <label for="link-posting-5">Link Form VT #3</label>
-              <input type="url" id="link-posting-5" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+              <div class="link-input-row">
+                <input type="url" id="link-posting-5" class="link-posting" placeholder="https://www.tiktok.com/@user/video/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(5)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(5)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-5"></div>
               <div class="tiktok-preview" id="tp-5"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
             </div>
 
@@ -955,7 +1037,6 @@ body{
           <div class="field-hint" id="hint-link-posting"></div>
         </div>
 
-        <button type="submit" class="submit-btn" id="btn-posting">Kirim Absen Posting</button>
         <div class="status-msg" id="status-posting"></div>
       </form>
     </div>
@@ -1379,6 +1460,105 @@ setupTikTokPreview('link-posting-3','tp-3');
 setupTikTokPreview('link-posting-4','tp-4');
 setupTikTokPreview('link-posting-5','tp-5');
 
+/* ===== Kirim & kunci link posting satu-satu (centang) ===== */
+const INFO_LINK_POSTING = {
+  1: { akun: '@buatqrisku', jadwal: '08:00 Pagi' },
+  2: { akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
+  3: { akun: '@Chilaawl', jadwal: '20:00 s/d 22:00 Malam (VT#1)' },
+  4: { akun: '@Chilaawl', jadwal: '20:00 s/d 22:00 Malam (VT#2)' },
+  5: { akun: '@Chilaawl', jadwal: '20:00 s/d 22:00 Malam (VT#3)' }
+};
+
+async function kirimPesanTeksTelegram(text){
+  try{
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'HTML' })
+    });
+    const data = await res.json();
+    return !!data.ok;
+  }catch(err){
+    console.error('Gagal kirim pesan link:', err);
+    return false;
+  }
+}
+
+async function kirimLinkCentang(nomor){
+  const input = document.getElementById(`link-posting-${nomor}`);
+  const item = input.closest('.link-item');
+  const btnCek = item.querySelector('.link-btn-cek');
+  const btnHapus = item.querySelector('.link-btn-hapus');
+  const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+
+  const nilai = input.value.trim();
+  waktuEl.style.color = '';
+  if(!nilai){
+    input.classList.add('error');
+    waktuEl.textContent = 'Isi link dulu sebelum dicentang.';
+    waktuEl.style.color = 'var(--danger)';
+    waktuEl.classList.add('show');
+    return;
+  }
+  if(!cekDuplikatLink()){
+    return;
+  }
+
+  btnCek.disabled = true;
+  btnHapus.disabled = true;
+  const iconAsli = btnCek.innerHTML;
+  btnCek.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  const info = INFO_LINK_POSTING[nomor] || {};
+  const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const pesan =
+`<b>🔗 LINK POSTING TIKTOK</b>
+━━━━━━━━━━━━━━
+👤 <b>Nama</b>   : ${NAMA_KARYAWAN}
+📌 <b>Akun</b>   : ${info.akun || '-'}
+🕒 <b>Jadwal</b> : ${info.jadwal || '-'}
+🔗 <b>Link</b>   : ${nilai}
+⏱️ <b>Dikirim</b> : ${jam}`;
+
+  const ok = await kirimPesanTeksTelegram(pesan);
+
+  if(ok){
+    input.disabled = true;
+    item.classList.add('terkirim');
+    waktuEl.textContent = `✅ Terkirim pukul ${jam}`;
+    waktuEl.classList.add('show');
+    btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
+    btnCek.style.display = 'none';
+    btnHapus.style.display = 'none';
+  }else{
+    btnCek.disabled = false;
+    btnHapus.disabled = false;
+    btnCek.innerHTML = iconAsli;
+    input.classList.add('error');
+    waktuEl.textContent = 'Gagal kirim, coba centang lagi.';
+    waktuEl.style.color = 'var(--danger)';
+    waktuEl.classList.add('show');
+  }
+}
+
+function hapusLinkInput(nomor){
+  const input = document.getElementById(`link-posting-${nomor}`);
+  if(input.disabled) return;
+  input.value = '';
+  input.classList.remove('error');
+  input.focus();
+
+  const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+  waktuEl.textContent = '';
+  waktuEl.classList.remove('show');
+
+  const previewBox = document.getElementById(`tp-${nomor}`);
+  if(previewBox){
+    previewBox.className = 'tiktok-preview';
+    previewBox.querySelector('img').src = '';
+  }
+}
+
 /* ===== Toggle tema gelap/terang ===== */
 function toggleTema(){
   const root = document.documentElement;
@@ -1543,14 +1723,12 @@ document.getElementById('form-posting').addEventListener('submit', async (e) => 
   }
 
   const linkValues = Array.from(linkInputs).map(i => i.value.trim());
-  const kosong = linkValues.some(v => v === '');
-  if(kosong){
+  const semuaTerkirim = Array.from(document.querySelectorAll('#link-group-posting .link-item'))
+    .every(item => item.classList.contains('terkirim'));
+  if(!semuaTerkirim){
     linkGroup.classList.add('error');
-    hintLink.textContent = 'Wajib isi kelima link video TikTok, tidak boleh ada yang kosong.';
+    hintLink.textContent = 'Centang (kirim) kelima link video TikTok dulu sebelum submit.';
     hintLink.style.color = 'var(--danger)';
-    linkInputs.forEach((i, idx) => { if(linkValues[idx] === '') i.classList.add('error'); });
-    valid = false;
-  }else if(!cekDuplikatLink()){
     valid = false;
   }
 
@@ -1580,6 +1758,21 @@ document.getElementById('form-posting').addEventListener('submit', async (e) => 
       const el = document.getElementById(id);
       el.className = 'tiktok-preview';
       el.querySelector('img').src = '';
+    });
+    document.querySelectorAll('#link-group-posting .link-item').forEach(item => {
+      item.classList.remove('terkirim');
+      const input = item.querySelector('.link-posting');
+      const btnCek = item.querySelector('.link-btn-cek');
+      const btnHapus = item.querySelector('.link-btn-hapus');
+      const waktuEl = item.querySelector('.link-waktu-kirim');
+      input.disabled = false;
+      btnCek.disabled = false;
+      btnHapus.disabled = false;
+      btnCek.style.display = '';
+      btnHapus.style.display = '';
+      btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
+      waktuEl.textContent = '';
+      waktuEl.classList.remove('show');
     });
     dataHariIniGlobal = await simpanAbsenHariIni('posting');
     renderRiwayat(dataHariIniGlobal);
