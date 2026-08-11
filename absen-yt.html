@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Absensi Posting Konten YT & IG</title>
+<style>
+
+    
+:root{
+  --ink:#1b2a26;
+  --paper:#f4f6f4;
+  --card:#ffffff;
+  --line:#dfe6e1;
+  --accent:#2196f3;
+  --accent-dark:#1769aa;
+  --muted:#6b7a74;
+  --danger:#c94f4f;
+  --info:#ff9800;
+}
+/* ===== Tema Gelap (soft dark, nyaman di mata) ===== */
+[data-theme="dark"]{
+  --ink:#e6ebe8;
+  --paper:#12181a;
+  --card:#1b2426;
+  --line:#2b3638;
+  --accent:#5aa9f2;
+  --accent-dark:#82c0ff;
+  --muted:#93a29d;
+  --danger:#e07a7a;
+  --info:#ffb266;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family: 'Gabarito', sans-serif;
+  min-height:100vh;
+  padding:22px 16px 60px;
+  transition:background .25s ease, color .25s ease;
+-webkit-tap-highlight-color: transparent; /* Hilangkan efek tap Android */
+}
+
+
+
+ /* Tidak ada highlight ketika user tahan dan block teks */
+  *::selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  /* Matikan drag image/text */
+  img, a, span, div, p {
+    -webkit-user-drag: none;
+    pointer-events: auto;
+  }
+
+
+
+.wrap{max-width:420px;margin:0 auto;}
+.top{
+  text-align:center;
+  margin-bottom:18px;
+}
+.top .eyebrow{
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--accent);
+  font-weight:700;
+}
+.top h1{
+  font-size:21px;
+  margin:4px 0 2px;
+  font-weight:800;
+}
+.top p{
+  font-size:13px;
+  color:var(--muted);
+  margin:0;
+}
+
+.tabs{
+  display:flex;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:4px;
+  margin-bottom:16px;
+  gap:4px;
+}
+.tab-btn{
+  flex:1;
+  border:none;
+  background:transparent;
+  padding:10px 6px;
+  font-size:13px;
+  font-weight:700;
+  color:var(--muted);
+  border-radius:9px;
+  cursor:pointer;
+  transition:.2s;
+}
+.tab-btn.active{
+  background:var(--accent);
+  color:#fff;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+  position:relative;
+  overflow:hidden;
+}
+.card h2{
+  font-size:15px;
+  margin:0 0 2px;
+}
+.card .sub{
+  font-size:12px;
+  color:var(--muted);
+  margin:0 0 16px;
+}
+
+.field{margin-bottom:14px;}
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:6px;
+}
+.field input[type="text"],
+.field input[type="url"]{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  font-size:14px;
+  background:#fbfcfb;
+}
+.field input:focus{
+  outline:2px solid var(--accent);
+  outline-offset:1px;
+}
+.field input:disabled{
+  background:#eee;
+  color:#999;
+  cursor:not-allowed;
+}
+
+.submit-btn{
+  width:100%;
+  padding:13px;
+  border:none;
+  border-radius:10px;
+  background:var(--accent);
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:6px;
+  transition:background .2s;
+}
+.submit-btn:hover{background:var(--accent-dark);}
+.submit-btn:disabled{background:#a9b8b1;cursor:not-allowed;}
+
+.status-msg{
+  margin-top:12px;
+  font-size:12.5px;
+  padding:10px 12px;
+  border-radius:9px;
+  display:none;
+}
+.status-msg.ok{
+  display:block;
+  background:#e3f2fd;
+  color:var(--accent-dark);
+  border:1px solid #bbdefb;
+}
+.status-msg.err{
+  display:block;
+  background:#fbeaea;
+  color:var(--danger);
+  border:1px solid #f0c6c6;
+}
+
+.panel-viewport{
+  position:relative;
+  overflow:hidden;
+}
+.form-panel{
+  display:none;
+  will-change:transform, opacity;
+}
+.form-panel.active{
+  display:block;
+}
+.form-panel.slide-in-right{
+  animation:slideInRight .32s cubic-bezier(.25,.8,.35,1) forwards;
+}
+.form-panel.slide-in-left{
+  animation:slideInLeft .32s cubic-bezier(.25,.8,.35,1) forwards;
+}
+@keyframes slideInRight{
+  from{ transform:translateX(24px); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
+}
+@keyframes slideInLeft{
+  from{ transform:translateX(-24px); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
+}
+.name-display{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  font-size:14px;
+  background:#eaf4fd;
+  color:var(--ink);
+  font-weight:700;
+}
+.field-hint{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.field label.required::after{
+  content:" *";
+  color:var(--danger);
+}
+.field input.error{
+  border-color:var(--danger);
+}
+
+/* ===== Icon platform (pengganti dot) ===== */
+.picon{
+  width:15px;
+  height:15px;
+  display:inline-block;
+  vertical-align:middle;
+  flex-shrink:0;
+}
+
+/* ===== Kalender ===== */
+.kalender-card{
+  margin-bottom:12px;
+}
+.kalender-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+.kalender-head h2{
+  font-size:14px;
+  margin:0;
+  text-transform:capitalize;
+}
+.kalender-legend{
+  display:flex;
+  gap:10px;
+  font-size:10px;
+  color:var(--muted);
+  flex-wrap:wrap;
+}
+.kalender-legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+
+.kalender-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+.kalender-hari-label{
+  font-size:10px;
+  color:var(--muted);
+  text-align:center;
+  font-weight:700;
+}
+.kalender-cell{
+  aspect-ratio:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  font-size:11.5px;
+  color:var(--ink);
+  background:#f7f9f7;
+  position:relative;
+  gap:2px;
+}
+.kalender-cell.kosong{
+  background:transparent;
+}
+.kalender-cell.hari-ini{
+  border:1.5px solid var(--accent);
+  font-weight:800;
+}
+.kalender-cell.selesai{
+  background:#e9ece9;
+}
+.kalender-cell.selesai .angka{
+  text-decoration:line-through;
+  color:var(--muted);
+}
+.kalender-cell .dots{
+  display:flex;
+  gap:3px;
+}
+.kalender-cell .dots i{
+  font-size:9px;
+}
+
+/* ===== Riwayat ===== */
+.riwayat-card{
+  margin-bottom:16px;
+}
+.riwayat-card h2{
+  font-size:13px;
+  margin:0 0 10px;
+}
+.riwayat-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:9px 0;
+  border-top:1px solid var(--line);
+}
+.riwayat-row:first-of-type{
+  border-top:none;
+}
+.riwayat-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:600;
+}
+.riwayat-label .riwayat-icons{
+  display:flex;
+  gap:5px;
+  font-size:14px;
+}
+.riwayat-badge{
+  font-size:11px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:20px;
+}
+.riwayat-badge.sudah{
+  background:#e3f2fd;
+  color:var(--accent-dark);
+}
+.riwayat-badge.belum{
+  background:#f1f1ee;
+  color:var(--muted);
+}
+.riwayat-waktu{
+  font-size:10.5px;
+  color:var(--muted);
+  margin-left:8px;
+}
+
+/* ===== Overlay saat sudah absen (ganti banner teks) ===== */
+.locked-overlay{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:24px;
+  text-align:center;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  border-radius:14px;
+  z-index:5;
+}
+.locked-overlay.show{display:flex;}
+.locked-overlay .lo-check{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:var(--accent);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.locked-overlay .lo-check svg{width:26px;height:26px;}
+.locked-overlay .lo-title{
+  font-size:14px;
+  font-weight:800;
+  color:var(--ink);
+}
+.locked-overlay .lo-time{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ===== 6 Link (YouTube + Instagram) + preview ===== */
+.link-group{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px 14px;
+  background:#fbfcfb;
+}
+.link-group.error{
+  border-color:var(--danger);
+}
+.link-group .platform-label{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.02em;
+  color:var(--accent);
+  margin:12px 0 6px;
+}
+.link-group .platform-label:first-child{
+  margin-top:0;
+}
+.link-group .platform-label i{
+  margin-right:4px;
+}
+.link-item{
+  margin-bottom:12px;
+}
+.link-item:last-child{
+  margin-bottom:0;
+}
+.link-item label{
+  font-size:11.5px;
+  font-weight:700;
+  color:var(--muted);
+  display:block;
+  margin-bottom:5px;
+}
+.link-item input{
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:13px;
+  background:#fff;
+}
+.link-item input.error{
+  border-color:var(--danger);
+}
+.tiktok-preview{
+  display:none;
+  margin-top:7px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#fff;
+}
+.tiktok-preview.show{
+  display:flex;
+}
+.tiktok-preview img{
+  width:56px;
+  height:56px;
+  object-fit:cover;
+  flex-shrink:0;
+}
+.tiktok-preview .tp-info{
+  padding:6px 8px;
+  overflow:hidden;
+}
+.tiktok-preview .tp-title{
+  font-size:11px;
+  font-weight:700;
+  color:var(--ink);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.tiktok-preview .tp-author{
+  font-size:10px;
+  color:var(--muted);
+}
+.tiktok-preview.tp-loading .tp-info{
+  font-size:11px;
+  color:var(--muted);
+}
+.tiktok-preview.tp-gagal .tp-info{
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* ===== Tombol toggle tema ===== */
+.theme-toggle{
+  position:absolute;
+  top:0;
+  right:0;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  transition:background .2s, color .2s, border-color .2s;
+}
+.theme-toggle:hover{border-color:var(--accent);}
+.top{position:relative;}
+
+/* ===== Penyesuaian warna elemen hardcode agar nyaman di mode gelap ===== */
+[data-theme="dark"] .field input[type="text"],
+[data-theme="dark"] .field input[type="url"],
+[data-theme="dark"] .link-group,
+[data-theme="dark"] .link-item input,
+[data-theme="dark"] .tiktok-preview{
+  background:#212b2d;
+  color:var(--ink);
+}
+[data-theme="dark"] .field input:disabled{
+  background:#242e30;
+  color:#7d8b86;
+}
+[data-theme="dark"] .name-display{
+  background:#213240;
+  color:var(--ink);
+}
+[data-theme="dark"] .status-msg.ok{
+  background:#1c3040;
+  color:#8fc7ff;
+  border-color:#2c4c63;
+}
+[data-theme="dark"] .status-msg.err{
+  background:#3a2323;
+  color:#f0a3a3;
+  border-color:#5c3434;
+}
+[data-theme="dark"] .riwayat-badge.sudah{
+  background:#1c3040;
+  color:#8fc7ff;
+}
+[data-theme="dark"] .riwayat-badge.belum{
+  background:#242e30;
+  color:var(--muted);
+}
+[data-theme="dark"] .kalender-cell{
+  background:#1f292b;
+}
+[data-theme="dark"] .kalender-cell.selesai{
+  background:#25322f;
+}
+[data-theme="dark"] .locked-overlay{
+  background:rgba(18,24,26,.9);
+}
+[data-theme="dark"] .tiktok-preview .tp-title{
+  color:var(--ink);
+}
+
+/* ===== Modal umum (dipakai gerbang nama) ===== */
+.kamera-modal{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  align-items:stretch;
+  justify-content:stretch;
+  z-index:999;
+  padding:0;
+}
+.kamera-modal.show{
+  display:flex;
+}
+.kamera-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.kamera-actions button{
+  flex:1;
+  border:none;
+  border-radius:9px;
+  padding:11px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.kbtn-batal{
+  background:#eceeec;
+  color:var(--muted);
+}
+.kbtn-pakai{
+  background:var(--accent);
+  color:#fff;
+}
+[data-theme="dark"] .kbtn-batal{
+  background:#2b3638;
+  color:var(--muted);
+}
+
+/* ===== Centang kirim per link posting ===== */
+.link-input-row{
+  display:flex;
+  gap:6px;
+  align-items:stretch;
+}
+.link-input-row input{
+  flex:1;
+  min-width:0;
+}
+.link-action-btn{
+  width:36px;
+  flex-shrink:0;
+  border:none;
+  border-radius:8px;
+  font-size:13px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background .2s, opacity .2s;
+}
+.link-btn-cek{
+  background:var(--accent);
+  color:#fff;
+}
+.link-btn-hapus{
+  background:#f1e6e6;
+  color:var(--danger);
+}
+.link-action-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.link-item.terkirim input{
+  background:#eceeec;
+  color:#8a938e;
+  border-color:var(--line);
+}
+.link-waktu-kirim{
+  font-size:10.5px;
+  color:var(--muted);
+  margin-top:5px;
+  display:none;
+}
+.link-waktu-kirim.show{
+  display:block;
+}
+[data-theme="dark"] .link-btn-hapus{
+  background:#3a2323;
+  color:var(--danger);
+}
+[data-theme="dark"] .link-item.terkirim input{
+  background:#242e30;
+  color:#7d8b86;
+}
+
+/* ===== Nama: tampilan + tombol edit (pensil) ===== */
+.name-display{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.edit-nama-btn{
+  border:none;
+  background:transparent;
+  color:var(--accent);
+  cursor:pointer;
+  font-size:14px;
+  padding:4px 6px;
+  flex-shrink:0;
+  border-radius:6px;
+}
+.edit-nama-btn:hover{
+  color:var(--accent-dark);
+  background:rgba(33,150,243,.1);
+}
+
+/* ===== Modal isi / edit nama (gerbang sebelum halaman dipakai) ===== */
+.gate-nama-modal{
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.gate-nama-box{
+  background:var(--card);
+  border-radius:16px;
+  padding:22px 20px;
+  max-width:340px;
+  width:100%;
+  height:auto;
+  margin:auto;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.gate-nama-box h3{
+  margin:0;
+  font-size:16px;
+  color:var(--ink);
+}
+.gate-nama-sub{
+  font-size:12px;
+  color:var(--muted);
+  margin:0 0 4px;
+}
+.gate-nama-input{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  font-size:14px;
+  background:#fbfcfb;
+  color:var(--ink);
+}
+.gate-nama-input:focus{
+  outline:2px solid var(--accent);
+  outline-offset:1px;
+}
+.gate-nama-error{
+  font-size:11.5px;
+  color:var(--danger);
+  display:none;
+}
+.gate-nama-error.show{
+  display:block;
+}
+[data-theme="dark"] .gate-nama-input{
+  background:#212b2d;
+  color:var(--ink);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <button type="button" class="theme-toggle" id="btn-tema" onclick="toggleTema()" aria-label="Ganti tema gelap/terang">🌙</button><br><br>
+    <div class="eyebrow">EXFAMS JURNAL</div>
+    <h1>Absensi Jadwal Posting</h1>
+    <p>Terimakasih sudah menjadi bagian dari kami.<br>Bukan mencari validasi hanya mencari sesuap nasi</p>
+  </div>
+
+  
+
+  <!-- RIWAYAT -->
+  <div class="card riwayat-card">
+    <h2>Riwayat Absen Hari Ini</h2>
+    <div class="riwayat-row">
+      <div class="riwayat-label">
+        <span class="riwayat-icons">
+          <i class="fa-brands fa-youtube" style="color:#FF0000;"></i>
+          <i class="fa-brands fa-instagram" style="color:#E1306C;"></i>
+        </span>
+        Posting Konten
+      </div>
+      <div>
+        <span class="riwayat-badge belum" id="badge-posting">Belum</span>
+        <span class="riwayat-waktu" id="waktu-posting"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-viewport">
+  <!-- FORM POSTING -->
+  <div class="form-panel active" id="panel-posting">
+    <div class="card">
+
+      <div class="locked-overlay" id="locked-posting">
+        <div class="lo-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg>
+        </div>
+        <div class="lo-title">Selamat beristirahat<br>Terimakasih.</div>
+        <div class="lo-time" id="lo-time-posting"></div>
+      </div>
+
+      <h2>Absen Posting Konten</h2>
+      <p class="sub">Copy link video/postingan setelah diupload biar dicek performanya</p>
+
+      <form id="form-posting">
+        <div class="field">
+          <label>Nama</label>
+          <div class="name-display" id="nama-posting">
+            <span id="nama-posting-text">Belum diisi</span>
+            <button type="button" class="edit-nama-btn" id="btn-edit-nama" onclick="bukaGateNama(true)" title="Edit nama"><i class="fa-solid fa-pen"></i></button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="required">6 Link Postingan Hari Ini (3 YouTube + 3 Instagram)</label>
+          <div class="link-group" id="link-group-posting">
+
+            <div class="platform-label"><i class="fa-brands fa-instagram"></i>@buatqrisku &middot; Jadwal konten jam 08.30 pagi</div>
+            <div class="link-item">
+              <label for="link-posting-4">Link Instagram #1</label>
+              <div class="link-input-row">
+                <input type="url" id="link-posting-4" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(4)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(4)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-4"></div>
+              <div class="tiktok-preview" id="tp-4"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
+            </div>
+
+            <div class="link-item">
+              <label for="link-posting-5">Link Instagram #2</label>
+              <div class="link-input-row">
+                <input type="url" id="link-posting-5" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(5)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(5)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-5"></div>
+              <div class="tiktok-preview" id="tp-5"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
+            </div>
+
+
+            <div class="link-item">
+              <label for="link-posting-6">Link Instagram #3</label>
+              <div class="link-input-row">
+                <input type="url" id="link-posting-6" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(6)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(6)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-6"></div>
+              <div class="tiktok-preview" id="tp-6"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
+            </div>
+
+             <div class="platform-label"><i class="fa-brands fa-youtube"></i>@AppFamsssPay &middot; Jadwal konten Jam 3 - 5 Sore</div>
+            <div class="link-item">
+              <label for="link-posting-1">Link Video YouTube #1</label>
+              <div class="link-input-row">
+                <input type="url" id="link-posting-1" class="link-posting" placeholder="https://youtu.be/... atau https://www.youtube.com/watch?v=...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(1)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(1)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-1"></div>
+              <div class="tiktok-preview" id="tp-1"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
+            </div>
+
+            
+            <div class="link-item">
+              <label for="link-posting-2">Link Video YouTube #2</label>
+              <div class="link-input-row">
+                <input type="url" id="link-posting-2" class="link-posting" placeholder="https://youtu.be/... atau https://www.youtube.com/watch?v=...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(2)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(2)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-2"></div>
+              <div class="tiktok-preview" id="tp-2"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
+            </div>
+
+
+            <div class="link-item">
+              <label for="link-posting-3">Link Video YouTube #3</label>
+              <div class="link-input-row">
+                <input type="url" id="link-posting-3" class="link-posting" placeholder="https://youtu.be/... atau https://www.youtube.com/watch?v=...">
+                <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(3)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(3)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="link-waktu-kirim" id="waktu-link-3"></div>
+              <div class="tiktok-preview" id="tp-3"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
+            </div>
+
+          </div>
+          <div class="field-hint" id="hint-link-posting"></div>
+        </div>
+
+        <div class="status-msg" id="status-posting"></div>
+      </form>
+    </div>
+  </div>
+  </div><br>
+<!-- KALENDER -->
+  <div class="card kalender-card">
+    <div class="kalender-head">
+      <h2 id="kalender-judul">Agustus 2026</h2>
+      <div class="kalender-legend">
+        <span><i class="fa-brands fa-youtube" style="color:#FF0000;"></i>YouTube</span>
+        <span><i class="fa-brands fa-instagram" style="color:#E1306C;"></i>Instagram</span>
+      </div>
+    </div>
+    <div class="kalender-grid" id="kalender-grid"></div>
+  </div>
+</div>
+
+
+
+<div class="kamera-modal gate-nama-modal" id="gate-nama-modal">
+  <div class="gate-nama-box">
+    <h3>Isi Nama</h3>
+    <p class="gate-nama-sub">Nama ini dipakai untuk catatan abseni &amp; laporan yang dikirim ke tim pusat untuk laporan Fyp bonusan.</p>
+    <input type="text" id="gate-nama-input" class="gate-nama-input" placeholder="Contoh: Iwak Slember" maxlength="60">
+    <div class="gate-nama-error" id="gate-nama-error"></div>
+    <div class="kamera-actions">
+      <button type="button" class="kbtn-batal" id="gate-nama-batal" onclick="tutupGateNama()">Batal</button>
+      <button type="button" class="kbtn-pakai" onclick="simpanNamaGate()">Ya, &amp; Gasken gawe</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BOT_TOKEN = "8988523187:AAFOQbJWwrbheGqs9ybDbX23wwReP18cbQc";
+const CHAT_ID   = "1399536933";
+
+// Nama karyawan sekarang diisi & disimpan sendiri oleh user (lihat blok "GERBANG NAMA" di bawah)
+const NAMA_KEY = 'nama-karyawan-tersimpan';
+function muatNamaTersimpan(){
+  try{ return localStorage.getItem(NAMA_KEY) || ''; }catch(err){ return ''; }
+}
+function simpanNamaLokal(nama){
+  try{ localStorage.setItem(NAMA_KEY, nama); }catch(err){}
+}
+let NAMA_KARYAWAN = muatNamaTersimpan();
+
+/* Icon platform dipakai ulang di kalender (JS-generated) */
+const ICON_YT = '<i class="fa-brands fa-youtube" style="color:#FF0000;"></i>';
+const ICON_IG = '<i class="fa-brands fa-instagram" style="color:#E1306C;"></i>';
+
+const NAMA_HARI = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+/* =========================================================
+   PENYIMPANAN PERMANEN VIA TELEGRAM
+   Data absen bulan berjalan disimpan sebagai 1 pesan yang di-pin
+   di chat bot. Setiap ada perubahan, pesan itu di-edit (bukan
+   kirim pesan baru), lalu saat halaman dibuka data dibaca ulang
+   dari pesan pin tersebut. Jadi walau cache/localStorage HP
+   dihapus, data tetap bisa dipulihkan selama chat & pin di
+   Telegram masih ada. localStorage tetap dipakai sebagai cache
+   cepat + cadangan kalau sedang offline.
+========================================================= */
+const STATE_MARKER = 'STATE_ABSEN_TIKTOK_V1::';
+let stateMsgIdCache = null;
+let stateMsgMonthCache = null;
+
+async function ambilStateDariTelegram(){
+  try{
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChat?chat_id=${CHAT_ID}`);
+    const data = await res.json();
+    if(!data.ok) return null;
+
+    const pinned = data.result.pinned_message;
+    if(!pinned || typeof pinned.text !== 'string' || !pinned.text.startsWith(STATE_MARKER)) return null;
+
+    const jsonText = pinned.text.slice(STATE_MARKER.length);
+    const parsed = JSON.parse(jsonText);
+
+    stateMsgIdCache = pinned.message_id;
+    stateMsgMonthCache = parsed.month;
+
+    return parsed;
+  }catch(err){
+    console.error('Gagal mengambil data dari Telegram, pakai data lokal dulu:', err);
+    return null;
+  }
+}
+
+async function simpanStateKeTelegram(dataBulan){
+  const bulanIni = kunciBulan(new Date());
+  const payload = STATE_MARKER + JSON.stringify({ month: bulanIni, data: dataBulan });
+
+  try{
+    if(stateMsgIdCache && stateMsgMonthCache === bulanIni){
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, message_id: stateMsgIdCache, text: payload })
+      });
+      const data = await res.json();
+      if(data.ok) return true;
+      // kalau gagal edit (misal pesan lama sudah tidak ada), lanjut kirim pesan baru di bawah
+      stateMsgIdCache = null;
+    }
+
+    const resKirim = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: payload, disable_notification: true })
+    });
+    const dataKirim = await resKirim.json();
+    if(!dataKirim.ok) return false;
+
+    stateMsgIdCache = dataKirim.result.message_id;
+    stateMsgMonthCache = bulanIni;
+
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/pinChatMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, message_id: stateMsgIdCache, disable_notification: true })
+    });
+
+    return true;
+  }catch(err){
+    console.error('Gagal menyimpan state ke Telegram, data tetap aman di localStorage:', err);
+    return false;
+  }
+}
+
+function kunciBulan(date){
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,'0');
+  return `absen-${y}-${m}`;
+}
+//atur
+async function ambilDataBulan(date){
+  const key = kunciBulan(date);
+  const bulanSekarang = kunciBulan(new Date());
+
+  // Untuk bulan berjalan, coba tarik dulu dari Telegram (sumber permanen)
+  if(key === bulanSekarang){
+    const stateTelegram = await ambilStateDariTelegram();
+    if(stateTelegram && stateTelegram.month === key && stateTelegram.data){
+      try{ localStorage.setItem(key, JSON.stringify(stateTelegram.data)); }catch(err){}
+      return stateTelegram.data;
+    }
+  }
+
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : {};
+  }catch(err){
+    console.error('Gagal membaca data absen:', err);
+    return {};
+  }
+}
+
+async function simpanAbsenHariIni(jenis){
+  const hariIni = new Date();
+  const key = kunciBulan(hariIni);
+  const tgl = String(hariIni.getDate());
+  const jam = hariIni.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+
+  let data = await ambilDataBulan(hariIni);
+  if(!data[tgl]) data[tgl] = {};
+  data[tgl][jenis] = true;
+  data[tgl][jenis + '_waktu'] = jam;
+
+  try{
+    localStorage.setItem(key, JSON.stringify(data));
+  }catch(err){
+    console.error('Gagal menyimpan status absen:', err);
+  }
+
+  await simpanStateKeTelegram(data);
+
+  return data[tgl];
+}
+
+let dataHariIniGlobal = {};
+
+async function muatUlangSemua(){
+  const hariIni = new Date();
+  const dataBulan = await ambilDataBulan(hariIni);
+  dataHariIniGlobal = dataBulan[String(hariIni.getDate())] || {};
+
+  renderKalender(dataBulan, hariIni);
+  renderRiwayat(dataHariIniGlobal);
+  terapkanKunci(dataHariIniGlobal);
+  terapkanLinkTersimpan(dataHariIniGlobal);
+}
+
+/* ===== Kalender ===== */
+function renderKalender(dataBulan, sekarang){
+  const tahun = sekarang.getFullYear();
+  const bulan = sekarang.getMonth();
+  const hariIniTgl = sekarang.getDate();
+
+  document.getElementById('kalender-judul').textContent = `${NAMA_BULAN[bulan]} ${tahun}`;
+
+  const grid = document.getElementById('kalender-grid');
+  grid.innerHTML = '';
+
+  NAMA_HARI.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'kalender-hari-label';
+    el.textContent = h;
+    grid.appendChild(el);
+  });
+
+  const tglPertama = new Date(tahun, bulan, 1).getDay();
+  const jumlahHari = new Date(tahun, bulan+1, 0).getDate();
+
+  for(let i=0; i<tglPertama; i++){
+    const kosong = document.createElement('div');
+    kosong.className = 'kalender-cell kosong';
+    grid.appendChild(kosong);
+  }
+
+  for(let tgl=1; tgl<=jumlahHari; tgl++){
+    const info = dataBulan[String(tgl)];
+    const lengkap = info && info.posting;
+
+    const cell = document.createElement('div');
+    cell.className = 'kalender-cell'
+      + (tgl === hariIniTgl ? ' hari-ini' : '')
+      + (lengkap ? ' selesai' : '');
+
+    const angka = document.createElement('div');
+    angka.className = 'angka';
+    angka.textContent = tgl;
+    cell.appendChild(angka);
+
+    if(info && info.posting){
+      const dots = document.createElement('div');
+      dots.className = 'dots';
+      dots.innerHTML = ICON_YT + ICON_IG;
+      cell.appendChild(dots);
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+/* ===== Riwayat ===== */
+function renderRiwayat(dataHariIni){
+  const badgePosting = document.getElementById('badge-posting');
+  const waktuPosting = document.getElementById('waktu-posting');
+
+  if(dataHariIni.posting){
+    badgePosting.textContent = 'Sudah';
+    badgePosting.className = 'riwayat-badge sudah';
+    waktuPosting.textContent = dataHariIni.posting_waktu ? `pukul ${dataHariIni.posting_waktu}` : '';
+  }else{
+    badgePosting.textContent = 'Belum';
+    badgePosting.className = 'riwayat-badge belum';
+    waktuPosting.textContent = '';
+  }
+}
+
+/* ===== Overlay saat form sudah diabsen ===== */
+function terapkanKunci(dataHariIni){
+  const overlayPosting = document.getElementById('locked-posting');
+  overlayPosting.classList.toggle('show', !!dataHariIni.posting);
+  document.getElementById('lo-time-posting').textContent = dataHariIni.posting_waktu ? `Pukul ${dataHariIni.posting_waktu}` : '';
+}
+
+/* ===== Preview banner YouTube / Instagram (oEmbed) + cek duplikat ===== */
+let timerPreviewTikTok = {};
+
+function deteksiPlatform(url){
+  const cek = url.toLowerCase();
+  if(cek.includes('youtube.com') || cek.includes('youtu.be')) return 'youtube';
+  if(cek.includes('instagram.com')) return 'instagram';
+  return null;
+}
+
+function setupPreviewLink(inputId, previewId){
+  const input = document.getElementById(inputId);
+  const previewBox = document.getElementById(previewId);
+
+  input.addEventListener('input', () => {
+    input.classList.remove('error');
+    document.getElementById('hint-link-posting').textContent = '';
+    document.getElementById('link-group-posting').classList.remove('error');
+
+    clearTimeout(timerPreviewTikTok[inputId]);
+    const url = input.value.trim();
+
+    if(!url || !deteksiPlatform(url)){
+      previewBox.className = 'tiktok-preview';
+      previewBox.querySelector('img').src = '';
+      return;
+    }
+
+    previewBox.className = 'tiktok-preview show tp-loading';
+    previewBox.querySelector('.tp-title').textContent = 'Memuat preview...';
+    previewBox.querySelector('.tp-author').textContent = '';
+
+    timerPreviewTikTok[inputId] = setTimeout(() => ambilPreviewMedia(url, previewBox), 500);
+    cekDuplikatLink();
+  });
+}
+
+async function ambilPreviewMedia(url, previewBox){
+  const platform = deteksiPlatform(url);
+  try{
+    let endpoint = null;
+    if(platform === 'youtube'){
+      endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+    }else if(platform === 'instagram'){
+      endpoint = `https://api.instagram.com/oembed?url=${encodeURIComponent(url)}`;
+    }
+    if(!endpoint) throw new Error('platform tidak dikenali');
+
+    const res = await fetch(endpoint);
+    if(!res.ok) throw new Error('gagal fetch');
+    const data = await res.json();
+
+    previewBox.className = 'tiktok-preview show';
+    previewBox.querySelector('img').src = data.thumbnail_url || '';
+    previewBox.querySelector('.tp-title').textContent = data.title || (platform === 'youtube' ? 'Video YouTube' : 'Postingan Instagram');
+    previewBox.querySelector('.tp-author').textContent = data.author_name ? '@' + data.author_name : '';
+  }catch(err){
+    previewBox.className = 'tiktok-preview show tp-gagal';
+    previewBox.querySelector('img').src = '';
+    previewBox.querySelector('.tp-title').textContent = 'Link terdeteksi (preview tidak tersedia)';
+    previewBox.querySelector('.tp-author').textContent = '';
+  }
+}
+
+function cekDuplikatLink(){
+  const inputs = document.querySelectorAll('.link-posting');
+  const nilai = Array.from(inputs).map(i => i.value.trim()).filter(v => v !== '');
+  const adaDuplikat = new Set(nilai).size !== nilai.length;
+
+  inputs.forEach(i => i.classList.remove('error'));
+  const hint = document.getElementById('hint-link-posting');
+  const group = document.getElementById('link-group-posting');
+
+  if(adaDuplikat){
+    group.classList.add('error');
+    hint.textContent = 'Ada link yang sama, cek kembali 6 link harus berbeda.';
+    hint.style.color = 'var(--danger)';
+    inputs.forEach(i => {
+      if(i.value.trim() !== '' && nilai.filter(v => v === i.value.trim()).length > 1){
+        i.classList.add('error');
+      }
+    });
+    return false;
+  }
+  hint.textContent = '';
+  group.classList.remove('error');
+  return true;
+}
+
+setupPreviewLink('link-posting-1','tp-1');
+setupPreviewLink('link-posting-2','tp-2');
+setupPreviewLink('link-posting-3','tp-3');
+setupPreviewLink('link-posting-4','tp-4');
+setupPreviewLink('link-posting-5','tp-5');
+setupPreviewLink('link-posting-6','tp-6');
+
+/* ===== Kirim & kunci link posting satu-satu (centang) ===== */
+const INFO_LINK_POSTING = {
+  1: { platform: 'YouTube',   akun: '@buatqrisku',      jadwal: '08:00 Pagi' },
+  2: { platform: 'YouTube',   akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
+  3: { platform: 'YouTube',   akun: '@Chilaawl',        jadwal: '20:00 Malam' },
+  4: { platform: 'Instagram', akun: '@buatqrisku',      jadwal: '08:00 Pagi' },
+  5: { platform: 'Instagram', akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
+  6: { platform: 'Instagram', akun: '@Chilaawl',        jadwal: '20:00 Malam' }
+};
+
+async function simpanLinkTersimpan(nomor, nilai, jam){
+  const hariIni = new Date();
+  const key = kunciBulan(hariIni);
+  const tgl = String(hariIni.getDate());
+
+  let data = await ambilDataBulan(hariIni);
+  if(!data[tgl]) data[tgl] = {};
+  if(!data[tgl].links) data[tgl].links = {};
+  data[tgl].links[nomor] = { nilai, jam };
+
+  try{
+    localStorage.setItem(key, JSON.stringify(data));
+  }catch(err){
+    console.error('Gagal menyimpan link posting:', err);
+  }
+
+  await simpanStateKeTelegram(data);
+}
+
+function terapkanLinkTersimpan(dataHariIni){
+  const links = (dataHariIni && dataHariIni.links) || {};
+  for(let nomor = 1; nomor <= 6; nomor++){
+    const info = links[nomor];
+    if(!info) continue;
+
+    const input = document.getElementById(`link-posting-${nomor}`);
+    const item = input.closest('.link-item');
+    const btnCek = item.querySelector('.link-btn-cek');
+    const btnHapus = item.querySelector('.link-btn-hapus');
+    const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+
+    input.value = info.nilai;
+    input.disabled = true;
+    item.classList.add('terkirim');
+    waktuEl.innerHTML = `<i class="fa-solid fa-clock"></i> Terkirim pukul ${info.jam}`;
+    waktuEl.style.color = '';
+    waktuEl.classList.add('show');
+    btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
+    btnCek.style.display = 'none';
+    btnHapus.style.display = 'none';
+
+    const previewBox = document.getElementById(`tp-${nomor}`);
+    if(previewBox) ambilPreviewMedia(info.nilai, previewBox);
+  }
+}
+
+async function cekSelesaiPosting(){
+  const semuaTerkirim = Array.from(document.querySelectorAll('#link-group-posting .link-item'))
+    .every(item => item.classList.contains('terkirim'));
+  if(semuaTerkirim && !dataHariIniGlobal.posting){
+    dataHariIniGlobal = await simpanAbsenHariIni('posting');
+    renderRiwayat(dataHariIniGlobal);
+    terapkanKunci(dataHariIniGlobal);
+    const dataBulan = await ambilDataBulan(new Date());
+    renderKalender(dataBulan, new Date());
+
+    const statusEl = document.getElementById('status-posting');
+    statusEl.className = 'status-msg ok';
+    statusEl.textContent = 'Mantap! Semua 6 link (3 YouTube + 3 Instagram) sudah dikirim, absen posting hari ini selesai.';
+  }
+}
+
+async function kirimPesanTeksTelegram(text){
+  try{
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'HTML' })
+    });
+    const data = await res.json();
+    return !!data.ok;
+  }catch(err){
+    console.error('Gagal kirim pesan link:', err);
+    return false;
+  }
+}
+
+async function kirimLinkCentang(nomor){
+  const input = document.getElementById(`link-posting-${nomor}`);
+  const item = input.closest('.link-item');
+  const btnCek = item.querySelector('.link-btn-cek');
+  const btnHapus = item.querySelector('.link-btn-hapus');
+  const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+
+  const nilai = input.value.trim();
+  waktuEl.style.color = '';
+  if(!nilai){
+    input.classList.add('error');
+    waktuEl.textContent = 'Isi link dulu sebelum dicentang.';
+    waktuEl.style.color = 'var(--danger)';
+    waktuEl.classList.add('show');
+    return;
+  }
+  if(!cekDuplikatLink()){
+    return;
+  }
+
+  btnCek.disabled = true;
+  btnHapus.disabled = true;
+  const iconAsli = btnCek.innerHTML;
+  btnCek.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  const info = INFO_LINK_POSTING[nomor] || {};
+  const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const iconPlatform = info.platform === 'YouTube' ? '▶️' : '📸';
+  const pesan =
+`${iconPlatform} <b>LAPORAN POSTING KONTEN</b>
+━━━━━━━━━━━━━━━━━━━
+👤 <b>Nama</b>     : ${NAMA_KARYAWAN}
+🎬 <b>Platform</b> : ${info.platform || '-'}
+📌 <b>Akun</b>     : ${info.akun || '-'}
+🕒 <b>Jadwal</b>   : ${info.jadwal || '-'}
+🔗 <b>Link</b>     : ${nilai}
+⏱️ <b>Dikirim</b>   : ${jam}
+━━━━━━━━━━━━━━━━━━━`;
+
+  const ok = await kirimPesanTeksTelegram(pesan);
+
+  if(ok){
+    input.disabled = true;
+    item.classList.add('terkirim');
+    waktuEl.innerHTML = `<i class="fa-regular fa-clock"></i> Terkirim pukul ${jam}`;
+    waktuEl.classList.add('show');
+    btnCek.innerHTML = '<i class="fa-solid fa-check"></i>';
+    btnCek.style.display = 'none';
+    btnHapus.style.display = 'none';
+
+    await simpanLinkTersimpan(nomor, nilai, jam);
+    await cekSelesaiPosting();
+  }else{
+    btnCek.disabled = false;
+    btnHapus.disabled = false;
+    btnCek.innerHTML = iconAsli;
+    input.classList.add('error');
+    waktuEl.textContent = 'Gagal kirim, coba centang lagi.';
+    waktuEl.style.color = 'var(--danger)';
+    waktuEl.classList.add('show');
+  }
+}
+
+function hapusLinkInput(nomor){
+  const input = document.getElementById(`link-posting-${nomor}`);
+  if(input.disabled) return;
+  input.value = '';
+  input.classList.remove('error');
+  input.focus();
+
+  const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+  waktuEl.textContent = '';
+  waktuEl.classList.remove('show');
+
+  const previewBox = document.getElementById(`tp-${nomor}`);
+  if(previewBox){
+    previewBox.className = 'tiktok-preview';
+    previewBox.querySelector('img').src = '';
+  }
+}
+
+/* ===== Toggle tema gelap/terang ===== */
+function toggleTema(){
+  const root = document.documentElement;
+  const gelapSekarang = root.getAttribute('data-theme') === 'dark';
+  const temaBaru = gelapSekarang ? 'light' : 'dark';
+  if(temaBaru === 'dark'){
+    root.setAttribute('data-theme','dark');
+  }else{
+    root.removeAttribute('data-theme');
+  }
+  document.getElementById('btn-tema').textContent = temaBaru === 'dark' ? '☀️' : '🌙';
+  try{ localStorage.setItem('tema-absen', temaBaru); }catch(err){}
+}
+(function muatTemaTersimpan(){
+  let tema = null;
+  try{ tema = localStorage.getItem('tema-absen'); }catch(err){}
+  if(tema === 'dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('btn-tema');
+    if(btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+  });
+})();
+
+/* ===== Form Posting: tanpa tombol submit, cegah reload kalau Enter ditekan ===== */
+document.getElementById('form-posting').addEventListener('submit', (e) => {
+  e.preventDefault();
+});
+
+/* =========================================================
+   GERBANG NAMA
+   Sebelum halaman bisa dipakai, user wajib isi nama dulu.
+   Nama disimpan permanen di localStorage HP/browser user,
+   ditampilkan di field Nama, dan bisa diedit lagi kapan saja
+   lewat tombol pensil. Nama ini yang dipakai di setiap pesan
+   yang dikirim ke bot Telegram (variabel NAMA_KARYAWAN).
+========================================================= */
+function tampilkanNamaDiForm(nama){
+  NAMA_KARYAWAN = nama;
+  const el = document.getElementById('nama-posting-text');
+  if(el) el.textContent = nama;
+}
+
+function bukaGateNama(modeEdit){
+  const modal = document.getElementById('gate-nama-modal');
+  const input = document.getElementById('gate-nama-input');
+  const btnBatal = document.getElementById('gate-nama-batal');
+  const errEl = document.getElementById('gate-nama-error');
+
+  input.value = modeEdit ? NAMA_KARYAWAN : '';
+  errEl.textContent = '';
+  errEl.classList.remove('show');
+  // Saat pertama kali (belum ada nama) tombol Batal disembunyikan, wajib isi dulu.
+  btnBatal.style.display = modeEdit ? 'block' : 'none';
+
+  modal.classList.add('show');
+  setTimeout(() => input.focus(), 150);
+}
+
+function tutupGateNama(){
+  document.getElementById('gate-nama-modal').classList.remove('show');
+}
+
+function simpanNamaGate(){
+  const input = document.getElementById('gate-nama-input');
+  const errEl = document.getElementById('gate-nama-error');
+  const nama = input.value.trim();
+
+  if(!nama){
+    errEl.textContent = 'Nama tidak boleh kosong.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  errEl.classList.remove('show');
+  simpanNamaLokal(nama);
+  tampilkanNamaDiForm(nama);
+  tutupGateNama();
+}
+
+// Kalau Enter ditekan di input nama, langsung simpan (tanpa reload halaman)
+document.getElementById('gate-nama-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    simpanNamaGate();
+  }
+});
+
+if(NAMA_KARYAWAN){
+  tampilkanNamaDiForm(NAMA_KARYAWAN);
+}else{
+  bukaGateNama(false); // paksa isi nama dulu sebelum halaman dipakai
+}
+
+muatUlangSemua();
+</script>
+</body>
+</html>
