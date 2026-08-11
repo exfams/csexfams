@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -15,217 +16,458 @@
 
 body{
   background:#f5f7fa;
-  padding:20px;
+  padding:14px;
+  color:#1f2937;
 }
 
+/* ================= HEADER ================= */
 .header{
+  max-width:600px;
+  margin:0 auto 16px;
   text-align:center;
-  margin-bottom:20px;
 }
 
 .header h1{
-  font-size:24px;
-  color:#222;
+  font-size:22px;
+  margin-bottom:4px;
 }
 
+.header p{
+  font-size:13px;
+  color:#6b7280;
+}
+
+/* ================= LIST ================= */
 .list-menu{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  max-width:500px;
+  width:100%;
+  max-width:600px;
   margin:auto;
+
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
 }
 
+/* ================= MENU ================= */
 .menu-btn{
+  min-height:78px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:15px;
+  gap:8px;
+
+  padding:12px;
   background:#fff;
   border:1px solid #e5e7eb;
-  border-radius:12px;
+  border-radius:14px;
+
   text-decoration:none;
-  color:#222;
+  color:#1f2937;
+  font-size:13px;
   font-weight:600;
-  transition:.2s;
+
+  box-shadow:0 2px 5px rgba(0,0,0,.04);
+  transition:.18s ease;
 }
 
-.menu-btn:hover{
-  transform:translateY(-2px);
+.menu-btn:active{
+  transform:scale(.97);
+  background:#f8fafc;
 }
 
-.arrow{
-  font-size:18px;
+.menu-left{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
 }
 
-#accessGate{
-  position:fixed;
-  inset:0;
-  background:#f5f7fa;
+.menu-icon{
+  width:34px;
+  height:34px;
+  flex-shrink:0;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
+  border-radius:10px;
+  background:#eaf4ff;
+  color:#1683df;
+  font-size:17px;
+}
+
+.menu-text{
+  line-height:1.25;
+  word-break:break-word;
+}
+
+.arrow{
+  flex-shrink:0;
+  width:22px;
+  height:22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+  background:#f1f5f9;
+  color:#64748b;
+  font-size:17px;
+}
+
+/* ================= DESKTOP ================= */
+@media(min-width:600px){
+  body{
+    padding:20px;
+  }
+
+  .list-menu{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .menu-btn{
+    min-height:82px;
+    font-size:14px;
+  }
+}
+
+/* ================= ACCESS GATE ================= */
+#accessGate{
+  position:fixed;
+  inset:0;
+
+  background:#f5f7fa;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
   z-index:99999;
 }
 
 .access-box{
   width:100%;
   max-width:350px;
+
   background:#fff;
-  padding:20px;
-  border-radius:14px;
+  padding:22px;
+
+  border-radius:16px;
   border:1px solid #e5e7eb;
+
   text-align:center;
+  box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
 .access-box h2{
-  margin-bottom:10px;
+  margin-bottom:8px;
+  font-size:20px;
 }
 
 .access-box p{
-  margin-bottom:15px;
-  color:#666;
-  font-size:14px;
+  margin-bottom:16px;
+  color:#6b7280;
+  font-size:13px;
+  line-height:1.5;
 }
 
 .access-box input{
   width:100%;
-  padding:12px;
-  border:1px solid #ddd;
-  border-radius:10px;
+  padding:13px;
+
+  border:1px solid #d1d5db;
+  border-radius:11px;
+
   outline:none;
+  font-size:14px;
+  text-align:center;
+}
+
+.access-box input:focus{
+  border-color:#2196f3;
+  box-shadow:0 0 0 3px rgba(33,150,243,.10);
 }
 
 .access-box button{
   width:100%;
-  margin-top:12px;
-  padding:12px;
+  margin-top:11px;
+  padding:13px;
+
   border:none;
-  border-radius:10px;
+  border-radius:11px;
+
   cursor:pointer;
-  background:#111827;
+
+  background:#2196f3;
   color:#fff;
+
   font-weight:bold;
+  font-size:14px;
+}
+
+.access-box button:active{
+  transform:scale(.98);
 }
 
 #accessError{
-  color:red;
+  color:#ef4444;
   margin-top:10px;
   font-size:13px;
 }
+
+/* ================= TOUCH ================= */
+a,
+button,
+input{
+  -webkit-tap-highlight-color:transparent;
+}
+
+a:focus,
+button:focus{
+  outline:none;
+}
 </style>
 </head>
+
 <body>
 
+<!-- ================= AKSES ================= -->
 <div id="accessGate">
+
   <div class="access-box">
-    <h2>Kode Akses</h2>
-    <p>Masukkan kode akses untuk membuka dashboard.</p>
+
+    <h2>🔐 Kode Akses</h2>
+
+    <p>
+      Masukkan kode akses untuk membuka
+      dashboard panduan.
+    </p>
 
     <input
       type="password"
       id="accessCode"
       placeholder="Masukkan kode akses"
+      autocomplete="off"
     >
 
-    <button id="btnAccess">Masuk</button>
+    <button id="btnAccess">
+      Masuk
+    </button>
 
     <div id="accessError"></div>
+
   </div>
+
 </div>
 
+
+<!-- ================= HEADER ================= -->
 <div class="header">
+
   <h1>Daftar Panduan</h1>
+
+  <p>
+    Pilih panduan yang ingin kamu buka
+  </p>
+
 </div>
 
+
+<!-- ================= MENU ================= -->
 <div class="list-menu">
 
   <a class="menu-btn" href="/cara-topup-ewallet">
-    <span>💳 Cara Topup E-Wallet</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">💳</div>
+      <div class="menu-text">
+        Cara Topup E-Wallet
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
 
   <a class="menu-btn" href="/MerchantPay">
-    <span>📹 Tutoral QRIS MerchantPay</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">📹</div>
+      <div class="menu-text">
+        Tutorial QRIS MerchantPay
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
 
   <a class="menu-btn" href="/B-Ketentuan-Qris">
-    <span>📥 S&K -2.000</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">📥</div>
+      <div class="menu-text">
+        S&K - Rp2.000
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
 
   <a class="menu-btn" href="/Jadwal-Qris-MerchantPay">
-    <span>📤 Jadwal QRIS MerchantPay</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">📅</div>
+      <div class="menu-text">
+        Jadwal QRIS MerchantPay
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
 
-   <a class="menu-btn" href="/B-Ketentuan-Qris-MerchantPay">
-    <span>📥 S&K QRIS MerchantPay</span>
-    <span class="arrow">›</span>
+
+  <a class="menu-btn" href="/B-Ketentuan-Qris-MerchantPay">
+    <div class="menu-left">
+      <div class="menu-icon">📋</div>
+      <div class="menu-text">
+        S&K QRIS MerchantPay
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
 
   <a class="menu-btn" href="/prankcs">
-    <span>📥GMIMIK CS</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">💬</div>
+      <div class="menu-text">
+        GMIMIK CS
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
 
-    <a class="menu-btn" href="/beku">
-    <span>📥PEMBEKUAN AKUN</span>
-    <span class="arrow">›</span>
+
+  <a class="menu-btn" href="/beku">
+    <div class="menu-left">
+      <div class="menu-icon">🔒</div>
+      <div class="menu-text">
+        Pembekuan Akun
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
 
   <a class="menu-btn" href="/D-Membatasi-Pemblokiran-Akun">
-    <span>📥JUDI FT</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">⚠️</div>
+      <div class="menu-text">
+        JUDI FT
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
 
   <a class="menu-btn" href="/MT">
-    <span>📥MAINTENANCE</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">🛠️</div>
+      <div class="menu-text">
+        Maintenance
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
 
+
   <a class="menu-btn" href="/S&K-FM">
-    <span>📥Syarat & Ketentuan FM</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">📜</div>
+      <div class="menu-text">
+        Syarat & Ketentuan FM
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
-</div>
 
 
   <a class="menu-btn" href="/download.FamsssPay.app">
-    <span>📥 Page FM</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">📱</div>
+      <div class="menu-text">
+        Page FM
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
-</div>
+
 
   <a class="menu-btn" href="/notif">
-    <span>📥 NOTIF</span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">🔔</div>
+      <div class="menu-text">
+        NOTIF
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
-</div>
+
 
   <a class="menu-btn" href="/absen">
-    <span>📥 ABSEN </span>
-    <span class="arrow">›</span>
+    <div class="menu-left">
+      <div class="menu-icon">📝</div>
+      <div class="menu-text">
+        ABSEN
+      </div>
+    </div>
+    <div class="arrow">›</div>
   </a>
+
+  <a class="menu-btn" href="/absen-tiktok">
+    <div class="menu-left">
+      <div class="menu-icon">📝</div>
+      <div class="menu-text">
+        ABSEN TIKTOK
+      </div>
+    </div>
+    <div class="arrow">›</div>
+  </a>
+
+  <a class="menu-btn" href="/absen-yt">
+    <div class="menu-left">
+      <div class="menu-icon">📝</div>
+      <div class="menu-text">
+        ABSEN YT
+      </div>
+    </div>
+    <div class="arrow">›</div>
+  </a>
+
 </div>
 
-  <script>
+
+<!-- ================= ANTI DEVTOOLS ================= -->
+<script>
 setInterval(() => {
+
   if (
     window.outerWidth - window.innerWidth > 150 ||
     window.outerHeight - window.innerHeight > 150
-  ) {
+  ){
+
     document.documentElement.innerHTML = "";
     document.body.style.display = "none";
 
-    while (true) {
-      history.pushState(null, null, location.href);
+    while(true){
+      history.pushState(null,null,location.href);
     }
+
   }
-}, 300);
+
+},300);
 </script>
 
+
+<!-- ================= ACCESS ================= -->
 <script>
 const ACCESS_CODE = "5678";
 
@@ -234,28 +476,55 @@ const input = document.getElementById("accessCode");
 const button = document.getElementById("btnAccess");
 const error = document.getElementById("accessError");
 
-// Sudah pernah login
-if (localStorage.getItem("dashboard_access") === "granted") {
+
+/* Sudah pernah login */
+if(localStorage.getItem("dashboard_access") === "granted"){
   gate.style.display = "none";
 }
 
-function checkAccess() {
-  if (input.value === ACCESS_CODE) {
-    localStorage.setItem("dashboard_access", "granted");
+
+/* Cek kode */
+function checkAccess(){
+
+  if(input.value === ACCESS_CODE){
+
+    localStorage.setItem(
+      "dashboard_access",
+      "granted"
+    );
+
     gate.style.display = "none";
-  } else {
+
+  }else{
+
     error.textContent = "Kode akses salah.";
     input.value = "";
+
+    input.focus();
+
   }
+
 }
 
-button.addEventListener("click", checkAccess);
 
-input.addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    checkAccess();
+/* Tombol */
+button.addEventListener(
+  "click",
+  checkAccess
+);
+
+
+/* Enter */
+input.addEventListener(
+  "keypress",
+  function(e){
+
+    if(e.key === "Enter"){
+      checkAccess();
+    }
+
   }
-});
+);
 </script>
 
 </body>
