@@ -255,6 +255,15 @@ button:not(:disabled):active{opacity:.8}
 </div>
 
 <div class="card">
+  <h2>Omset Kotor & PPH</h2>
+  <label>Omset Kotor (Rp)</label>
+  <input type="text" id="omsetKotorManual" inputmode="numeric" value="">
+
+  <label>PPH (Rp)</label>
+  <input type="text" id="pphManual" inputmode="numeric" value="">
+</div>
+
+<div class="card">
   <h2>Form Kalkulasi</h2>
   <label>Kuota API (Rp)</label>
   <input type="number" id="kuotaApi" value="">
@@ -306,11 +315,27 @@ document.getElementById('pendapatanKotor').addEventListener('input', function(e)
   e.target.setSelectionRange(pos, pos);
 });
 
+document.getElementById('omsetKotorManual').addEventListener('input', function(e){
+  const posDariKanan = e.target.value.length - e.target.selectionStart;
+  e.target.value = formatRibuan(e.target.value);
+  const pos = e.target.value.length - posDariKanan;
+  e.target.setSelectionRange(pos, pos);
+});
+
+document.getElementById('pphManual').addEventListener('input', function(e){
+  const posDariKanan = e.target.value.length - e.target.selectionStart;
+  e.target.value = formatRibuan(e.target.value);
+  const pos = e.target.value.length - posDariKanan;
+  e.target.setSelectionRange(pos, pos);
+});
+
 function angka(){
   return {
     kuota: parseFloat(document.getElementById('kuotaApi').value) || 0,
     trx: parseFloat(document.getElementById('totalTransaksi').value) || 0,
-    kotor: parseFloat(document.getElementById('pendapatanKotor').value.replace(/\D/g, "")) || 0
+    kotor: parseFloat(document.getElementById('pendapatanKotor').value.replace(/\D/g, "")) || 0,
+    omsetManual: parseFloat(document.getElementById('omsetKotorManual').value.replace(/\D/g, "")) || 0,
+    pphManual: parseFloat(document.getElementById('pphManual').value.replace(/\D/g, "")) || 0
   };
 }
 
@@ -336,8 +361,8 @@ let offsetY = 0;
 const OFFSET_STEP = 15;
 
 function refreshPreviewIfPossible(){
-  if(uploadedBytes){
-    document.getElementById('btnLihatHasil').click();
+  if(uploadedBytes && typeof tampilkanPratinjau === 'function'){
+    tampilkanPratinjau(false);
   }
 }
 
@@ -403,7 +428,7 @@ function terbilangRupiah(n){
 async function editPdf(){
   if(!uploadedBytes){ document.getElementById('status').innerText = "Upload PDF dulu."; return null; }
 
-  const {kuota, trx, kotor} = angka();
+  const {kuota, trx, kotor, omsetManual, pphManual} = angka();
   const biayaKuota = kuota * trx;
   const bersih = kotor - biayaKuota;
 
@@ -416,13 +441,26 @@ async function editPdf(){
   const {width, height} = lastPage.getSize();
   const page = posisiMode === 'timpa' ? lastPage : pdfDoc.addPage([width, height]);
 
-  let startY = height - 230 + offsetY; //ini nih//
+  let startY = posisiMode === 'baru' ? (height - 100 + offsetY) : (height - 230 + offsetY); //ini nih//
 
   const blue = rgb(33/255,150/255,243/255);
+  const darkBlue = rgb(13/255,71/255,161/255);
   const green = rgb(46/255,125/255,50/255);
   const white = rgb(1,1,1);
   const margin = 30;
   const boxW = width - margin*2;
+  const halfW = (boxW - 8) / 2;
+  const topRowY = startY + 40;
+
+  page.drawRectangle({x:margin, y:topRowY, width:halfW, height:30, color:darkBlue});
+  page.drawText(
+    "OMSET KOTOR : " + rp(omsetManual),
+    {x:margin+8, y:topRowY+11, size:13, font:fontBold, color:white});
+
+  page.drawRectangle({x:margin+halfW+8, y:topRowY, width:halfW, height:30, color:darkBlue});
+  page.drawText(
+    "PPH : " + rp(pphManual),
+    {x:margin+halfW+8+8, y:topRowY+11, size:13, font:fontBold, color:white});
 
   page.drawRectangle({x:margin, y:startY, width:boxW, height:30, color:blue});
   page.drawText(
@@ -570,7 +608,7 @@ document.getElementById('btnNextPage').addEventListener('click', function(){
   }
 });
 
-document.getElementById('btnLihatHasil').addEventListener('click', async function(){
+async function tampilkanPratinjau(doScroll){
   const status = document.getElementById('status');
   status.innerText = "Memproses pratinjau hasil edit...";
   const bytes = await editPdf();
@@ -582,8 +620,14 @@ document.getElementById('btnLihatHasil').addEventListener('click', async functio
   const previewCard = document.getElementById('pdfPreviewCard');
   previewCard.style.display = "block";
   await renderPreviewPage(previewPageNum);
-  previewCard.scrollIntoView({behavior:"smooth", block:"center"});
+  if(doScroll){
+    previewCard.scrollIntoView({behavior:"smooth", block:"center"});
+  }
   status.innerText = "Menampilkan pratinjau hasil edit.";
+}
+
+document.getElementById('btnLihatHasil').addEventListener('click', function(){
+  tampilkanPratinjau(true);
 });
 
 function autoResizeNamaFile(){
