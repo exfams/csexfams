@@ -323,8 +323,9 @@ async function editPdf(){
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  const page = pdfDoc.getPage(pdfDoc.getPageCount()-1);
-  const {width, height} = page.getSize();
+  const lastPage = pdfDoc.getPage(pdfDoc.getPageCount()-1);
+  const {width, height} = lastPage.getSize();
+  const page = pdfDoc.addPage([width, height]);
 
   let startY = height - 230; //ini nih//
 
