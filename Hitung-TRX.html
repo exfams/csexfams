@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Laporan TRX</title>
+<link rel="icon" type="image/png" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/1000630391.jpg">
+<link rel="apple-touch-icon" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/1000630391.jpg">
+<meta name="theme-color" content="#0F1115">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -16,6 +19,27 @@ body{
   background:#0F1115;
   color:#E6E9EF;
   -webkit-font-smoothing:antialiased;
+}
+.profile{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+.profile-img{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #262B34;
+  background:#181B21;
+}
+.profile-name{
+  font-size:16px;
+  font-weight:600;
+  color:#E6E9EF;
+  margin:0;
 }
 .card{
   background:#181B21;
@@ -233,17 +257,19 @@ button:not(:disabled):active{opacity:.8}
 </head>
 <body>
 
+
+
 <div class="card">
   <h2>Upload File PDF</h2>
   <input type="file" id="pdfFile" accept="application/pdf">
   <p id="fileName"></p>
 </div>
 
-  <div class="card">
+<div class="card">
   <h2>Nama File Hasil Edit</h2>
   <textarea id="namaFile" rows="1">hasil-edit.pdf</textarea>
-  </div>
-  
+</div>
+
 <div class="card" id="pdfPreviewCard" style="display:none">
   <h2>Pratinjau PDF</h2>
   <div class="preview-wrap">
@@ -254,7 +280,7 @@ button:not(:disabled):active{opacity:.8}
   <p class="page-info" id="pageInfo"></p>
 </div>
 
-  <div class="card">
+<div class="card">
   <h2>Posisi Hasil Edit</h2>
   <label>Penempatan</label>
   <div class="toggle-group">
@@ -267,14 +293,7 @@ button:not(:disabled):active{opacity:.8}
     <span id="offsetInfo">0 px</span>
     <button type="button" class="nav-btn" id="btnGeserBawah" aria-label="Geser ke bawah">▼</button>
   </div>
-
- <div class="hasil" id="hasil"></div>
-
-<button id="btnLihatHasil" disabled>Lihat Hasil Edit</button>
-<button id="btnDownload" disabled>Download PDF Hasil Edit</button>
-<button id="btnShare" disabled>Share ke Google Drive</button>
-<div id="status"></div>
-  
+</div>
 
 <div class="card">
   <h2>Omset Kotor & PPH</h2>
@@ -297,10 +316,12 @@ button:not(:disabled):active{opacity:.8}
   <input type="text" id="pendapatanKotor" inputmode="numeric" value="">
 </div>
 
+<div class="hasil" id="hasil"></div>
 
-</div>
-
-
+<button id="btnLihatHasil" disabled>Lihat Hasil Edit</button>
+<button id="btnDownload" disabled>Download PDF Hasil Edit</button>
+<button id="btnShare" disabled>Share ke Google Drive</button>
+<div id="status"></div>
 
 <script>
 function rp(n){
