@@ -178,6 +178,45 @@ button:not(:disabled):active{opacity:.8}
   color:#9AA3B2;
   margin:12px 0 0;
 }
+.toggle-group{
+  display:flex;
+  gap:8px;
+  margin-top:6px;
+}
+.toggle-btn{
+  flex:1;
+  padding:10px;
+  border-radius:7px;
+  border:1px solid #2C323D;
+  background:#101318;
+  color:#9AA3B2;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.toggle-btn.active{
+  background:#2196f3;
+  color:#FFFFFF;
+  border-color:#2196f3;
+}
+.shift-group{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  margin-top:8px;
+}
+.shift-group .nav-btn{
+  position:static;
+  transform:none;
+}
+#offsetInfo{
+  font-size:14px;
+  color:#C4CAD4;
+  min-width:64px;
+  text-align:center;
+}
 @media (min-width:600px){
   body{
     max-width:680px;
@@ -225,6 +264,21 @@ button:not(:disabled):active{opacity:.8}
 
   <label>Pendapatan Kotor (Rp)</label>
   <input type="text" id="pendapatanKotor" inputmode="numeric" value="">
+</div>
+
+<div class="card">
+  <h2>Posisi Hasil Edit</h2>
+  <label>Penempatan</label>
+  <div class="toggle-group">
+    <button type="button" class="toggle-btn active" id="btnModeBaru">Halaman Baru</button>
+    <button type="button" class="toggle-btn" id="btnModeTimpa">Halaman Terakhir</button>
+  </div>
+  <label>Geser Posisi</label>
+  <div class="shift-group">
+    <button type="button" class="nav-btn" id="btnGeserAtas" aria-label="Geser ke atas">▲</button>
+    <span id="offsetInfo">0 px</span>
+    <button type="button" class="nav-btn" id="btnGeserBawah" aria-label="Geser ke bawah">▼</button>
+  </div>
 </div>
 
 <div class="hasil" id="hasil"></div>
@@ -277,6 +331,41 @@ function hitung(){
 });
 
 let uploadedBytes = null;
+let posisiMode = 'baru';
+let offsetY = 0;
+const OFFSET_STEP = 15;
+
+function refreshPreviewIfPossible(){
+  if(uploadedBytes){
+    document.getElementById('btnLihatHasil').click();
+  }
+}
+
+document.getElementById('btnModeBaru').addEventListener('click', function(){
+  posisiMode = 'baru';
+  document.getElementById('btnModeBaru').classList.add('active');
+  document.getElementById('btnModeTimpa').classList.remove('active');
+  refreshPreviewIfPossible();
+});
+
+document.getElementById('btnModeTimpa').addEventListener('click', function(){
+  posisiMode = 'timpa';
+  document.getElementById('btnModeTimpa').classList.add('active');
+  document.getElementById('btnModeBaru').classList.remove('active');
+  refreshPreviewIfPossible();
+});
+
+document.getElementById('btnGeserAtas').addEventListener('click', function(){
+  offsetY += OFFSET_STEP;
+  document.getElementById('offsetInfo').innerText = offsetY + " px";
+  refreshPreviewIfPossible();
+});
+
+document.getElementById('btnGeserBawah').addEventListener('click', function(){
+  offsetY -= OFFSET_STEP;
+  document.getElementById('offsetInfo').innerText = offsetY + " px";
+  refreshPreviewIfPossible();
+});
 
 document.getElementById('pdfFile').addEventListener('change', function(e){
   const f = e.target.files[0];
@@ -325,9 +414,9 @@ async function editPdf(){
 
   const lastPage = pdfDoc.getPage(pdfDoc.getPageCount()-1);
   const {width, height} = lastPage.getSize();
-  const page = pdfDoc.addPage([width, height]);
+  const page = posisiMode === 'timpa' ? lastPage : pdfDoc.addPage([width, height]);
 
-  let startY = height - 230; //ini nih//
+  let startY = height - 230 + offsetY; //ini nih//
 
   const blue = rgb(33/255,150/255,243/255);
   const green = rgb(46/255,125/255,50/255);
