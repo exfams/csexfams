@@ -239,6 +239,11 @@ button:not(:disabled):active{opacity:.8}
   <p id="fileName"></p>
 </div>
 
+  <div class="card">
+  <h2>Nama File Hasil Edit</h2>
+  <textarea id="namaFile" rows="1">hasil-edit.pdf</textarea>
+  </div>
+  
 <div class="card" id="pdfPreviewCard" style="display:none">
   <h2>Pratinjau PDF</h2>
   <div class="preview-wrap">
@@ -249,10 +254,27 @@ button:not(:disabled):active{opacity:.8}
   <p class="page-info" id="pageInfo"></p>
 </div>
 
-<div class="card">
-  <h2>Nama File Hasil Edit</h2>
-  <textarea id="namaFile" rows="1">hasil-edit.pdf</textarea>
-</div>
+  <div class="card">
+  <h2>Posisi Hasil Edit</h2>
+  <label>Penempatan</label>
+  <div class="toggle-group">
+    <button type="button" class="toggle-btn active" id="btnModeBaru">Halaman Baru</button>
+    <button type="button" class="toggle-btn" id="btnModeTimpa">Halaman Terakhir</button>
+  </div>
+  <label>Geser Posisi</label>
+  <div class="shift-group">
+    <button type="button" class="nav-btn" id="btnGeserAtas" aria-label="Geser ke atas">▲</button>
+    <span id="offsetInfo">0 px</span>
+    <button type="button" class="nav-btn" id="btnGeserBawah" aria-label="Geser ke bawah">▼</button>
+  </div>
+
+ <div class="hasil" id="hasil"></div>
+
+<button id="btnLihatHasil" disabled>Lihat Hasil Edit</button>
+<button id="btnDownload" disabled>Download PDF Hasil Edit</button>
+<button id="btnShare" disabled>Share ke Google Drive</button>
+<div id="status"></div>
+  
 
 <div class="card">
   <h2>Omset Kotor & PPH</h2>
@@ -266,7 +288,7 @@ button:not(:disabled):active{opacity:.8}
 <div class="card">
   <h2>Form Kalkulasi</h2>
   <label>Kuota API (Rp)</label>
-  <input type="number" id="kuotaApi" value="">
+  <input type="number" id="kuotaApi" value="70">
 
   <label>Total Transaksi</label>
   <input type="number" id="totalTransaksi" value="">
@@ -275,27 +297,10 @@ button:not(:disabled):active{opacity:.8}
   <input type="text" id="pendapatanKotor" inputmode="numeric" value="">
 </div>
 
-<div class="card">
-  <h2>Posisi Hasil Edit</h2>
-  <label>Penempatan</label>
-  <div class="toggle-group">
-    <button type="button" class="toggle-btn active" id="btnModeBaru">Halaman Baru</button>
-    <button type="button" class="toggle-btn" id="btnModeTimpa">Halaman Terakhir</button>
-  </div>
-  <label>Geser Posisi</label>
-  <div class="shift-group">
-    <button type="button" class="nav-btn" id="btnGeserAtas" aria-label="Geser ke atas">▲</button>
-    <span id="offsetInfo">0 px</span>
-    <button type="button" class="nav-btn" id="btnGeserBawah" aria-label="Geser ke bawah">▼</button>
-  </div>
+
 </div>
 
-<div class="hasil" id="hasil"></div>
 
-<button id="btnLihatHasil" disabled>Lihat Hasil Edit</button>
-<button id="btnDownload" disabled>Download PDF Hasil Edit</button>
-<button id="btnShare" disabled>Share ke Google Drive</button>
-<div id="status"></div>
 
 <script>
 function rp(n){
