@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — Komplain</title>
+<link rel="icon" type="image/png" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-famssspay-1.png?w=1024">
+<link rel="apple-touch-icon" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-famssspay-1.png?w=1024">
+<meta name="theme-color" content="#2196F3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Komplain Admin">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#2196F3;--danger:#E74C3C;--success:#27AE60;--warning:#F39C12;--ink:#1A2332;--muted:#8A94A3;--border:#E7EBF0;--bg:#f3f5f7;}
+*{box-sizing:border-box;font-family:'Inter',system-ui,sans-serif;}
+body{margin:0;background:var(--bg);color:#33404F;}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px;}
+h1{font-size:18px;color:var(--ink);margin-bottom:4px;}
+.sub{font-size:12.5px;color:var(--muted);margin-bottom:18px;}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.tabs button{padding:8px 16px;border-radius:30px;border:1.5px solid var(--border);background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);}
+.tabs button.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+.status-bar{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-bottom:14px;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);}
+.status-dot.off{background:var(--danger);}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px;}
+.kode{font-weight:700;color:var(--ink);font-size:14px;}
+.meta{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.badge{font-size:11px;font-weight:700;color:#fff;padding:4px 10px;border-radius:20px;flex:0 0 auto;white-space:nowrap;}
+.badge-proses{background:var(--warning);}
+.badge-selesai{background:var(--success);}
+.pesan{font-size:13px;line-height:1.5;margin:8px 0;white-space:pre-wrap;}
+.foto-row{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.foto-row img{width:90px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:#f0f2f4;}
+.reply-old{background:#f7f9fb;border-radius:10px;padding:10px;font-size:12.5px;margin:8px 0;color:#555;}
+.reply-old img{width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:6px;cursor:pointer;}
+.reply-form textarea{width:100%;min-height:70px;padding:10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:8px;resize:vertical;}
+.file-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--muted);}
+.file-row input{font-size:12px;}
+.btn-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.btn-row button{padding:9px 14px;border-radius:8px;border:none;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.btn-send{background:var(--primary);color:#fff;}
+.btn-send:disabled{background:#B7CDE0;cursor:not-allowed;}
+.hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:#F7F9FB;padding:8px 10px;border-radius:8px;}
+.empty{text-align:center;padding:60px 10px;color:var(--muted);font-size:13px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,18,28,.88);z-index:200;align-items:center;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal-bg img{max-width:90vw;max-height:85vh;border-radius:10px;}
+.setup-box{max-width:440px;margin:60px auto;background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;}
+.setup-box h2{font-size:15px;margin-bottom:10px;color:var(--ink);}
+.setup-box p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
+.setup-box input{width:100%;padding:10px 11px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;margin-bottom:9px;}
+.setup-box button{width:100%;padding:11px;border:none;border-radius:9px;background:var(--primary);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:12.5px;font-weight:500;opacity:0;visibility:hidden;transition:opacity .15s;z-index:999;max-width:90%;}
+.toast.show{opacity:1;visibility:visible;}
+.toast.ok{background:var(--success);}
+.toast.err{background:var(--danger);}
+</style>
+</head>
+<body>
+
+<div class="setup-box" id="setupBox">
+  <h2><i class="fa-solid fa-gear"></i> Setup Awal (sekali saja)</h2>
+  <p>Tempel URL Web App Google Apps Script kamu (yang berakhiran <code>/exec</code>). Lihat panduan setup Code.gs kalau belum punya.</p>
+  <input type="text" id="inpUrl" placeholder="https://script.google.com/macros/s/xxxxx/exec">
+  <button onclick="saveSetup()">Simpan &amp; Mulai</button>
+</div>
+
+<div class="wrap" id="dashboard" style="display:none;">
+  <span style="float:right;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;" onclick="resetSetup()">Ganti URL</span>
+  <h1>Dashboard Komplain</h1>
+  <div class="sub">Balas komplain langsung dari sini — tidak perlu buka Telegram.</div>
+  <div class="status-bar"><span class="status-dot" id="statusDot"></span><span id="statusTxt">Menghubungkan...</span></div>
+  <div class="tabs">
+    <button class="active" data-s="proses" onclick="setTab('proses',this)">Belum Dibalas</button>
+    <button data-s="selesai" onclick="setTab('selesai',this)">Sudah Selesai</button>
+    <button data-s="" onclick="setTab('',this)">Semua</button>
+  </div>
+  <div id="list"></div>
+</div>
+
+<div class="modal-bg" id="modal" onclick="this.classList.remove('show')"><img id="modalImg" src=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   Dashboard Admin — sumber data: Google Apps Script (Sheet).
+   Tidak lagi polling Telegram getUpdates sama sekali, jadi
+   tidak ada risiko pesan "kemakan" oleh device lain, dan
+   balas bisa langsung dari sini (dikirim via Apps Script,
+   yang meneruskannya ke Telegram sebagai notifikasi/log).
+═══════════════════════════════════════════════════════════ */
+
+let APPS_SCRIPT_URL = localStorage.getItem('admin_gas_url') || '';
+let TICKETS = [];
+let TAB = 'proses';
+let pollTimer = null;
+const photoCache = {};
+
+if(APPS_SCRIPT_URL){ startApp(); }
+
+function saveSetup(){
+  const url = document.getElementById('inpUrl').value.trim();
+  if(!url){ alert('Isi URL Apps Script dulu.'); return; }
+  APPS_SCRIPT_URL = url;
+  localStorage.setItem('admin_gas_url', url);
+  startApp();
+}
+function resetSetup(){
+  if(!confirm('Ganti URL Apps Script?')) return;
+  document.getElementById('setupBox').style.display='block';
+  document.getElementById('dashboard').style.display='none';
+  clearInterval(pollTimer);
+}
+
+function startApp(){
+  document.getElementById('setupBox').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  poll();
+  pollTimer = setInterval(poll, 4000);
+}
+
+async function api(action, params, isPost, body){
+  if(!isPost){
+    const qs = new URLSearchParams(Object.assign({action}, params||{})).toString();
+    const r = await fetch(`${APPS_SCRIPT_URL}?${qs}`);
+    return r.json();
+  }
+  const r = await fetch(APPS_SCRIPT_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(Object.assign({action}, body||{}))
+  });
+  return r.json();
+}
+
+function setStatus(ok, txt){
+  document.getElementById('statusDot').classList.toggle('off', !ok);
+  document.getElementById('statusTxt').textContent = txt;
+}
+function toast(msg, type=''){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(()=> el.className='toast', 3500);
+}
+function fmtWaktu(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+', '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+async function poll(){
+  try{
+    const d = await api('list', {status: ''});
+    if(!d.ok){ setStatus(false, 'Gagal memuat: ' + (d.error||'')); return; }
+    setStatus(true, 'Terhubung · update tiap 4 detik');
+    TICKETS = d.items;
+    render();
+  } catch(e){
+    setStatus(false, 'Jaringan bermasalah, mencoba lagi...');
+  }
+}
+
+function setTab(s, btn){
+  TAB = s;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function openModal(src){ if(!src) return; document.getElementById('modalImg').src=src; document.getElementById('modal').classList.add('show'); }
+
+async function loadPhoto(fileId, imgEl){
+  if(!fileId || !imgEl) return;
+  if(photoCache[fileId]){ imgEl.src = photoCache[fileId]; return; }
+  const d = await api('photo', {file_id: fileId});
+  if(d.ok){ photoCache[fileId] = d.dataUrl; imgEl.src = d.dataUrl; }
+}
+
+function render(){
+  const el = document.getElementById('list');
+  let items = TICKETS.slice();
+  if(TAB) items = items.filter(t => t.status === TAB);
+  if(!items.length){ el.innerHTML = '<div class="empty">Tidak ada tiket di kategori ini.</div>'; return; }
+
+  el.innerHTML = items.map(t => `
+    <div class="card" id="card-${t.kode}">
+      <div class="card-top">
+        <div>
+          <div class="kode">#${t.kode}</div>
+          <div class="meta">${t.nama||'-'} · ${t.email||'-'}${t.membership?(' · '+t.membership):''}</div>
+          <div class="meta">${fmtWaktu(t.waktu)}</div>
+        </div>
+        <span class="badge ${t.status==='selesai'?'badge-selesai':'badge-proses'}">${t.status==='selesai'?'Selesai':'Belum Dibalas'}</span>
+      </div>
+      <div class="pesan">${(t.pesan||'').toString().replace(/</g,'&lt;')}</div>
+      <div class="foto-row">
+        ${t.foto_file_id ? `<img data-fid="${t.foto_file_id}" onclick="openModal(this.src)" title="Foto dari user">` : ''}
+        ${t.balasan_foto_file_id ? `<img data-fid="${t.balasan_foto_file_id}" onclick="openModal(this.src)" style="border-color:var(--primary)" title="Foto balasan">` : ''}
+      </div>
+      ${t.balasan ? `<div class="reply-old"><strong>Balasan tersimpan:</strong><br>${t.balasan.toString().replace(/</g,'&lt;')}</div>` : ''}
+      ${t.status!=='selesai' ? `
+        <div class="reply-form">
+          <textarea id="txt-${t.kode}" placeholder="Tulis jawaban untuk komplain ini..."></textarea>
+          <div class="file-row">
+            <label><i class="fa-solid fa-paperclip"></i> Lampirkan foto (opsional):</label>
+            <input type="file" id="foto-${t.kode}" accept="image/*">
+          </div>
+          <div class="btn-row">
+            <button class="btn-send" id="btn-${t.kode}" onclick="kirimBalasan('${t.kode}')"><i class="fa-solid fa-paper-plane"></i> Kirim Balasan &amp; Tutup Tiket</button>
+          </div>
+          <div class="hint"><i class="fa-solid fa-circle-info"></i> Kirim dari sini langsung menutup tiket dan otomatis muncul di aplikasi user. Tidak perlu buka Telegram sama sekali.</div>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+
+  el.querySelectorAll('img[data-fid]').forEach(img => loadPhoto(img.dataset.fid, img));
+}
+
+async function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function kirimBalasan(kode){
+  const txtEl = document.getElementById('txt-'+kode);
+  const fileEl = document.getElementById('foto-'+kode);
+  const txt = txtEl.value.trim();
+  const hasFile = fileEl && fileEl.files && fileEl.files[0];
+  if(!txt && !hasFile){ alert('Isi jawaban atau lampirkan foto dulu.'); return; }
+
+  const btn = document.getElementById('btn-'+kode);
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mengirim...';
+
+  try{
+    let balasanFotoBase64 = null;
+    if(hasFile) balasanFotoBase64 = await fileToBase64(fileEl.files[0]);
+    const d = await api('reply', {}, true, { kode, balasan: txt, balasanFotoBase64 });
+    if(!d.ok) throw new Error(d.error || 'Gagal mengirim balasan');
+    toast('Balasan terkirim, tiket ditutup.', 'ok');
+    await poll();
+  } catch(e){
+    toast('Gagal: ' + e.message, 'err');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Balasan & Tutup Tiket';
+  }
+}
+</script>
+</body>
+</html>
