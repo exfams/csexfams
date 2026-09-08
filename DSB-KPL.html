@@ -1,259 +1,1520 @@
-<!doctype html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Admin — Komplain</title>
-<link rel="icon" type="image/png" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-famssspay-1.png?w=1024">
-<link rel="apple-touch-icon" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-famssspay-1.png?w=1024">
-<meta name="theme-color" content="#2196F3">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Komplain Admin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pusat Bantuan Transaksi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{--primary:#2196F3;--danger:#E74C3C;--success:#27AE60;--warning:#F39C12;--ink:#1A2332;--muted:#8A94A3;--border:#E7EBF0;--bg:#f3f5f7;}
-*{box-sizing:border-box;font-family:'Inter',system-ui,sans-serif;}
-body{margin:0;background:var(--bg);color:#33404F;}
-.wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px;}
-h1{font-size:18px;color:var(--ink);margin-bottom:4px;}
-.sub{font-size:12.5px;color:var(--muted);margin-bottom:18px;}
-.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-.tabs button{padding:8px 16px;border-radius:30px;border:1.5px solid var(--border);background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);}
-.tabs button.active{background:var(--primary);border-color:var(--primary);color:#fff;}
-.status-bar{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-bottom:14px;}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);}
-.status-dot.off{background:var(--danger);}
-.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px;}
-.kode{font-weight:700;color:var(--ink);font-size:14px;}
-.meta{font-size:11.5px;color:var(--muted);margin-top:2px;}
-.badge{font-size:11px;font-weight:700;color:#fff;padding:4px 10px;border-radius:20px;flex:0 0 auto;white-space:nowrap;}
-.badge-proses{background:var(--warning);}
-.badge-selesai{background:var(--success);}
-.pesan{font-size:13px;line-height:1.5;margin:8px 0;white-space:pre-wrap;}
-.foto-row{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;}
-.foto-row img{width:90px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:#f0f2f4;}
-.reply-old{background:#f7f9fb;border-radius:10px;padding:10px;font-size:12.5px;margin:8px 0;color:#555;}
-.reply-old img{width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:6px;cursor:pointer;}
-.reply-form textarea{width:100%;min-height:70px;padding:10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:8px;resize:vertical;}
-.file-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--muted);}
-.file-row input{font-size:12px;}
-.btn-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-.btn-row button{padding:9px 14px;border-radius:8px;border:none;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-.btn-send{background:var(--primary);color:#fff;}
-.btn-send:disabled{background:#B7CDE0;cursor:not-allowed;}
-.hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:#F7F9FB;padding:8px 10px;border-radius:8px;}
-.empty{text-align:center;padding:60px 10px;color:var(--muted);font-size:13px;}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,18,28,.88);z-index:200;align-items:center;justify-content:center;}
-.modal-bg.show{display:flex;}
-.modal-bg img{max-width:90vw;max-height:85vh;border-radius:10px;}
-.setup-box{max-width:440px;margin:60px auto;background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;}
-.setup-box h2{font-size:15px;margin-bottom:10px;color:var(--ink);}
-.setup-box p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
-.setup-box input{width:100%;padding:10px 11px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;margin-bottom:9px;}
-.setup-box button{width:100%;padding:11px;border:none;border-radius:9px;background:var(--primary);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:12.5px;font-weight:500;opacity:0;visibility:hidden;transition:opacity .15s;z-index:999;max-width:90%;}
-.toast.show{opacity:1;visibility:visible;}
-.toast.ok{background:var(--success);}
-.toast.err{background:var(--danger);}
+:root{
+  --primary:#2196F3;
+  --primary-dark:#1976D2;
+  --primary-soft:#E8F3FD;
+  --danger:#E74C3C;
+  --danger-soft:#FDECEA;
+  --success:#27AE60;
+  --success-soft:#E8F8EF;
+  --warning:#F39C12;
+  --warning-soft:#FEF3E2;
+  --ink:#1A2332;
+  --text:#33404F;
+  --muted:#8A94A3;
+  --border:#E7EBF0;
+  --bg:#f6f6f7;
+  --surface:#FFFFFF;
+  --r-lg:18px;
+  --r-md:14px;
+  --r-sm:10px;
+  --shadow:0 1px 2px rgba(20,30,45,.04), 0 6px 16px -8px rgba(20,30,45,.10);
+  --font-display:'Poppins',sans-serif;
+  --font-body:'Inter',sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Gabarito',sans-serif; }
+*::selection { background:transparent; color:inherit; }
+img,a,span,div,p { -webkit-user-drag:none; }
+html,body { height:100%; overflow:hidden; }
+body{
+  font-family:var(--font-body);
+  background:#D9DEE3;
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  min-height:100dvh;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+  -ms-user-select:none;
+  -moz-user-select:none;
+  -webkit-touch-callout:none;
+}
+input,textarea { user-select:text; -webkit-user-select:text; }
+.app{
+  width:100%;
+  height:100dvh;
+  height:var(--app-height,100dvh);
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+@media(min-width:560px){
+  body{ padding:28px 0; }
+  .app{
+    width:420px;
+    height:min(100dvh,860px);
+    height:var(--app-height,min(100dvh,860px));
+    border-radius:24px;
+    box-shadow:0 20px 50px -16px rgba(15,25,40,.35);
+  }
+}
+.app-content{
+  flex:1 1 auto;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:16px 16px 20px;
+  -webkit-overflow-scrolling:touch;
+  position:relative;
+}
+.app-content::-webkit-scrollbar{ width:0; }
+.screen{ display:none; }
+.screen.active{ display:block; }
+.screen.slide-in-right{ animation:slideInRight .3s cubic-bezier(.32,.72,0,1); }
+.screen.slide-in-left{ animation:slideInLeft .3s cubic-bezier(.32,.72,0,1); }
+@keyframes slideInRight{
+  from{ transform:translateX(32px); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
+}
+@keyframes slideInLeft{
+  from{ transform:translateX(-32px); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
+}
+@keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+.screen-head{ margin-bottom:14px; }
+.screen-head h2{ font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--ink); }
+.screen-head p{ font-size:12px; color:var(--muted); margin-top:3px; line-height:1.5; }
+.panel{ background:#fff; border:1px solid #e4e7ec; border-radius:16px; padding:18px; box-shadow:0 1px 0 #d1d5db; }
+.alert-lock{
+  display:none;
+  background:#2196f3;
+  border:1px #2196f3;
+  border-radius:14px;
+  padding:12px 13px;
+  margin-bottom:14px;
+  gap:10px;
+  align-items:flex-start;
+}
+.alert-lock.show{ display:flex; }
+.alert-lock .ico{
+  flex:0 0 auto; width:30px; height:30px; border-radius:9px;
+  background:#fff; color:#2196f3;
+  display:flex; align-items:center; justify-content:center; font-size:13px;
+}
+.alert-lock .txt strong{ display:block; font-size:12.5px; color:#fff; margin-bottom:2px; font-weight:700; }
+.alert-lock .txt span{ font-size:11.5px; color:#f5f5f5; line-height:1.5; }
+.form-group{ margin-bottom:13px; }
+.form-label{ display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px; }
+.form-label .req{ color:var(--danger); }
+.input-wrap{ position:relative; }
+.input-wrap i.field-ico{
+  position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  color:var(--muted); font-size:13px;
+}
+.input-wrap input[type="text"]{ padding-left:36px; }
+input[type="text"],textarea{
+  width:100%; padding:11px 12px; border:1.5px solid var(--border); border-radius:var(--r-sm);
+  font-size:13.5px; outline:none; color:var(--text); font-family:inherit; background:#F7F9FB;
+}
+input[type="text"]:focus,textarea:focus{ border-color:var(--primary); background:#fff; }
+input[readonly]{ color:var(--muted); }
+textarea{ resize:vertical; min-height:80px; line-height:1.5; }
+.form-locked textarea,
+.form-locked .upload-area,
+.form-locked .upload-btn-galeri{ pointer-events:none; opacity:0.5; cursor:not-allowed; }
+.upload-area{
+  border:1.5px dashed #C3CDD6; border-radius:var(--r-md);
+  background:#F7F9FB; overflow:hidden;
+}
+.upload-btn-galeri{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:22px 14px; cursor:pointer; width:100%; border:none; background:transparent;
+}
+.upload-btn-galeri .ico-circle{
+  width:40px; height:40px; border-radius:50%;
+  background:var(--primary-soft); color:var(--primary);
+  display:flex; align-items:center; justify-content:center; font-size:16px; flex:0 0 auto;
+}
+.upload-btn-galeri .txt-wrap{ text-align:left; }
+.upload-btn-galeri .txt-main{ font-size:13px; font-weight:700; color:var(--ink); display:block; }
+.upload-btn-galeri .txt-sub{ font-size:11px; color:var(--muted); display:block; margin-top:1px; }
+.upload-preview-wrap{ display:none; padding:10px 12px 12px; gap:8px; align-items:flex-start; }
+.upload-preview-wrap.show{ display:flex; }
+.preview-img{
+  width:72px; height:72px; border-radius:var(--r-sm); object-fit:cover;
+  cursor:pointer; border:1px solid var(--border); flex:0 0 auto;
+}
+.preview-meta{ flex:1; min-width:0; }
+.preview-fname{ font-size:11.5px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+.preview-fsize{ font-size:11px; color:var(--muted); margin-top:2px; }
+.preview-change{
+  font-size:11px; color:var(--primary); font-weight:600; margin-top:6px;
+  background:none; border:none; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:4px;
+}
+.btn{
+  width:100%; border:none; padding:13px; border-radius:var(--r-sm); font-size:14px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  font-family:var(--font-display); color:#fff;
+}
+.btn-primary{ background:var(--primary); }
+.btn-primary:hover{ background:var(--primary-dark); }
+.btn-primary:disabled{ background:#C7CDD4; cursor:not-allowed; }
+.loading-row{
+  display:none; align-items:center; justify-content:center; gap:8px;
+  margin-top:10px; font-size:12px; font-weight:600; color:var(--primary);
+}
+.empty-state{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding:48px 14px 18px; gap:12px;
+}
+.empty-state .ico-ring{
+  width:64px; height:64px; border-radius:50%;
+  background:var(--surface); border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:22px; color:#B0B9C2;
+}
+.empty-state h3{ font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--ink); }
+.empty-state p{ font-size:12px; color:var(--muted); max-width:220px; line-height:1.5; }
+.empty-state button{
+  margin-top:4px; border:1.5px solid var(--primary); color:var(--primary); background:transparent;
+  font-size:12px; font-weight:600; padding:8px 16px; border-radius:var(--r-sm); cursor:pointer;
+  font-family:var(--font-display);
+}
+.empty-state button:hover{ background:var(--primary-soft); }
+
+/* TX CARD */
+.tx-card{
+  background:#fff; border:1px solid #e4e7ec; border-radius:16px;
+  margin-bottom:12px; overflow:hidden; box-shadow:0 1px 0 #d1d5db;
+  transition:transform .15s ease, opacity .2s, filter .2s;
+}
+.tx-card:active{ transform:scale(.99); }
+.tx-card.tx-old{ opacity:0.52; filter:grayscale(60%); }
+.tx-top{ display:flex; justify-content:space-between; align-items:center; padding:11px 14px; }
+.tx-time{ display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--muted); font-weight:500; }
+.tx-time .tag-today{
+  background:var(--primary-soft); color:var(--primary);
+  font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; letter-spacing:.3px;
+}
+.tx-badge{
+  font-size:11px; font-weight:700; color:#fff; padding:5px 12px;
+  border-radius:var(--r-sm) 0 0 var(--r-sm); margin-right:-14px;
+}
+.tx-badge-proses{ background:var(--warning); }
+.tx-badge-selesai{ background:var(--success); }
+.tx-card.tx-old .tx-badge-selesai{ background:#9AA5B1; }
+.tx-divider{ height:1px; background:var(--border); }
+.tx-body{ display:flex; align-items:center; gap:12px; padding:14px; }
+.tx-avatar{
+  position:relative; flex:0 0 auto; width:46px; height:46px; border-radius:50%;
+  background:#EEF1F4; color:#9AA5B1;
+  display:flex; align-items:center; justify-content:center; font-size:17px;
+}
+.tx-avatar .dot{
+  position:absolute; right:-2px; bottom:-2px; width:18px; height:18px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff;
+  border:2px solid var(--surface);
+}
+.dot-proses{ background:var(--warning); }
+.dot-selesai{ background:var(--success); }
+.tx-card.tx-old .dot-selesai{ background:#9AA5B1; }
+.tx-info{ flex:1; min-width:0; }
+.tx-kode{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted); font-weight:600; }
+.tx-title{
+  display:block; font-family:var(--font-display); font-size:13.5px; font-weight:600; color:var(--ink);
+  margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.tx-detail-btn{
+  flex:0 0 auto; background:#2196F3; color:#fff; border:none;
+  font-size:11.5px; font-weight:700; padding:8px 12px; border-radius:30px; cursor:pointer;
+  display:flex; align-items:center; gap:5px; font-family:var(--font-display);
+}
+.tx-card.tx-old .tx-detail-btn{ background:#9AA5B1; }
+.tx-detail-btn i{ font-size:10px; }
+.tx-expand{ display:none; padding:0 14px 14px; }
+.detail-row{
+  display:flex; align-items:flex-start; gap:9px; margin-bottom:8px; font-size:12.5px; color:var(--text);
+}
+.detail-row i{ width:15px; padding-top:2px; color:var(--muted); font-size:12px; }
+.detail-row .lbl{ color:var(--muted); font-weight:600; min-width:72px; flex:0 0 auto; }
+.detail-row .val{ line-height:1.5; word-break:break-word; }
+.screenshot-view{
+  width:100%; max-height:160px; object-fit:cover; border-radius:var(--r-sm);
+  margin:6px 0 4px; cursor:pointer; border:1px solid var(--border);
+}
+
+/* REPLY BOX */
+.reply-box{
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 8px;
+  color: #2d3748;
+  font-size: 13px;
+  line-height: 1.6;
+  border: 1px solid rgba(0,0,0,.04);
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+  overflow: hidden;
+}
+.reply-box *{ color: inherit !important; }
+.reply-box a{ color: #2196f3 !important; pointer-events: auto !important; }
+.reply-label{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #7a7a7a;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.reply-img{
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: block;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,.06);
+}
+.reply-text{
+  color: #444;
+  font-size: 13px;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.poll-row{ display:flex; align-items:center; gap:7px; font-size:11px; color:var(--muted); margin-top:6px; }
+.wa-btn{
+  display:none; width:100%; margin-top:10px; padding:11px 14px;
+  background:#25D366; color:#fff; border:none; border-radius:var(--r-sm);
+  font-size:13px; font-weight:700; font-family:var(--font-display); cursor:pointer;
+  align-items:center; justify-content:center; gap:8px;
+  text-decoration:none; transition:background .15s;
+}
+.wa-btn:hover{ background:#1ebe5a; }
+.wa-btn.show{ display:flex; }
+.wa-btn i{ font-size:15px; }
+.wa-countdown{
+  display:flex; align-items:center; gap:6px; margin-top:10px; padding:9px 11px;
+  background:#F7F9FB; border:1px solid var(--border); border-radius:var(--r-sm);
+  font-size:11px; color:var(--muted); font-weight:500;
+}
+.wa-countdown i{ color:#2196f3; font-size:12px; }
+.wa-countdown.hidden{ display:none; }
+
+/* FILTER TANGGAL */
+.date-filter{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+.date-filter-label{ font-size:11.5px; font-weight:600; color:var(--muted); white-space:nowrap; }
+.date-filter-wrap{ position:relative; flex:1; }
+.date-filter-wrap i{
+  position:absolute; left:10px; top:50%; transform:translateY(-50%);
+  color:var(--muted); font-size:12px; pointer-events:none;
+}
+.date-filter-input{
+  width:100%; padding:9px 10px 9px 30px;
+  border:1.5px solid var(--border); border-radius:var(--r-sm);
+  font-size:12.5px; color:var(--text); background:#fff;
+  font-family:inherit; outline:none; cursor:pointer;
+}
+.date-filter-input:focus{ border-color:var(--primary); }
+.date-filter-clear{ background:none; border:none; cursor:pointer; color:var(--muted); font-size:13px; padding:4px; display:none; }
+.date-filter-clear.show{ display:block; }
+
+/* BOTTOM NAV */
+.bottom-nav{
+  flex:0 0 auto; display:flex; background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:8px 6px calc(env(safe-area-inset-bottom,0px) + 8px);
+  position:relative;
+}
+.nav-indicator{
+  position:absolute; top:0; left:0; height:3px; width:0;
+  background:var(--primary); border-radius:0 0 4px 4px;
+  transition:left .32s cubic-bezier(.4,0,.2,1),width .32s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.nav-item{
+  flex:1; background:none; border:none; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:6px 4px; color:#9AA5B1; font-family:var(--font-body); position:relative;
+}
+.nav-item i{ font-size:17px; }
+.nav-item span{ font-size:10.5px; font-weight:600; }
+.nav-item.active{ color:var(--primary); }
+.nav-dot{
+  position:absolute; top:2px; right:calc(50% - 15px);
+  width:7px; height:7px; border-radius:50%; background:var(--danger);
+  border:2px solid var(--surface); display:none;
+}
+.nav-dot.show{ display:block; }
+.toast{
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--ink); color:#fff; padding:11px 16px; border-radius:10px;
+  font-size:12px; font-weight:500; opacity:0; visibility:hidden; transition:opacity .15s; z-index:999;
+  pointer-events:none; max-width:88%; display:flex; align-items:center; gap:9px; line-height:1.5;
+}
+.toast.show{ opacity:1; visibility:visible; }
+.toast.ok{ background:var(--success); }
+.toast.err{ background:var(--danger); }
+.toast i{ font-size:15px; flex:0 0 auto; }
+.toast .toast-text{ white-space:pre-line; }
+@media(min-width:560px){ .toast{ bottom:104px; } }
+.modal-bg{
+  display:none; position:fixed; inset:0; background:rgba(10,18,28,.88); z-index:200;
+  align-items:center; justify-content:center;
+}
+.modal-bg.show{ display:flex; }
+.modal-close{
+  position:absolute; top:18px; right:20px; color:#fff; width:36px; height:36px;
+  border-radius:50%; background:rgba(255,255,255,.14);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px;
+}
+
+
+    /* Splash */
+    #splash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99990;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+    }
+
+    .splash-logo {
+      width: 80px; height: 80px;
+      opacity: 0;
+      transform: scale(0.8);
+      border-radius: 16px;
+      animation: fadeZoomIn 1.2s ease forwards;
+    }
+
+    @keyframes fadeZoomIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+.modal-bg img{ max-width:90vw; max-height:80vh; border-radius:12px; }
+#dbg{ font-size:10.5px; color:#aaa; padding:6px 16px 8px; display:none; }
+.membership-field{ display:none !important; }
+.footer-brand{ text-align:center; padding:20px 10px; }
+.footer-logo{ max-width:100px; height:auto; margin-bottom:-5px; filter:grayscale(100%) brightness(0.9); opacity:0.6; }
+.footer-text{ font-size:10px; color:#9e9e9e; }
+.plus-badge{ font-size:.7em; font-weight:700; margin-left:2px; }
 </style>
 </head>
 <body>
 
-<div class="setup-box" id="setupBox">
-  <h2><i class="fa-solid fa-gear"></i> Setup Awal (sekali saja)</h2>
-  <p>Tempel URL Web App Google Apps Script kamu (yang berakhiran <code>/exec</code>). Lihat panduan setup Code.gs kalau belum punya.</p>
-  <input type="text" id="inpUrl" placeholder="https://script.google.com/macros/s/xxxxx/exec">
-  <button onclick="saveSetup()">Simpan &amp; Mulai</button>
-</div>
+<script>
+/* ─── Splash ─── */
+window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  setTimeout(() => {
+    splash.style.opacity = "0";
+    setTimeout(() => splash.style.display = "none", 800);
+  }, 1200);
+});
 
-<div class="wrap" id="dashboard" style="display:none;">
-  <span style="float:right;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;" onclick="resetSetup()">Ganti URL</span>
-  <h1>Dashboard Komplain</h1>
-  <div class="sub">Balas komplain langsung dari sini — tidak perlu buka Telegram.</div>
-  <div class="status-bar"><span class="status-dot" id="statusDot"></span><span id="statusTxt">Menghubungkan...</span></div>
-  <div class="tabs">
-    <button class="active" data-s="proses" onclick="setTab('proses',this)">Belum Dibalas</button>
-    <button data-s="selesai" onclick="setTab('selesai',this)">Sudah Selesai</button>
-    <button data-s="" onclick="setTab('',this)">Semua</button>
-  </div>
-  <div id="list"></div>
-</div>
-
-<div class="modal-bg" id="modal" onclick="this.classList.remove('show')"><img id="modalImg" src=""></div>
-<div class="toast" id="toast"></div>
+(function(){
+  function setAppHeight(){
+    document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+  }
+  setAppHeight();
+  let lastWidth = window.innerWidth;
+  window.addEventListener('resize', function(){
+    if(window.innerWidth !== lastWidth){ lastWidth = window.innerWidth; setAppHeight(); }
+  });
+  if(window.visualViewport){
+    function pinScroll(){ window.scrollTo(0,0); }
+    window.visualViewport.addEventListener('resize', pinScroll);
+    window.visualViewport.addEventListener('scroll', pinScroll);
+  }
+})();
+</script>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   Dashboard Admin — sumber data: Google Apps Script (Sheet).
-   Tidak lagi polling Telegram getUpdates sama sekali, jadi
-   tidak ada risiko pesan "kemakan" oleh device lain, dan
-   balas bisa langsung dari sini (dikirim via Apps Script,
-   yang meneruskannya ke Telegram sebagai notifikasi/log).
-═══════════════════════════════════════════════════════════ */
+/*
+ * CFG — konfigurasi client-side.
+ * PENTING: bot token & chat ID Telegram TIDAK LAGI disimpan di sini.
+ * Semua interaksi ke Telegram (kirim foto, cek balasan admin, ambil
+ * foto balasan) lewat Worker di CFG.workerBase, yang menyimpan
+ * kredensial tersebut sebagai secret di server.
+ */
+const CFG = {
+  nama       : "{{nama_user}}",
+  email      : "{{email_user}}",
+  membership : "{{nama_membership}}",
+  waLink     : "https://wa.me/6285123765416",
+  workerBase : "https://kpl.famssspay.workers.dev"
+};
+</script>
 
-let APPS_SCRIPT_URL = localStorage.getItem('admin_gas_url') || '';
-let TICKETS = [];
-let TAB = 'proses';
-let pollTimer = null;
-const photoCache = {};
+<!-- Splash Screen -->
+<div id="splash">
+  <img src="https://play-lh.googleusercontent.com/_nR9Eg5F9uinmjAb5K4CtHw7Ge90Zhgb6KPhRSDm67lcnqnQpjgA0cfzRMILgUOjSLSjPt3wHEJopf4UfcbG=w240-h480-rw"
+       alt="Logo" class="splash-logo" />
+</div>
 
-if(APPS_SCRIPT_URL){ startApp(); }
+<div class="app">
+  <main class="app-content">
 
-function saveSetup(){
-  const url = document.getElementById('inpUrl').value.trim();
-  if(!url){ alert('Isi URL Apps Script dulu.'); return; }
-  APPS_SCRIPT_URL = url;
-  localStorage.setItem('admin_gas_url', url);
-  startApp();
-}
-function resetSetup(){
-  if(!confirm('Ganti URL Apps Script?')) return;
-  document.getElementById('setupBox').style.display='block';
-  document.getElementById('dashboard').style.display='none';
-  clearInterval(pollTimer);
-}
+    <!-- SCREEN: AJUKAN -->
+    <section id="screen-misi" class="screen active">
+      <div class="alert-lock" id="lockMsg">
+        <div class="ico"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="txt">
+          <strong>Masih ada komplain yang sedang diproses.</strong>
+          <span>Mohon tunggu hingga proses pengecekan selesai sebelum mengirim komplain baru ya.</span>
+        </div>
+      </div>
+      <div class="panel" id="formPanel">
+        <div class="form-group">
+          <label class="form-label">Nama</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-user field-ico"></i>
+            <input type="text" id="fNama" readonly>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Akun FamsssPay</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope field-ico"></i>
+            <input type="text" id="fEmail" readonly>
+          </div>
+        </div>
+        <div class="membership-field">
+          <label class="form-label">Nama Membership</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-gem field-ico"></i>
+            <input type="text" id="fMember" readonly>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pesan Komplain <span class="req">*</span></label>
+          <textarea id="fPesan" placeholder="Contoh Pesan: Transaksi saya belum masuk dari 1 jam yang lalu harap dicek Min, terimakasih..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Screenshot/Foto Kendala <span class="req">*</span></label>
+          <input type="file" id="fFile" accept="image/*" capture="environment" style="display:none" onchange="onFileGaleri(this)">
+          <div class="upload-area" id="uploadArea">
+            <button type="button" class="upload-btn-galeri" onclick="document.getElementById('fFile').click()">
+              <div class="ico-circle"><i class="fa-solid fa-image"></i><span class="plus-badge">+</span></div>
+              <div class="txt-wrap">
+                <span class="txt-main">Pilih Foto / Screenshot</span>
+                <span class="txt-sub">Dari galeri atau ambil foto langsung</span>
+              </div>
+            </button>
+          </div>
+          <div class="upload-preview-wrap" id="previewWrap">
+            <img id="fPreview" class="preview-img" alt="preview" onclick="openModal(this.src)">
+            <div class="preview-meta">
+              <span class="preview-fname" id="previewName">FamsssPay_image-komplain.jpg</span>
+              <span class="preview-fsize" id="previewSize"></span>
+              <button type="button" class="preview-change" onclick="resetUpload()">
+                <i class="fa-solid fa-rotate-left"></i> Ganti Foto
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="btnKirim" onclick="kirim()">
+          <i class="fa-solid fa-paper-plane"></i> Kirim Komplain
+        </button>
+        <div class="loading-row" id="loadingBar">
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Mengirim laporan...
+        </div>
+      </div>
+    </section>
 
-function startApp(){
-  document.getElementById('setupBox').style.display='none';
-  document.getElementById('dashboard').style.display='block';
-  poll();
-  pollTimer = setInterval(poll, 4000);
-}
+    <!-- SCREEN: PROSES -->
+    <section id="screen-proses" class="screen">
+      <div class="screen-head">
+        <h2>Sedang Dalam Pengecekan</h2>
+        <p>Tim Pusat FamsssPay sedang menindaklanjuti komplain ini.</p>
+      </div>
+      <div id="prosesWrap"></div>
+    </section>
 
-async function api(action, params, isPost, body){
-  if(!isPost){
-    const qs = new URLSearchParams(Object.assign({action}, params||{})).toString();
-    const r = await fetch(`${APPS_SCRIPT_URL}?${qs}`);
-    return r.json();
-  }
-  const r = await fetch(APPS_SCRIPT_URL, {
-    method:'POST',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify(Object.assign({action}, body||{}))
+    <!-- SCREEN: SELESAI -->
+    <section id="screen-selesai" class="screen">
+      <div class="screen-head">
+        <h2>Riwayat Selesai</h2>
+        <p>Daftar komplain yang sudah ditindaklanjuti.</p>
+      </div>
+      <div class="date-filter" id="dateFilterRow" style="display:none;">
+        <span class="date-filter-label">Tanggal</span>
+        <div class="date-filter-wrap">
+          <i class="fa-regular fa-calendar"></i>
+          <input type="date" class="date-filter-input" id="dateFilter" onchange="renderSelesai()">
+        </div>
+        <button class="date-filter-clear" id="dateClearBtn" onclick="clearDateFilter()" title="Reset filter">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="selesaiWrap"></div>
+    </section>
+
+    <div class="footer-brand">
+      <img class="footer-logo"
+           src="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-famssspay-1.png?w=1024"
+           alt="FamsssPay Logo">
+      <div class="footer-text">Transaksi digital aman & nyaman.</div>
+    </div>
+    <div id="dbg"></div>
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <div class="nav-indicator" id="navIndicator"></div>
+    <button class="nav-item active" data-target="misi" onclick="gTab('misi',this)">
+      <i class="fa-solid fa-file-circle-exclamation"></i>
+      <span>Komplain</span>
+    </button>
+    <button class="nav-item" data-target="proses" onclick="gTab('proses',this)">
+      <i class="fa-solid fa-spinner"></i>
+      <span>Proses</span>
+      <span class="nav-dot" id="navDot"></span>
+    </button>
+    <button class="nav-item" data-target="selesai" onclick="gTab('selesai',this)">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Status</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modal" onclick="this.classList.remove('show')">
+  <span class="modal-close"><i class="fa-solid fa-xmark"></i></span>
+  <img id="modalImg" src="" alt="">
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   BERSIHKAN localStorage VERSI LAMA (kpl_v5 dst)
+   Data lama otomatis diabaikan sejak key dipindah ke kpl_v5,
+   baris ini cuma buang sampahnya biar tidak numpuk di storage.
+══════════════════════════════════════════════════ */
+(function purgeLegacyStorage(){
+  try {
+    ['kpl_v5','kpl_uid4'].forEach(k => localStorage.removeItem(k));
+    if(indexedDB.databases){
+      indexedDB.databases().then(list=>{
+        list.forEach(d=>{ if(d.name==='kpl_foto_db') indexedDB.deleteDatabase('kpl_foto_db'); });
+      }).catch(()=>{});
+    }
+  } catch(e){}
+})();
+
+(function cleanOldStorage(){
+  try {
+    const raw = localStorage.getItem('kpl_v6');
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    let dirty = false;
+    if(parsed && parsed.proses && parsed.proses.b64){ parsed.proses.b64 = null; dirty = true; }
+    if(parsed && parsed.selesai){
+      parsed.selesai.forEach(c => {
+        if(c.b64){ c.b64 = null; dirty = true; }
+      });
+    }
+    if(dirty) localStorage.setItem('kpl_v6', JSON.stringify(parsed));
+    const keysToClean = [];
+    for(let i = 0; i < sessionStorage.length; i++){
+      const k = sessionStorage.key(i);
+      if(k && (k.startsWith('kpl_b64_') || k.startsWith('kpl_rfoto_'))) keysToClean.push(k);
+    }
+    keysToClean.forEach(k => sessionStorage.removeItem(k));
+  } catch(e){}
+})();
+
+/* ══════════════════════════════════════════════════
+   STATE & HELPERS
+══════════════════════════════════════════════════ */
+let DB   = JSON.parse(localStorage.getItem('kpl_v6') || 'null') || { proses:null, selesai:[] };
+let uid  = parseInt(localStorage.getItem('kpl_uid5') || '0');
+let ptmr = null;
+let waTmr = null;
+let selFile = null;
+let isSending = false;
+let isPolling = false;
+
+const WA_DELAY_MS = 20 * 60 * 1000;
+
+/* ══════════════════════════════════════════════════
+   INDEXEDDB — Storage foto unlimited, persistent
+══════════════════════════════════════════════════ */
+let _idb = null;
+
+function openIDB(){
+  return new Promise((resolve, reject) => {
+    if(_idb){ resolve(_idb); return; }
+    const req = indexedDB.open('kpl_foto_db_v2', 1);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains('foto')) db.createObjectStore('foto');
+    };
+    req.onsuccess = e => { _idb = e.target.result; resolve(_idb); };
+    req.onerror   = e => reject(e);
   });
-  return r.json();
 }
 
-function setStatus(ok, txt){
-  document.getElementById('statusDot').classList.toggle('off', !ok);
-  document.getElementById('statusTxt').textContent = txt;
+async function idbSet(key, val){
+  try {
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('foto','readwrite');
+      tx.objectStore('foto').put(val, key);
+      tx.oncomplete = () => res(true);
+      tx.onerror    = e => rej(e);
+    });
+  } catch(e){ dbg('idbSet err: '+e); return false; }
 }
-function toast(msg, type=''){
+
+async function idbGet(key){
+  try {
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('foto','readonly');
+      const req = tx.objectStore('foto').get(key);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = e => rej(e);
+    });
+  } catch(e){ return null; }
+}
+
+async function idbDel(key){
+  try {
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('foto','readwrite');
+      tx.objectStore('foto').delete(key);
+      tx.oncomplete = () => res(true);
+      tx.onerror    = e => rej(e);
+    });
+  } catch(e){ return false; }
+}
+
+async function clearFotoIDB(kode){
+  await idbDel('b64_' + kode);
+  await idbDel('rfoto_' + kode);
+}
+
+/* ══════════════════════════════════════════════════
+   SAVE
+══════════════════════════════════════════════════ */
+function save(){
+  try {
+    const dbToSave = {
+      proses : DB.proses ? {
+        ...DB.proses,
+        b64        : null,
+        balasanFoto: null
+      } : null,
+      selesai: DB.selesai.map(c => ({
+        ...c,
+        b64        : null,
+        balasanFoto: null
+      }))
+    };
+    localStorage.setItem('kpl_v6', JSON.stringify(dbToSave));
+    localStorage.setItem('kpl_uid5', uid);
+  } catch(e) {
+    try {
+      DB.selesai = DB.selesai.slice(0, 10);
+      const dbToSave = {
+        proses : DB.proses ? { ...DB.proses, b64: null, balasanFoto: null } : null,
+        selesai: DB.selesai.map(c => ({ ...c, b64: null, balasanFoto: null }))
+      };
+      localStorage.setItem('kpl_v6', JSON.stringify(dbToSave));
+      localStorage.setItem('kpl_uid5', uid);
+    } catch(e2){ dbg('save error: ' + e2.message); }
+  }
+}
+
+async function persistBalasanFoto(kode, url){
+  if(!kode) return;
+  if(url){
+    await idbSet('rfoto_' + kode, url);
+  } else {
+    await idbDel('rfoto_' + kode);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   SYNC DB
+══════════════════════════════════════════════════ */
+async function syncDBAsync(){
+  const raw = localStorage.getItem('kpl_v6');
+  DB = JSON.parse(raw || 'null') || DB;
+
+  if(DB.proses && DB.proses.kode){
+    if(!DB.proses.b64){
+      const b64 = await idbGet('b64_' + DB.proses.kode);
+      if(b64) DB.proses.b64 = b64;
+    }
+    if(!DB.proses.balasanFoto){
+      const rfoto = await idbGet('rfoto_' + DB.proses.kode);
+      if(rfoto) DB.proses.balasanFoto = rfoto;
+    }
+  }
+  for(const c of DB.selesai){
+    if(!c.kode) continue;
+    if(!c.b64){
+      const b64 = await idbGet('b64_' + c.kode);
+      if(b64) c.b64 = b64;
+    }
+    if(!c.balasanFoto){
+      const rfoto = await idbGet('rfoto_' + c.kode);
+      if(rfoto) c.balasanFoto = rfoto;
+    }
+  }
+}
+
+function syncDB(){
+  const raw = localStorage.getItem('kpl_v6');
+  DB = JSON.parse(raw || 'null') || DB;
+}
+
+function toast(msg, type='', icon='', dur=4000){
   const el = document.getElementById('toast');
-  el.textContent = msg;
+  const ic = icon || (type==='ok'?'fa-circle-check':type==='err'?'fa-triangle-exclamation':'fa-circle-info');
+  el.innerHTML = `<i class="fa-solid ${ic}"></i><span class="toast-text">${msg}</span>`;
   el.className = 'toast show ' + type;
   clearTimeout(el._t);
-  el._t = setTimeout(()=> el.className='toast', 3500);
+  el._t = setTimeout(()=> el.className = 'toast', dur);
 }
-function fmtWaktu(iso){
-  const d = new Date(iso);
-  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+', '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+function dbg(msg){ document.getElementById('dbg').textContent = msg; }
+
+function fmtWaktu(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) +
+         ', ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+function fmtWaktuSelesai(ts){
+  const now = new Date();
+  const d   = new Date(ts);
+  const today  = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const yest   = new Date(today - 86400000);
+  const jam    = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const isOld  = d < today;
+  let label;
+  if(d >= today)      label = `<span class="tag-today">Hari ini</span> ${jam}`;
+  else if(d >= yest)  label = `Kemarin, ${jam}`;
+  else                label = d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) + `, ${jam}`;
+  return { label, isOld };
+}
+
+function renameFamsss(file){
+  const mime = file.type || 'image/jpeg';
+  const ext  = mime==='image/png'?'png':mime==='image/gif'?'gif':mime==='image/webp'?'webp':'jpg';
+  return new File([file], `FamsssPay_image-komplain.${ext}`, { type:mime, lastModified:file.lastModified });
+}
+
+function compressImage(file){
+  return new Promise((resolve)=>{
+    if(file.size<=5*1024*1024 && (file.type==='image/jpeg'||file.type==='image/png')){
+      resolve(renameFamsss(file)); return;
+    }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      const MAX=1920; let w=img.naturalWidth, h=img.naturalHeight;
+      if(w>MAX||h>MAX){ if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;} }
+      const cv = document.createElement('canvas');
+      cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
+      cv.toBlob(blob=>{
+        if(!blob){ resolve(renameFamsss(file)); return; }
+        if(blob.size>9*1024*1024){
+          cv.toBlob(b2=>{ resolve(new File([b2||blob],'FamsssPay_image-komplain.jpg',{type:'image/jpeg'})); },'image/jpeg',0.60);
+        } else {
+          resolve(new File([blob],'FamsssPay_image-komplain.jpg',{type:'image/jpeg'}));
+        }
+      },'image/jpeg',0.82);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); resolve(renameFamsss(file)); };
+    img.src = url;
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   TELEGRAM (via Worker) — ambil URL foto balasan admin
+   Worker men-STREAM isi file dari Telegram, jadi token
+   bot TIDAK PERNAH muncul di URL manapun yang dilihat client.
+══════════════════════════════════════════════════ */
+function fetchTelegramPhotoUrl(fileId){
+  // Worker yang menyimpan token & yang men-stream file-nya balik.
+  // URL ini aman dipakai langsung sebagai src <img>.
+  return `${CFG.workerBase}/telegram/file?file_id=${encodeURIComponent(fileId)}`;
+}
+
+/* ══════════════════════════════════════════════════
+   NOTIFIKASI HP — kirim via Cloudflare Worker proxy
+   (Worker menyimpan API key bukaOlshop secara rahasia,
+   HTML ini hanya memanggil URL worker tanpa API key)
+══════════════════════════════════════════════════ */
+async function kirimNotifHp(kode){
+  try{
+    if(!CFG.workerBase) { dbg('notifHp: CFG.workerBase belum diisi'); return; }
+    const r = await fetch(`${CFG.workerBase}/notif`, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({
+        email_user: CFG.email,
+        kode      : kode
+      })
+    });
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok || d.ok === false) dbg('notifHp gagal: '+JSON.stringify(d));
+  } catch(e){ dbg('notifHp err: '+e.message); }
+}
+
+/* ══════════════════════════════════════════════════
+   LINKIFY — ubah URL mentah dalam teks admin menjadi
+   <a href> yang bisa diklik dan buka di browser.
+   Mendukung: http://, https://, dan www.xxx
+══════════════════════════════════════════════════ */
+function linkify(text){
+  if(!text) return '';
+  /* Escape HTML dulu supaya aman dari XSS */
+  const escaped = text
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
+  /* Deteksi URL http/https dan www.xxx lalu jadikan link */
+  return escaped.replace(
+    /(https?:\/\/[^\s<>"'\u2019\u201D]+|www\.[^\s<>"'\u2019\u201D]+)/gi,
+    function(url){
+      const href = url.startsWith('http') ? url : 'https://' + url;
+      /* Hapus tanda baca di akhir URL (titik, koma, tanda kurung tutup) */
+      const clean = href.replace(/[.,;!?()\]]+$/, '');
+      const display = url.replace(/[.,;!?()\]]+$/, '');
+      return '<a href="' + clean + '" target="_blank" rel="noopener noreferrer" ' +
+             'style="color:#2196f3;word-break:break-all;text-decoration:underline;pointer-events:auto;">' +
+             display + '</a>';
+    }
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   BUILD REPLY BOX — link dari admin bisa diklik
+══════════════════════════════════════════════════ */
+function buildReplyBox(balasan, balasanFoto){
+  if(!balasan && !balasanFoto) return '';
+  const fotoHtml = balasanFoto
+    ? `<img src="${balasanFoto}" class="reply-img" onclick="openModal(this.src)" alt="Foto balasan admin" onerror="this.style.display='none'">`
+    : '';
+  const teks = (balasan||'').trim();
+  /* Teks diproses linkify: URL mentah → <a target="_blank"> */
+  const teksHtml = teks
+    ? `<div class="reply-text" style="white-space:pre-wrap;">${linkify(teks)}</div>`
+    : '';
+  return `
+    <div class="reply-box">
+      <div class="reply-label"><i class="fa-solid fa-reply"></i> BALASAN MINFAMS</div>
+      ${fotoHtml}${teksHtml}
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   INIT FORM
+══════════════════════════════════════════════════ */
+document.getElementById('fNama').value   = CFG.nama;
+document.getElementById('fEmail').value  = CFG.email;
+document.getElementById('fMember').value = CFG.membership;
+
+/* ══════════════════════════════════════════════════
+   TAB / BOTTOM NAV
+══════════════════════════════════════════════════ */
+const TAB_ORDER = ['misi','proses','selesai'];
+let currentTabIndex = 0;
+
+function moveIndicator(btn){
+  const ind=document.getElementById('navIndicator');
+  const nav=document.getElementById('bottomNav');
+  if(!ind||!nav||!btn) return;
+  const nr=nav.getBoundingClientRect(), br=btn.getBoundingClientRect();
+  ind.style.left  = (br.left-nr.left)+'px';
+  ind.style.width = br.width+'px';
+}
+function gTab(name,btn){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  if(btn){ btn.classList.add('active'); moveIndicator(btn); }
+
+  const newIndex = TAB_ORDER.indexOf(name);
+  const dir = newIndex === currentTabIndex ? null : (newIndex > currentTabIndex ? 'right' : 'left');
+  currentTabIndex = newIndex;
+
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active','slide-in-right','slide-in-left');
+  });
+  const target = document.getElementById('screen-'+name);
+  target.classList.add('active');
+  if(dir==='right') target.classList.add('slide-in-right');
+  else if(dir==='left') target.classList.add('slide-in-left');
+  target.addEventListener('animationend', function handler(){
+    target.classList.remove('slide-in-right','slide-in-left');
+    target.removeEventListener('animationend', handler);
+  });
+
+  const contentEl = document.querySelector('.app-content');
+  if(contentEl) contentEl.scrollTop = 0;
+
+  if(name==='misi')    checkLock();
+  if(name==='proses')  renderProses();
+  if(name==='selesai') renderSelesai();
+}
+function goTab(name){ const btn=document.querySelector(`.nav-item[data-target="${name}"]`); gTab(name,btn); }
+
+function toggleDetail(btn){
+  const exp=btn.closest('.tx-card').querySelector('.tx-expand');
+  const ic=btn.querySelector('i');
+  const open=exp.style.display==='block';
+  exp.style.display=open?'none':'block';
+  ic.className=open?'fa-solid fa-chevron-down':'fa-solid fa-chevron-up';
+}
+
+function checkLock(){
+  syncDB();
+  const L=DB.proses!==null;
+  document.getElementById('lockMsg').classList.toggle('show',L);
+  document.getElementById('navDot').classList.toggle('show',L);
+  document.getElementById('btnKirim').disabled = L || isSending;
+  document.getElementById('fPesan').disabled=L;
+  document.getElementById('fFile').disabled=L;
+  document.getElementById('formPanel').classList.toggle('form-locked',L);
+  return L;
+}
+
+function onFileGaleri(inp){ if(!inp.files[0]) return; applyFile(inp.files[0]); }
+function applyFile(file){
+  const r=new FileReader();
+  r.onload=e=>{
+    const b64 = e.target.result;
+    document.getElementById('fPreview').src = b64;
+    selFile._b64preview = b64;
+    const mime=file.type||'image/jpeg';
+    const ext=mime==='image/png'?'png':mime==='image/webp'?'webp':'jpg';
+    document.getElementById('previewName').textContent=`FamsssPay_image-komplain.${ext}`;
+    const kb=(file.size/1024).toFixed(0);
+    document.getElementById('previewSize').textContent=kb>1024?(kb/1024).toFixed(1)+' MB':kb+' KB';
+    document.getElementById('uploadArea').style.display='none';
+    document.getElementById('previewWrap').classList.add('show');
+  };
+  r.readAsDataURL(file);
+  selFile=file;
+}
+function resetUpload(){
+  if(DB.proses!==null) return;
+  selFile=null;
+  document.getElementById('fFile').value='';
+  document.getElementById('fPreview').src='';
+  document.getElementById('previewWrap').classList.remove('show');
+  document.getElementById('uploadArea').style.display='';
+}
+function openModal(src){
+  if(!src) return;
+  document.getElementById('modalImg').src=src;
+  document.getElementById('modal').classList.add('show');
+}
+
+function startWaCountdown(){ clearInterval(waTmr); tickWa(); waTmr=setInterval(tickWa,1000); }
+function tickWa(){
+  syncDB();
+  if(!DB.proses){ clearInterval(waTmr); return; }
+  const rem=WA_DELAY_MS-(Date.now()-(DB.proses.waktu||Date.now()));
+  const cdEl=document.getElementById('waCountdown');
+  const btnEl=document.getElementById('waBtn');
+  if(!cdEl||!btnEl){ clearInterval(waTmr); return; }
+  if(rem<=0){ cdEl.classList.add('hidden'); btnEl.classList.add('show'); clearInterval(waTmr); }
+  else {
+    cdEl.classList.remove('hidden'); btnEl.classList.remove('show');
+    const ts=Math.ceil(rem/1000);
+    const sp=document.getElementById('waCountdownText');
+    if(sp) sp.textContent=String(Math.floor(ts/60)).padStart(2,'0')+':'+String(ts%60).padStart(2,'0');
+  }
+}
+
+async function kirim(){
+  /* Guard anti kirim dobel: cek flag pengiriman & status lock sebelum apa pun */
+  if(isSending) return;
+  if(checkLock()) return toast('Masih ada komplain yang sedang diproses.','err');
+  const pesan=document.getElementById('fPesan').value.trim();
+  if(!pesan)   return toast('Pesan komplain wajib diisi.','err');
+  if(!selFile) return toast('Screenshot bukti wajib dilampirkan.','err');
+
+  isSending = true;
+  const btn=document.getElementById('btnKirim');
+  btn.disabled=true;
+  btn.style.pointerEvents='none';
+  document.getElementById('loadingBar').style.display='flex';
+
+  const kode='KPL-'+Math.floor(10000+Math.random()*90000);
+  const caption=
+    `*KOMPLAIN TRANSAKSI BARU*\n\n`+
+    `Kode: \`${kode}\`\n`+
+    `Nama: ${CFG.nama}\n`+
+    `Email: ${CFG.email}\n`+
+    `Membership: ${CFG.membership}\n\n`+
+    `Pesan:\n${pesan}\n\n`+
+    `------------------------\n`+
+    `Cara menyelesaikan:\n`+
+    `Reply pesan ini dengan teks atau foto+teks → otomatis selesai\n`+
+    `atau ketik bebas: \`${kode} Selesai\`\n\n`+
+    `Update balasan: reply ke balasan lama dengan pesan baru\n`+
+    `Hapus balasan: reply ke balasanmu sendiri dengan kata \`hapus\``;
+
+  try{
+    if(checkLock()){
+      toast('Komplain baru saja terisi dari sesi lain.','err');
+      return;
+    }
+    const fotoSiap=await compressImage(selFile);
+    let msgId=await trySendPhoto(fotoSiap,caption);
+    if(!msgId){ dbg('sendPhoto gagal, coba sendDocument...'); msgId=await trySendDocument(fotoSiap,caption); }
+    if(!msgId){ await new Promise(r=>setTimeout(r,2000)); msgId=await trySendPhoto(fotoSiap,caption); }
+    if(!msgId) throw new Error('Gagal mengirim foto ke server setelah beberapa percobaan.');
+
+    await syncLastUpdateId();
+    syncDB();
+
+    const b64preview = selFile._b64preview || document.getElementById('fPreview').src;
+    await idbSet('b64_' + kode, b64preview);
+
+    DB.proses={
+      kode,
+      pesan,
+      b64        : b64preview,
+      tgMsgId    : msgId,
+      replyMsgId : null,
+      balasan    : null,
+      balasanFoto: null,
+      waktu      : Date.now()
+    };
+    save();
+    document.getElementById('fPesan').value='';
+    resetUpload();
+    checkLock();
+    startPoll();
+    toast(`Komplain berhasil dikirim\nNomor tiket: ${kode}`,'ok','fa-circle-check',5000);
+    setTimeout(()=>goTab('proses'),900);
+  } catch(e){
+    toast(`Pengiriman gagal\n${e.message}`,'err','fa-triangle-exclamation',5000);
+  } finally {
+    isSending = false;
+    document.getElementById('loadingBar').style.display='none';
+    const locked = checkLock();
+    btn.style.pointerEvents = locked ? 'none' : '';
+    btn.disabled = locked;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   KIRIM FOTO/DOKUMEN — via Worker (bukan langsung ke
+   Telegram). chat_id & bot token sudah ada di server,
+   client hanya kirim file + caption.
+══════════════════════════════════════════════════ */
+async function trySendPhoto(file,caption){
+  try{
+    const fd=new FormData();
+    fd.append('file',file,file.name);
+    fd.append('caption',caption);
+    const r=await fetch(`${CFG.workerBase}/telegram/sendPhoto`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok) return d.result.message_id;
+    dbg('sendPhoto err: '+d.description); return null;
+  } catch(e){ dbg('sendPhoto exc: '+e.message); return null; }
+}
+
+async function trySendDocument(file,caption){
+  try{
+    const fd=new FormData();
+    fd.append('file',file,file.name);
+    fd.append('caption',caption);
+    const r=await fetch(`${CFG.workerBase}/telegram/sendDocument`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok) return d.result.message_id;
+    dbg('sendDocument err: '+d.description); return null;
+  } catch(e){ dbg('sendDocument exc: '+e.message); return null; }
+}
+
+async function syncLastUpdateId(){
+  try{
+    const r=await fetch(`${CFG.workerBase}/telegram/getUpdates?offset=-1&limit=1`,{cache:'no-store'});
+    const d=await r.json();
+    if(d.ok&&d.result.length){ uid=d.result[d.result.length-1].update_id; localStorage.setItem('kpl_uid5',uid); }
+  } catch(e){}
+}
+
+async function renderProses(){
+  await syncDBAsync();
+  const w=document.getElementById('prosesWrap');
+  if(!DB.proses){
+    clearInterval(waTmr);
+    w.innerHTML=`
+      <div class="empty-state">
+        <div class="ico-ring"><i class="fa-solid fa-hourglass-half"></i></div>
+        <h3>Belum ada komplain.</h3>
+        <p>Komplain yang sedang dalam proses pengecekan akan muncul di sini.</p>
+        <button onclick="goTab('misi')"><i class="fa-solid fa-paper-plane"></i> Ajukan Komplain</button>
+      </div>`;
+    return;
+  }
+  const c=DB.proses;
+  const waPesan=encodeURIComponent(`Halo MinFams, komplain saya dengan nomor tiket ${c.kode} belum ada update lebih dari 20 menit. Mohon bantuannya, terima kasih.`);
+  const waHref=`${CFG.waLink}?text=${waPesan}`;
+
+  w.innerHTML=`
+    <div class="tx-card">
+      <div class="tx-top">
+        <span class="tx-time"><i class="fa-regular fa-clock"></i> ${fmtWaktu(c.waktu||Date.now())}</span>
+        <span class="tx-badge tx-badge-proses">Diproses</span>
+      </div>
+      <div class="tx-divider"></div>
+      <div class="tx-body">
+        <div class="tx-avatar">
+          <i class="fa-solid fa-message"></i>
+          <span class="dot dot-proses"><i class="fa-solid fa-clock"></i></span>
+        </div>
+        <div class="tx-info">
+          <span class="tx-kode"><i class="fa-solid fa-hashtag"></i>${c.kode}</span>
+          <span class="tx-title">Komplain Diproses</span>
+        </div>
+        <button class="tx-detail-btn" onclick="toggleDetail(this)">Detail <i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      <div class="tx-expand">
+        <div class="detail-row"><i class="fa-solid fa-user"></i><span class="lbl">Nama</span><span class="val">${CFG.nama}</span></div>
+        <div class="detail-row"><i class="fa-solid fa-envelope"></i><span class="lbl">Email</span><span class="val">${CFG.email}</span></div>
+        <div class="detail-row"><i class="fa-solid fa-comment-dots"></i><span class="lbl">Pesan</span><span class="val">${c.pesan}</span></div>
+        ${c.b64?`<img src="${c.b64}" class="screenshot-view" onclick="openModal(this.src)">`:''}
+        ${buildReplyBox(c.balasan, c.balasanFoto)}
+        <div class="poll-row"><i class="fa-solid fa-circle-info"></i>Komplain kamu sedang dalam proses pengecekan. Mohon tunggu sebentar ya, kami akan usahakan prosesnya secepat mungkin.</div>
+        <div class="wa-countdown" id="waCountdown">
+          <i class="fa-solid fa-comment-dots"></i>
+          Belum ada balasan? Chat MinFams dalam <strong id="waCountdownText">20:00</strong>
+        </div>
+        <a class="wa-btn" id="waBtn" href="${waHref}" target="_blank" rel="noopener">
+          <i class="fa-brands fa-whatsapp"></i> Chat MinFams di WhatsApp
+        </a>
+      </div>
+    </div>`;
+  startWaCountdown();
+}
+
+async function renderSelesai(){
+  await syncDBAsync();
+  const w=document.getElementById('selesaiWrap');
+  const filterRow=document.getElementById('dateFilterRow');
+  if(!DB.selesai.length){
+    filterRow.style.display='none';
+    w.innerHTML=`
+      <div class="empty-state">
+        <div class="ico-ring"><i class="fa-solid fa-inbox"></i></div>
+        <h3>Belum ada riwayat</h3>
+        <p>Komplain yang sudah selesai ditindaklanjuti akan tersimpan di sini.</p>
+      </div>`;
+    return;
+  }
+  filterRow.style.display='flex';
+  const filterVal=document.getElementById('dateFilter').value;
+  document.getElementById('dateClearBtn').classList.toggle('show',!!filterVal);
+  let sorted=[...DB.selesai].sort((a,b)=>(b.waktu||0)-(a.waktu||0));
+  if(filterVal){
+    sorted=sorted.filter(c=>{
+      const d=new Date(c.waktu||0);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`===filterVal;
+    });
+  }
+  if(!sorted.length){
+    w.innerHTML=`
+      <div class="empty-state">
+        <div class="ico-ring"><i class="fa-regular fa-calendar-xmark"></i></div>
+        <h3>Tidak ada komplain</h3>
+        <p>Tidak ada komplain selesai pada tanggal yang dipilih.</p>
+      </div>`;
+    return;
+  }
+  w.innerHTML=sorted.map(c=>{
+    const {label:waktuLabel,isOld}=fmtWaktuSelesai(c.waktu||Date.now());
+    const oldClass=isOld?' tx-old':'';
+    return `
+    <div class="tx-card${oldClass}">
+      <div class="tx-top">
+        <span class="tx-time"><i class="fa-regular fa-clock"></i> ${waktuLabel}</span>
+        <span class="tx-badge tx-badge-selesai">Selesai</span>
+      </div>
+      <div class="tx-divider"></div>
+      <div class="tx-body">
+        <div class="tx-avatar">
+          <i class="fa-solid fa-message"></i>
+          <span class="dot dot-selesai"><i class="fa-solid fa-check"></i></span>
+        </div>
+        <div class="tx-info">
+          <span class="tx-kode"><i class="fa-solid fa-hashtag"></i>${c.kode}</span>
+          <span class="tx-title">Komplain Diterima</span>
+        </div>
+        <button class="tx-detail-btn" onclick="toggleDetail(this)">Detail <i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      <div class="tx-expand">
+        <div class="detail-row"><i class="fa-solid fa-user"></i><span class="lbl">Nama</span><span class="val">${CFG.nama}</span></div>
+        <div class="detail-row"><i class="fa-solid fa-envelope"></i><span class="lbl">Email</span><span class="val">${CFG.email}</span></div>
+        <div class="detail-row"><i class="fa-solid fa-comment-dots"></i><span class="lbl">Pesan</span><span class="val">${c.pesan}</span></div>
+        ${c.b64?`<img src="${c.b64}" class="screenshot-view" onclick="openModal(this.src)">`:''}
+        ${buildReplyBox(c.balasan, c.balasanFoto)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearDateFilter(){
+  document.getElementById('dateFilter').value='';
+  document.getElementById('dateClearBtn').classList.remove('show');
+  renderSelesai();
 }
 
 async function poll(){
-  try{
-    const d = await api('list', {status: ''});
-    if(!d.ok){ setStatus(false, 'Gagal memuat: ' + (d.error||'')); return; }
-    setStatus(true, 'Terhubung · update tiap 4 detik');
-    TICKETS = d.items;
-    render();
+  /* Guard anti tumpang-tindih: jangan jalankan poll baru selagi masih ada yang berjalan */
+  if(isPolling) return;
+  isPolling = true;
+  try {
+    if(!CFG.workerBase) return;
+    syncDB();
+    if(!DB.proses) return;
+
+    if(DB.proses.kode){
+      if(!DB.proses.b64) DB.proses.b64 = await idbGet('b64_' + DB.proses.kode);
+      if(!DB.proses.balasanFoto) DB.proses.balasanFoto = await idbGet('rfoto_' + DB.proses.kode);
+    }
+
+    const kode=DB.proses.kode;
+
+    const r=await fetch(`${CFG.workerBase}/telegram/getUpdates?offset=${uid+1}&limit=100&timeout=0`,{cache:'no-store'});
+    const d=await r.json();
+    if(!d.ok){ dbg('API not ok: '+JSON.stringify(d)); sPoll(3000); return; }
+    if(!d.result.length){ sPoll(2000); return; }
+
+    /* Gabungkan caption dari media group (album foto) supaya foto+teks yang
+       terpisah jadi beberapa update Telegram tetap terbaca sebagai satu balasan */
+    const mediaGroupCaption = {};
+    for(const upd of d.result){
+      const m = upd.message || upd.edited_message;
+      if(m && m.media_group_id && (m.caption || m.text)){
+        mediaGroupCaption[m.media_group_id] = (m.caption || m.text).trim();
+      }
+    }
+
+    let changed=false;
+    let selesai=false;
+
+    for(const upd of d.result){
+      /* uid tidak boleh mundur, jaga-jaga urutan update tidak selalu naik murni */
+      uid = Math.max(uid, upd.update_id);
+
+      /* Tangani juga edited_message (Telegram kirim event terpisah saat admin edit balasan) */
+      const msg = upd.message || upd.edited_message;
+      if(!msg) continue;
+
+      let txt=(msg.text||msg.caption||'').trim();
+      if(!txt && msg.media_group_id && mediaGroupCaption[msg.media_group_id]){
+        txt = mediaGroupCaption[msg.media_group_id];
+      }
+
+      if(
+        DB.proses &&
+        DB.proses.replyMsgId &&
+        msg.reply_to_message &&
+        msg.reply_to_message.message_id === DB.proses.replyMsgId &&
+        /^hapus$/i.test(txt)
+      ){
+        DB.proses.balasan     = null;
+        DB.proses.balasanFoto = null;
+        DB.proses.replyMsgId  = null;
+        await persistBalasanFoto(DB.proses.kode, null);
+        changed = true;
+        dbg('Balasan dihapus oleh admin');
+        continue;
+      }
+
+      if(
+        DB.proses &&
+        msg.reply_to_message &&
+        msg.reply_to_message.message_id === DB.proses.tgMsgId
+      ){
+        if(/^hapus$/i.test(txt)) continue;
+
+        const adaFoto = msg.photo && msg.photo.length > 0;
+
+        if(adaFoto && txt){
+          const bestPhoto = msg.photo[msg.photo.length - 1];
+          const fotoUrl   = fetchTelegramPhotoUrl(bestPhoto.file_id);
+          DB.proses.balasan     = txt;
+          DB.proses.replyMsgId  = msg.message_id;
+          DB.proses.balasanFoto = fotoUrl;
+          if(!DB.proses.b64 && DB.proses.kode) DB.proses.b64 = await idbGet('b64_' + DB.proses.kode);
+          await persistBalasanFoto(DB.proses.kode, fotoUrl);
+          DB.selesai.unshift({ ...DB.proses });
+          DB.proses = null;
+          changed = true;
+          selesai = true;
+          dbg('Selesai via reply foto+teks');
+          kirimNotifHp(kode);
+          break;
+
+        } else if(adaFoto && !txt){
+          const bestPhoto = msg.photo[msg.photo.length - 1];
+          const fotoUrl   = fetchTelegramPhotoUrl(bestPhoto.file_id);
+          DB.proses.replyMsgId  = msg.message_id;
+          DB.proses.balasanFoto = fotoUrl;
+          await persistBalasanFoto(DB.proses.kode, fotoUrl);
+          changed = true;
+          dbg('Balasan foto admin diterima (tanpa teks), menunggu konfirmasi selesai');
+
+        } else {
+          DB.proses.balasan    = txt || null;
+          DB.proses.replyMsgId = msg.message_id;
+          if(!DB.proses.b64 && DB.proses.kode) DB.proses.b64 = await idbGet('b64_' + DB.proses.kode);
+          await persistBalasanFoto(DB.proses.kode, DB.proses.balasanFoto || null);
+          DB.selesai.unshift({ ...DB.proses });
+          DB.proses = null;
+          changed = true;
+          selesai = true;
+          dbg('Selesai via reply teks');
+          kirimNotifHp(kode);
+          break;
+        }
+        continue;
+      }
+
+      if(
+        DB.proses &&
+        DB.proses.replyMsgId &&
+        msg.reply_to_message &&
+        msg.reply_to_message.message_id === DB.proses.replyMsgId &&
+        !/^hapus$/i.test(txt)
+      ){
+        const adaFoto = msg.photo && msg.photo.length > 0;
+        if(adaFoto){
+          const bestPhoto = msg.photo[msg.photo.length - 1];
+          const fotoUrl   = fetchTelegramPhotoUrl(bestPhoto.file_id);
+          DB.proses.balasanFoto = fotoUrl;
+          await persistBalasanFoto(DB.proses.kode, fotoUrl);
+        }
+        if(txt) DB.proses.balasan = txt;
+        DB.proses.replyMsgId = msg.message_id;
+        if(txt){
+          if(!DB.proses.b64 && DB.proses.kode) DB.proses.b64 = await idbGet('b64_' + DB.proses.kode);
+          await persistBalasanFoto(DB.proses.kode, DB.proses.balasanFoto || null);
+          DB.selesai.unshift({ ...DB.proses });
+          DB.proses = null;
+          changed = true;
+          selesai = true;
+          dbg('Selesai via update balasan berteks');
+          kirimNotifHp(kode);
+          break;
+        }
+        changed = true;
+        dbg('Balasan admin diupdate (foto saja)');
+        continue;
+      }
+
+      if(DB.proses && txt && !msg.reply_to_message){
+        const esc=kode.replace(/-/g,'\\-');
+        const rx=new RegExp(esc+'[\\s\\S]{0,200}selesai','i');
+        if(rx.test(txt)){
+          const after=txt.replace(new RegExp(esc+'[\\s\\S]{0,200}?selesai\\s*','i'),'').trim();
+          DB.proses.balasan = after || DB.proses.balasan || null;
+          if(!DB.proses.b64 && DB.proses.kode) DB.proses.b64 = await idbGet('b64_' + DB.proses.kode);
+          await persistBalasanFoto(DB.proses.kode, DB.proses.balasanFoto || null);
+          DB.selesai.unshift({ ...DB.proses });
+          DB.proses = null;
+          changed = true;
+          selesai = true;
+          dbg('Selesai via teks bebas');
+          kirimNotifHp(kode);
+          break;
+        }
+      }
+    }
+
+    save();
+
+    if(changed){
+      checkLock();
+      renderProses();
+      renderSelesai();
+      if(selesai){
+        clearInterval(waTmr);
+        toast('Komplain kamu telah diterima','ok','fa-circle-check',6000);
+        setTimeout(()=>goTab('selesai'), 500);
+        return;
+      }
+      if(DB.proses && (DB.proses.balasan || DB.proses.balasanFoto)){
+        toast('Admin telah membalas komplain kamu','ok','fa-reply',5000);
+      }
+    }
+
+    sPoll(2000);
   } catch(e){
-    setStatus(false, 'Jaringan bermasalah, mencoba lagi...');
+    dbg('Poll error: '+e.message);
+    sPoll(2000);
+  } finally {
+    isPolling = false;
   }
 }
 
-function setTab(s, btn){
-  TAB = s;
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
-function openModal(src){ if(!src) return; document.getElementById('modalImg').src=src; document.getElementById('modal').classList.add('show'); }
+function sPoll(ms){ clearTimeout(ptmr); ptmr=setTimeout(poll,ms); }
+function startPoll(){ clearTimeout(ptmr); poll(); }
 
-async function loadPhoto(fileId, imgEl){
-  if(!fileId || !imgEl) return;
-  if(photoCache[fileId]){ imgEl.src = photoCache[fileId]; return; }
-  const d = await api('photo', {file_id: fileId});
-  if(d.ok){ photoCache[fileId] = d.dataUrl; imgEl.src = d.dataUrl; }
-}
-
-function render(){
-  const el = document.getElementById('list');
-  let items = TICKETS.slice();
-  if(TAB) items = items.filter(t => t.status === TAB);
-  if(!items.length){ el.innerHTML = '<div class="empty">Tidak ada tiket di kategori ini.</div>'; return; }
-
-  el.innerHTML = items.map(t => `
-    <div class="card" id="card-${t.kode}">
-      <div class="card-top">
-        <div>
-          <div class="kode">#${t.kode}</div>
-          <div class="meta">${t.nama||'-'} · ${t.email||'-'}${t.membership?(' · '+t.membership):''}</div>
-          <div class="meta">${fmtWaktu(t.waktu)}</div>
-        </div>
-        <span class="badge ${t.status==='selesai'?'badge-selesai':'badge-proses'}">${t.status==='selesai'?'Selesai':'Belum Dibalas'}</span>
-      </div>
-      <div class="pesan">${(t.pesan||'').toString().replace(/</g,'&lt;')}</div>
-      <div class="foto-row">
-        ${t.foto_file_id ? `<img data-fid="${t.foto_file_id}" onclick="openModal(this.src)" title="Foto dari user">` : ''}
-        ${t.balasan_foto_file_id ? `<img data-fid="${t.balasan_foto_file_id}" onclick="openModal(this.src)" style="border-color:var(--primary)" title="Foto balasan">` : ''}
-      </div>
-      ${t.balasan ? `<div class="reply-old"><strong>Balasan tersimpan:</strong><br>${t.balasan.toString().replace(/</g,'&lt;')}</div>` : ''}
-      ${t.status!=='selesai' ? `
-        <div class="reply-form">
-          <textarea id="txt-${t.kode}" placeholder="Tulis jawaban untuk komplain ini..."></textarea>
-          <div class="file-row">
-            <label><i class="fa-solid fa-paperclip"></i> Lampirkan foto (opsional):</label>
-            <input type="file" id="foto-${t.kode}" accept="image/*">
-          </div>
-          <div class="btn-row">
-            <button class="btn-send" id="btn-${t.kode}" onclick="kirimBalasan('${t.kode}')"><i class="fa-solid fa-paper-plane"></i> Kirim Balasan &amp; Tutup Tiket</button>
-          </div>
-          <div class="hint"><i class="fa-solid fa-circle-info"></i> Kirim dari sini langsung menutup tiket dan otomatis muncul di aplikasi user. Tidak perlu buka Telegram sama sekali.</div>
-        </div>
-      ` : ''}
-    </div>
-  `).join('');
-
-  el.querySelectorAll('img[data-fid]').forEach(img => loadPhoto(img.dataset.fid, img));
-}
-
-async function fileToBase64(file){
-  return new Promise((res,rej)=>{
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-
-async function kirimBalasan(kode){
-  const txtEl = document.getElementById('txt-'+kode);
-  const fileEl = document.getElementById('foto-'+kode);
-  const txt = txtEl.value.trim();
-  const hasFile = fileEl && fileEl.files && fileEl.files[0];
-  if(!txt && !hasFile){ alert('Isi jawaban atau lampirkan foto dulu.'); return; }
-
-  const btn = document.getElementById('btn-'+kode);
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mengirim...';
-
-  try{
-    let balasanFotoBase64 = null;
-    if(hasFile) balasanFotoBase64 = await fileToBase64(fileEl.files[0]);
-    const d = await api('reply', {}, true, { kode, balasan: txt, balasanFotoBase64 });
-    if(!d.ok) throw new Error(d.error || 'Gagal mengirim balasan');
-    toast('Balasan terkirim, tiket ditutup.', 'ok');
-    await poll();
-  } catch(e){
-    toast('Gagal: ' + e.message, 'err');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Balasan & Tutup Tiket';
+window.addEventListener('storage',(e)=>{
+  if(e.key!=='kpl_v6') return;
+  const wasProses = !!DB.proses;
+  syncDB(); checkLock();
+  if(document.getElementById('screen-proses').classList.contains('active'))  renderProses();
+  if(document.getElementById('screen-selesai').classList.contains('active')) renderSelesai();
+  /* Kalau komplain yang tadinya proses jadi selesai lewat tab/perangkat lain,
+     langsung pindahkan tampilan ke tab Status juga di sini (bukan cuma Komplain) */
+  if(wasProses && !DB.proses){
+    setTimeout(()=>goTab('selesai'), 300);
   }
-}
+  if(DB.proses) startPoll(); else { clearTimeout(ptmr); clearInterval(waTmr); }
+});
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible') return;
+  checkLock();
+  if(document.getElementById('screen-proses').classList.contains('active'))  renderProses();
+  if(document.getElementById('screen-selesai').classList.contains('active')) renderSelesai();
+  if(DB.proses) startPoll();
+});
+
+/* INIT */
+(async function init(){
+  checkLock();
+  await renderProses();
+  await renderSelesai();
+  if(DB.proses) startPoll();
+  moveIndicator(document.querySelector('.nav-item.active'));
+  window.addEventListener('resize',()=>moveIndicator(document.querySelector('.nav-item.active')));
+})();
 </script>
 </body>
 </html>
