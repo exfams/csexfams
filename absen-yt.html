@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>Absensi Posting Konten YT & IG</title>
+<title>Absensi Posting Konten YT & TikTok</title>
 <style>
 
     
@@ -412,7 +412,7 @@ body{
   color:var(--muted);
 }
 
-/* ===== 6 Link (YouTube + Instagram) + preview ===== */
+/* ===== 6 Link (YouTube + TikTok) + preview ===== */
 .link-group{
   border:1px solid var(--line);
   border-radius:10px;
@@ -802,14 +802,14 @@ body{
         </div>
 
         <div class="field">
-          <label class="required">6 Link Postingan Hari Ini (3 YouTube + 3 Tiktok)</label>
+          <label class="required">6 Link Postingan Hari Ini (3 YouTube + 3 TikTok)</label>
           <div class="link-group" id="link-group-posting">
 
             <div class="platform-label"><i class="fa-brands fa-tiktok"></i>@linemheys &middot; Jadwal upload 15.20 s/d 17.20 WIB.</div>
             <div class="link-item">
               <label for="link-posting-4">Link Video Tiktok #1</label>
               <div class="link-input-row">
-                <input type="url" id="link-posting-4" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
+                <input type="url" id="link-posting-4" class="link-posting" placeholder="https://www.tiktok.com/@user/video/... atau https://vt.tiktok.com/...">
                 <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(4)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
                 <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(4)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
               </div>
@@ -820,7 +820,7 @@ body{
             <div class="link-item">
               <label for="link-posting-5">Link Video Tiktok #2</label>
               <div class="link-input-row">
-                <input type="url" id="link-posting-5" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
+                <input type="url" id="link-posting-5" class="link-posting" placeholder="https://www.tiktok.com/@user/video/... atau https://vt.tiktok.com/...">
                 <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(5)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
                 <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(5)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
               </div>
@@ -832,7 +832,7 @@ body{
             <div class="link-item">
               <label for="link-posting-6">Link Video Tiktok #3</label>
               <div class="link-input-row">
-                <input type="url" id="link-posting-6" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
+                <input type="url" id="link-posting-6" class="link-posting" placeholder="https://www.tiktok.com/@user/video/... atau https://vt.tiktok.com/...">
                 <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(6)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
                 <button type="button" class="link-action-btn link-btn-hapus" onclick="hapusLinkInput(6)" title="Hapus link"><i class="fa-solid fa-xmark"></i></button>
               </div>
@@ -929,7 +929,7 @@ let NAMA_KARYAWAN = muatNamaTersimpan();
 
 /* Icon platform dipakai ulang di kalender (JS-generated) */
 const ICON_YT = '<i class="fa-brands fa-youtube" style="color:#FF0000;"></i>';
-const ICON_IG = '<i class="fa-brands fa-tiktok" style="color:#E1306C;"></i>';
+const ICON_IG = '<i class="fa-brands fa-tiktok" style="color:#050f30;"></i>';
 
 const NAMA_HARI = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
 const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -1149,13 +1149,13 @@ function terapkanKunci(dataHariIni){
   document.getElementById('lo-time-posting').textContent = dataHariIni.posting_waktu ? `Pukul ${dataHariIni.posting_waktu}` : '';
 }
 
-/* ===== Preview banner YouTube / Instagram (oEmbed) + cek duplikat ===== */
+/* ===== Preview banner YouTube / TikTok (oEmbed) + cek duplikat ===== */
 let timerPreviewTikTok = {};
 
 function deteksiPlatform(url){
   const cek = url.toLowerCase();
   if(cek.includes('youtube.com') || cek.includes('youtu.be')) return 'youtube';
-  if(cek.includes('instagram.com')) return 'instagram';
+  if(cek.includes('tiktok.com')) return 'tiktok';
   return null;
 }
 
@@ -1186,24 +1186,48 @@ function setupPreviewLink(inputId, previewId){
   });
 }
 
+/* Daftar proxy CORS fallback untuk oEmbed TikTok (dicoba berurutan
+   sampai salah satu berhasil, biar preview tetap valid walau satu
+   proxy sedang down / dibatasi). */
+const PROXY_CORS = [
+  (url) => url, // coba akses langsung dulu (kadang sudah CORS-enabled)
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+];
+
+async function ambilJSONDenganFallback(endpoint){
+  let errorTerakhir = null;
+  for(const bungkus of PROXY_CORS){
+    try{
+      const res = await fetch(bungkus(endpoint));
+      if(!res.ok) throw new Error('status ' + res.status);
+      const data = await res.json();
+      if(data && (data.thumbnail_url || data.title)) return data;
+      throw new Error('respon tidak valid');
+    }catch(err){
+      errorTerakhir = err;
+      continue;
+    }
+  }
+  throw errorTerakhir || new Error('semua proxy gagal');
+}
+
 async function ambilPreviewMedia(url, previewBox){
   const platform = deteksiPlatform(url);
   try{
     let endpoint = null;
     if(platform === 'youtube'){
       endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
-    }else if(platform === 'instagram'){
-      endpoint = `https://api.instagram.com/oembed?url=${encodeURIComponent(url)}`;
+    }else if(platform === 'tiktok'){
+      endpoint = `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`;
     }
     if(!endpoint) throw new Error('platform tidak dikenali');
 
-    const res = await fetch(endpoint);
-    if(!res.ok) throw new Error('gagal fetch');
-    const data = await res.json();
+    const data = await ambilJSONDenganFallback(endpoint);
 
     previewBox.className = 'tiktok-preview show';
     previewBox.querySelector('img').src = data.thumbnail_url || '';
-    previewBox.querySelector('.tp-title').textContent = data.title || (platform === 'youtube' ? 'Video YouTube' : 'Postingan Instagram');
+    previewBox.querySelector('.tp-title').textContent = data.title || (platform === 'youtube' ? 'Video YouTube' : 'Video TikTok');
     previewBox.querySelector('.tp-author').textContent = data.author_name ? '@' + data.author_name : '';
   }catch(err){
     previewBox.className = 'tiktok-preview show tp-gagal';
@@ -1247,12 +1271,12 @@ setupPreviewLink('link-posting-6','tp-6');
 
 /* ===== Kirim & kunci link posting satu-satu (centang) ===== */
 const INFO_LINK_POSTING = {
-  1: { platform: 'YouTube',   akun: '@linemheys',      jadwal: '08:00 Pagi' },
-  2: { platform: 'YouTube',   akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
-  3: { platform: 'YouTube',   akun: '@Chilaawl',        jadwal: '20:00 Malam' },
-  4: { platform: 'Instagram', akun: '@linemheys',      jadwal: '08:00 Pagi' },
-  5: { platform: 'Instagram', akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
-  6: { platform: 'Instagram', akun: '@Chilaawl',        jadwal: '20:00 Malam' }
+  1: { platform: 'YouTube', akun: '@AppFamsssPay', jadwal: '15.25 - 17.25 WIB' },
+  2: { platform: 'YouTube', akun: '@AppFamsssPay', jadwal: '15.25 - 17.25 WIB' },
+  3: { platform: 'YouTube', akun: '@AppFamsssPay', jadwal: '15.25 - 17.25 WIB' },
+  4: { platform: 'TikTok',  akun: '@linemheys',    jadwal: '15.20 - 17.20 WIB' },
+  5: { platform: 'TikTok',  akun: '@linemheys',    jadwal: '15.20 - 17.20 WIB' },
+  6: { platform: 'TikTok',  akun: '@linemheys',    jadwal: '15.20 - 17.20 WIB' }
 };
 
 async function simpanLinkTersimpan(nomor, nilai, jam){
@@ -1313,7 +1337,7 @@ async function cekSelesaiPosting(){
 
     const statusEl = document.getElementById('status-posting');
     statusEl.className = 'status-msg ok';
-    statusEl.textContent = 'Mantap! Semua 6 link (3 YouTube + 3 Tiktok) sudah dikirim, absen posting hari ini selesai.';
+    statusEl.textContent = 'Mantap! Semua 6 link (3 YouTube + 3 TikTok) sudah dikirim, absen posting hari ini selesai.';
   }
 }
 
@@ -1359,7 +1383,7 @@ async function kirimLinkCentang(nomor){
 
   const info = INFO_LINK_POSTING[nomor] || {};
   const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  const iconPlatform = info.platform === 'YouTube' ? '▶️' : '📸';
+  const iconPlatform = info.platform === 'YouTube' ? '▶️' : '🎵';
   const pesan =
 `${iconPlatform} <b>LAPORAN POSTING KONTEN</b>
 ━━━━━━━━━━━━━━━━━━━
