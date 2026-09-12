@@ -765,7 +765,7 @@ body{
       <div class="riwayat-label">
         <span class="riwayat-icons">
           <i class="fa-brands fa-youtube" style="color:#FF0000;"></i>
-          <i class="fa-brands fa-instagram" style="color:#E1306C;"></i>
+          <i class="fa-brands fa-tiktok" style="color:#050f30;"></i>
         </span>
         Posting Konten
       </div>
@@ -802,12 +802,12 @@ body{
         </div>
 
         <div class="field">
-          <label class="required">6 Link Postingan Hari Ini (3 YouTube + 3 Instagram)</label>
+          <label class="required">6 Link Postingan Hari Ini (3 YouTube + 3 Tiktok)</label>
           <div class="link-group" id="link-group-posting">
 
-            <div class="platform-label"><i class="fa-brands fa-instagram"></i>@buatqrisku &middot; Jadwal konten jam 08.30 pagi</div>
+            <div class="platform-label"><i class="fa-brands fa-tiktok"></i>@linemheys &middot; Jadwal upload 15.20 s/d 17.20 WIB.</div>
             <div class="link-item">
-              <label for="link-posting-4">Link Instagram #1</label>
+              <label for="link-posting-4">Link Video Tiktok #1</label>
               <div class="link-input-row">
                 <input type="url" id="link-posting-4" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
                 <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(4)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
@@ -818,7 +818,7 @@ body{
             </div>
 
             <div class="link-item">
-              <label for="link-posting-5">Link Instagram #2</label>
+              <label for="link-posting-5">Link Video Tiktok #2</label>
               <div class="link-input-row">
                 <input type="url" id="link-posting-5" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
                 <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(5)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
@@ -830,7 +830,7 @@ body{
 
 
             <div class="link-item">
-              <label for="link-posting-6">Link Instagram #3</label>
+              <label for="link-posting-6">Link Video Tiktok #3</label>
               <div class="link-input-row">
                 <input type="url" id="link-posting-6" class="link-posting" placeholder="https://www.instagram.com/reel/... atau /p/...">
                 <button type="button" class="link-action-btn link-btn-cek" onclick="kirimLinkCentang(6)" title="Kirim link ini"><i class="fa-solid fa-check"></i></button>
@@ -840,7 +840,7 @@ body{
               <div class="tiktok-preview" id="tp-6"><img alt=""><div class="tp-info"><div class="tp-title"></div><div class="tp-author"></div></div></div>
             </div>
 
-             <div class="platform-label"><i class="fa-brands fa-youtube"></i>@AppFamsssPay &middot; Jadwal konten Jam 3 - 5 Sore</div>
+             <div class="platform-label"><i class="fa-brands fa-youtube"></i>@AppFamsssPay &middot; Jadwal upload 15.25 s/d 17.25 WIB</div>
             <div class="link-item">
               <label for="link-posting-1">Link Video YouTube #1</label>
               <div class="link-input-row">
@@ -891,7 +891,7 @@ body{
       <h2 id="kalender-judul">Agustus 2026</h2>
       <div class="kalender-legend">
         <span><i class="fa-brands fa-youtube" style="color:#FF0000;"></i>YouTube</span>
-        <span><i class="fa-brands fa-instagram" style="color:#E1306C;"></i>Instagram</span>
+        <span><i class="fa-brands fa-tiktok" style="color:#080f25;"></i>Tiktok</span>
       </div>
     </div>
     <div class="kalender-grid" id="kalender-grid"></div>
@@ -929,7 +929,7 @@ let NAMA_KARYAWAN = muatNamaTersimpan();
 
 /* Icon platform dipakai ulang di kalender (JS-generated) */
 const ICON_YT = '<i class="fa-brands fa-youtube" style="color:#FF0000;"></i>';
-const ICON_IG = '<i class="fa-brands fa-instagram" style="color:#E1306C;"></i>';
+const ICON_IG = '<i class="fa-brands fa-tiktok" style="color:#E1306C;"></i>';
 
 const NAMA_HARI = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
 const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -1247,10 +1247,10 @@ setupPreviewLink('link-posting-6','tp-6');
 
 /* ===== Kirim & kunci link posting satu-satu (centang) ===== */
 const INFO_LINK_POSTING = {
-  1: { platform: 'YouTube',   akun: '@buatqrisku',      jadwal: '08:00 Pagi' },
+  1: { platform: 'YouTube',   akun: '@linemheys',      jadwal: '08:00 Pagi' },
   2: { platform: 'YouTube',   akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
   3: { platform: 'YouTube',   akun: '@Chilaawl',        jadwal: '20:00 Malam' },
-  4: { platform: 'Instagram', akun: '@buatqrisku',      jadwal: '08:00 Pagi' },
+  4: { platform: 'Instagram', akun: '@linemheys',      jadwal: '08:00 Pagi' },
   5: { platform: 'Instagram', akun: '@buatqrispayment', jadwal: '08:00 Pagi' },
   6: { platform: 'Instagram', akun: '@Chilaawl',        jadwal: '20:00 Malam' }
 };
@@ -1313,7 +1313,7 @@ async function cekSelesaiPosting(){
 
     const statusEl = document.getElementById('status-posting');
     statusEl.className = 'status-msg ok';
-    statusEl.textContent = 'Mantap! Semua 6 link (3 YouTube + 3 Instagram) sudah dikirim, absen posting hari ini selesai.';
+    statusEl.textContent = 'Mantap! Semua 6 link (3 YouTube + 3 Tiktok) sudah dikirim, absen posting hari ini selesai.';
   }
 }
 
