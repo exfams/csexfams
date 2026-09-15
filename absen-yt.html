@@ -384,9 +384,7 @@ body{
   gap:10px;
   padding:24px;
   text-align:center;
-  background:rgba(255,255,255,.88);
-  backdrop-filter:blur(3px);
-  -webkit-backdrop-filter:blur(3px);
+  background:rgba(255,255,255,.94);
   border-radius:14px;
   z-index:5;
 }
@@ -520,6 +518,10 @@ body{
   transition:background .2s, color .2s, border-color .2s;
 }
 .theme-toggle:hover{border-color:var(--accent);}
+.theme-toggle i{
+  font-size:15px;
+  color:var(--ink);
+}
 .top{position:relative;}
 
 /* ===== Penyesuaian warna elemen hardcode agar nyaman di mode gelap ===== */
@@ -750,7 +752,7 @@ body{
 <div class="wrap">
 
   <div class="top">
-    <button type="button" class="theme-toggle" id="btn-tema" onclick="toggleTema()" aria-label="Ganti tema gelap/terang">🌙</button><br><br>
+    <button type="button" class="theme-toggle" id="btn-tema" onclick="toggleTema()" aria-label="Ganti tema gelap/terang"><i class="fa-solid fa-moon"></i></button><br><br>
     <div class="eyebrow">EXFAMS JURNAL</div>
     <h1>Absensi Jadwal Posting</h1>
     <p>Terimakasih sudah menjadi bagian dari kami.<br>Bukan mencari validasi hanya mencari sesuap nasi</p>
@@ -1039,16 +1041,58 @@ async function ambilDataBulan(date){
   }
 }
 
+/* Ambil data paling baru langsung dari pesan pin Telegram (bukan dari
+   variabel cache di memori), lalu gabungkan dengan cache localStorage.
+   Dipakai KHUSUS sesaat sebelum menulis/menyimpan, supaya kalau ada nama
+   lain yang barusan absen dari HP lain, datanya tidak ikut tertimpa /
+   hilang (data tiap nama tetap aman terpisah, tidak jadi 1 / ke-reset). */
+async function ambilDataTerbaruUntukTulis(date){
+  const key = kunciBulan(date);
+  let data = {};
+
+  const stateTelegram = await ambilStateDariTelegram();
+  if(stateTelegram && stateTelegram.month === key && stateTelegram.data){
+    data = stateTelegram.data;
+  }else{
+    try{
+      const raw = localStorage.getItem(key);
+      data = raw ? JSON.parse(raw) : {};
+    }catch(err){
+      data = {};
+    }
+  }
+
+  // Gabungkan (bukan timpa) dengan cache lokal, jaga-jaga ada perubahan
+  // yang sempat tersimpan lokal tapi belum sempat terkirim ke Telegram.
+  try{
+    const rawLokal = localStorage.getItem(key);
+    if(rawLokal){
+      const dataLokal = JSON.parse(rawLokal);
+      Object.keys(dataLokal).forEach(tglLokal => {
+        if(!data[tglLokal]) data[tglLokal] = {};
+        Object.keys(dataLokal[tglLokal]).forEach(namaLokal => {
+          if(!data[tglLokal][namaLokal]){
+            data[tglLokal][namaLokal] = dataLokal[tglLokal][namaLokal];
+          }
+        });
+      });
+    }
+  }catch(err){}
+
+  return data;
+}
+
 async function simpanAbsenHariIni(jenis){
   const hariIni = new Date();
   const key = kunciBulan(hariIni);
   const tgl = String(hariIni.getDate());
   const jam = hariIni.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
 
-  let data = await ambilDataBulan(hariIni);
+  let data = await ambilDataTerbaruUntukTulis(hariIni);
   if(!data[tgl]) data[tgl] = {};
-  data[tgl][jenis] = true;
-  data[tgl][jenis + '_waktu'] = jam;
+  if(!data[tgl][NAMA_KARYAWAN]) data[tgl][NAMA_KARYAWAN] = {};
+  data[tgl][NAMA_KARYAWAN][jenis] = true;
+  data[tgl][NAMA_KARYAWAN][jenis + '_waktu'] = jam;
 
   try{
     localStorage.setItem(key, JSON.stringify(data));
@@ -1058,7 +1102,7 @@ async function simpanAbsenHariIni(jenis){
 
   await simpanStateKeTelegram(data);
 
-  return data[tgl];
+  return data[tgl][NAMA_KARYAWAN];
 }
 
 let dataHariIniGlobal = {};
@@ -1066,7 +1110,8 @@ let dataHariIniGlobal = {};
 async function muatUlangSemua(){
   const hariIni = new Date();
   const dataBulan = await ambilDataBulan(hariIni);
-  dataHariIniGlobal = dataBulan[String(hariIni.getDate())] || {};
+  const dataTanggal = dataBulan[String(hariIni.getDate())] || {};
+  dataHariIniGlobal = dataTanggal[NAMA_KARYAWAN] || {};
 
   renderKalender(dataBulan, hariIni);
   renderRiwayat(dataHariIniGlobal);
@@ -1102,7 +1147,8 @@ function renderKalender(dataBulan, sekarang){
   }
 
   for(let tgl=1; tgl<=jumlahHari; tgl++){
-    const info = dataBulan[String(tgl)];
+    const infoTanggal = dataBulan[String(tgl)];
+    const info = infoTanggal ? infoTanggal[NAMA_KARYAWAN] : null;
     const lengkap = info && info.posting;
 
     const cell = document.createElement('div');
@@ -1177,11 +1223,7 @@ function setupPreviewLink(inputId, previewId){
       return;
     }
 
-    previewBox.className = 'tiktok-preview show tp-loading';
-    previewBox.querySelector('.tp-title').textContent = 'Memuat preview...';
-    previewBox.querySelector('.tp-author').textContent = '';
-
-    timerPreviewTikTok[inputId] = setTimeout(() => ambilPreviewMedia(url, previewBox), 500);
+    timerPreviewTikTok[inputId] = setTimeout(() => ambilPreviewMedia(url, previewBox), 120);
     cekDuplikatLink();
   });
 }
@@ -1284,10 +1326,11 @@ async function simpanLinkTersimpan(nomor, nilai, jam){
   const key = kunciBulan(hariIni);
   const tgl = String(hariIni.getDate());
 
-  let data = await ambilDataBulan(hariIni);
+  let data = await ambilDataTerbaruUntukTulis(hariIni);
   if(!data[tgl]) data[tgl] = {};
-  if(!data[tgl].links) data[tgl].links = {};
-  data[tgl].links[nomor] = { nilai, jam };
+  if(!data[tgl][NAMA_KARYAWAN]) data[tgl][NAMA_KARYAWAN] = {};
+  if(!data[tgl][NAMA_KARYAWAN].links) data[tgl][NAMA_KARYAWAN].links = {};
+  data[tgl][NAMA_KARYAWAN].links[nomor] = { nilai, jam };
 
   try{
     localStorage.setItem(key, JSON.stringify(data));
@@ -1447,7 +1490,7 @@ function toggleTema(){
   }else{
     root.removeAttribute('data-theme');
   }
-  document.getElementById('btn-tema').textContent = temaBaru === 'dark' ? '☀️' : '🌙';
+  document.getElementById('btn-tema').innerHTML = temaBaru === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
   try{ localStorage.setItem('tema-absen', temaBaru); }catch(err){}
 }
 (function muatTemaTersimpan(){
@@ -1458,7 +1501,7 @@ function toggleTema(){
   }
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('btn-tema');
-    if(btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    if(btn) btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
   });
 })();
 
@@ -1516,6 +1559,7 @@ function simpanNamaGate(){
   simpanNamaLokal(nama);
   tampilkanNamaDiForm(nama);
   tutupGateNama();
+  muatUlangSemua();
 }
 
 // Kalau Enter ditekan di input nama, langsung simpan (tanpa reload halaman)
