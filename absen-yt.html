@@ -921,17 +921,56 @@ const CHAT_ID   = "1399536933";
 
 // Nama karyawan sekarang diisi & disimpan sendiri oleh user (lihat blok "GERBANG NAMA" di bawah)
 const NAMA_KEY = 'nama-karyawan-tersimpan';
+
+/* =========================================================
+   FALLBACK COOKIE UNTUK NAMA
+   localStorage bisa hilang kalau user membersihkan "cache/data
+   situs" di browser (Settings > Clear browsing data > kadang
+   localStorage ikut ke-reset). Supaya nama (identitas) tetap
+   dikenali dan histori absen di Telegram tetap bisa ditemukan
+   lagi, nama juga disimpan cadangan di cookie umur panjang
+   (1 tahun). Data absen itu sendiri TETAP permanen di Telegram,
+   cookie ini cuma supaya user tidak perlu isi nama dari nol
+   dan datanya "kelihatan" hilang gara-gara localStorage kosong.
+========================================================= */
+const NAMA_COOKIE = 'nama_karyawan_absen';
+
+function ambilCookie(nama){
+  const match = document.cookie.match(new RegExp('(?:^|; )' + nama + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : '';
+}
+function simpanCookie(nama, nilai, hari){
+  try{
+    const tgl = new Date();
+    tgl.setTime(tgl.getTime() + (hari * 24 * 60 * 60 * 1000));
+    document.cookie = `${nama}=${encodeURIComponent(nilai)};expires=${tgl.toUTCString()};path=/;SameSite=Lax`;
+  }catch(err){}
+}
+
 function muatNamaTersimpan(){
-  try{ return localStorage.getItem(NAMA_KEY) || ''; }catch(err){ return ''; }
+  try{
+    const dariLocal = localStorage.getItem(NAMA_KEY);
+    if(dariLocal) return dariLocal;
+  }catch(err){}
+
+  // localStorage kosong (baru dibersihkan) -> coba pulihkan dari cookie cadangan
+  const dariCookie = ambilCookie(NAMA_COOKIE);
+  if(dariCookie){
+    try{ localStorage.setItem(NAMA_KEY, dariCookie); }catch(err){}
+    return dariCookie;
+  }
+  return '';
 }
 function simpanNamaLokal(nama){
   try{ localStorage.setItem(NAMA_KEY, nama); }catch(err){}
+  simpanCookie(NAMA_COOKIE, nama, 365);
 }
 let NAMA_KARYAWAN = muatNamaTersimpan();
 
 /* Icon platform dipakai ulang di kalender (JS-generated) */
 const ICON_YT = '<i class="fa-brands fa-youtube" style="color:#FF0000;"></i>';
 const ICON_IG = '<i class="fa-brands fa-tiktok" style="color:#050f30;"></i>';
+const ICON_CENTANG = '<i class="fa-solid fa-circle-check" style="color:#90EE90;"></i>';
 
 const NAMA_HARI = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
 const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -1164,7 +1203,7 @@ function renderKalender(dataBulan, sekarang){
     if(info && info.posting){
       const dots = document.createElement('div');
       dots.className = 'dots';
-      dots.innerHTML = ICON_YT + ICON_IG;
+      dots.innerHTML = ICON_CENTANG;
       cell.appendChild(dots);
     }
 
