@@ -976,6 +976,103 @@ const NAMA_HARI = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
 const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
 /* =========================================================
+   HELPER TELEGRAM (dengan timeout supaya tombol tidak nyangkut
+   di spinner kalau koneksi lambat/putus)
+========================================================= */
+async function panggilTelegram(method, body, timeoutMs){
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs || 15000);
+  try{
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+    return await res.json();
+  }catch(err){
+    return { ok:false, description: err && err.name === 'AbortError' ? 'koneksi timeout' : 'koneksi gagal' };
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+/* Antrian tulis: semua penyimpanan state dijalankan satu per satu,
+   supaya kalau 2 link dicentang berdekatan, datanya tidak saling
+   menimpa (last-write-wins). */
+let antrianTulis = Promise.resolve();
+function jalankanBerurutan(fn){
+  const hasil = antrianTulis.then(fn);
+  antrianTulis = hasil.catch(() => {});
+  return hasil;
+}
+
+/* =========================================================
+   FORMAT DATA (1 nama saja)
+   data = { "<tanggal>": { posting:true, posting_waktu:"HH.MM",
+                           links:{ "1":{nilai,jam}, ... } } }
+   Tidak ada lagi lapisan per-nama.
+========================================================= */
+function normalisasiEntri(e){
+  if(!e || typeof e !== 'object') return {};
+  if('posting' in e || 'links' in e || 'posting_waktu' in e) return e;
+
+  // Format lama: { "<nama>": {posting, links} } -> ambil punya nama ini, atau yang pertama ada
+  let sumber = e[NAMA_KARYAWAN];
+  if(!sumber || typeof sumber !== 'object'){
+    const kunci = Object.keys(e).find(k => e[k] && typeof e[k] === 'object');
+    sumber = kunci ? e[kunci] : {};
+  }
+  return sumber || {};
+}
+function normalisasiData(data){
+  const hasil = {};
+  if(!data || typeof data !== 'object') return hasil;
+  Object.keys(data).forEach(tgl => {
+    hasil[tgl] = normalisasiEntri(data[tgl]);
+  });
+  return hasil;
+}
+
+/* Gabungkan data lokal ke data utama (tidak menimpa yang sudah ada) */
+function gabungData(utama, lokal){
+  utama = normalisasiData(utama);
+  lokal = normalisasiData(lokal);
+  Object.keys(lokal).forEach(tgl => {
+    const src = lokal[tgl];
+    if(!utama[tgl]) utama[tgl] = {};
+    const dst = utama[tgl];
+    if(src.posting && !dst.posting){
+      dst.posting = true;
+      dst.posting_waktu = src.posting_waktu;
+    }
+    if(src.links){
+      if(!dst.links) dst.links = {};
+      Object.keys(src.links).forEach(no => {
+        if(!dst.links[no]) dst.links[no] = src.links[no];
+      });
+    }
+  });
+  return utama;
+}
+
+/* Telegram membatasi 1 pesan maks 4096 karakter. Supaya state tidak
+   pernah melewati batas itu, link hanya disimpan untuk HARI INI
+   (hari lain cukup status posting-nya saja). */
+function ringkasData(data){
+  const tglIni = String(new Date().getDate());
+  const hasil = {};
+  Object.keys(data).forEach(tgl => {
+    const e = data[tgl];
+    if(!e) return;
+    const salin = Object.assign({}, e);
+    if(tgl !== tglIni) delete salin.links;
+    hasil[tgl] = salin;
+  });
+  return hasil;
+}
+
+/* =========================================================
    PENYIMPANAN PERMANEN VIA TELEGRAM
    Data absen bulan berjalan disimpan sebagai 1 pesan yang di-pin
    di chat bot. Setiap ada perubahan, pesan itu di-edit (bukan
@@ -998,7 +1095,24 @@ async function ambilStateDariTelegram(){
     const pinned = data.result.pinned_message;
     if(!pinned || typeof pinned.text !== 'string' || !pinned.text.startsWith(STATE_MARKER)) return null;
 
-    const jsonText = pinned.text.slice(STATE_MARKER.length);
+    /* getChat sering mengembalikan isi LAMA pesan pin (sebelum diedit), sehingga
+       yang terbaca cuma link pertama saja. Supaya dapat isi terbaru, pesan pin
+       di-forward sebentar (hasilnya berisi teks terkini), lalu langsung dihapus. */
+    let teksState = pinned.text;
+    const fwd = await panggilTelegram('forwardMessage', {
+      chat_id: CHAT_ID,
+      from_chat_id: CHAT_ID,
+      message_id: pinned.message_id,
+      disable_notification: true
+    });
+    if(fwd.ok && fwd.result){
+      if(typeof fwd.result.text === 'string' && fwd.result.text.startsWith(STATE_MARKER)){
+        teksState = fwd.result.text;
+      }
+      panggilTelegram('deleteMessage', { chat_id: CHAT_ID, message_id: fwd.result.message_id });
+    }
+
+    const jsonText = teksState.slice(STATE_MARKER.length);
     const parsed = JSON.parse(jsonText);
 
     stateMsgIdCache = pinned.message_id;
@@ -1013,36 +1127,32 @@ async function ambilStateDariTelegram(){
 
 async function simpanStateKeTelegram(dataBulan){
   const bulanIni = kunciBulan(new Date());
-  const payload = STATE_MARKER + JSON.stringify({ month: bulanIni, data: dataBulan });
+  const payload = STATE_MARKER + JSON.stringify({ month: bulanIni, data: ringkasData(dataBulan) });
 
   try{
     if(stateMsgIdCache && stateMsgMonthCache === bulanIni){
-      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, message_id: stateMsgIdCache, text: payload })
+      const data = await panggilTelegram('editMessageText', {
+        chat_id: CHAT_ID, message_id: stateMsgIdCache, text: payload
       });
-      const data = await res.json();
-      if(data.ok) return true;
+      // "message is not modified" artinya isi sudah sama = aman
+      if(data.ok || /not modified/i.test(data.description || '')) return true;
       // kalau gagal edit (misal pesan lama sudah tidak ada), lanjut kirim pesan baru di bawah
       stateMsgIdCache = null;
     }
 
-    const resKirim = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHAT_ID, text: payload, disable_notification: true })
+    const dataKirim = await panggilTelegram('sendMessage', {
+      chat_id: CHAT_ID, text: payload, disable_notification: true
     });
-    const dataKirim = await resKirim.json();
-    if(!dataKirim.ok) return false;
+    if(!dataKirim.ok){
+      console.error('Gagal simpan state ke Telegram:', dataKirim.description);
+      return false;
+    }
 
     stateMsgIdCache = dataKirim.result.message_id;
     stateMsgMonthCache = bulanIni;
 
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/pinChatMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHAT_ID, message_id: stateMsgIdCache, disable_notification: true })
+    await panggilTelegram('pinChatMessage', {
+      chat_id: CHAT_ID, message_id: stateMsgIdCache, disable_notification: true
     });
 
     return true;
@@ -1057,20 +1167,8 @@ function kunciBulan(date){
   const m = String(date.getMonth()+1).padStart(2,'0');
   return `absen-${y}-${m}`;
 }
-//atur
-async function ambilDataBulan(date){
-  const key = kunciBulan(date);
-  const bulanSekarang = kunciBulan(new Date());
 
-  // Untuk bulan berjalan, coba tarik dulu dari Telegram (sumber permanen)
-  if(key === bulanSekarang){
-    const stateTelegram = await ambilStateDariTelegram();
-    if(stateTelegram && stateTelegram.month === key && stateTelegram.data){
-      try{ localStorage.setItem(key, JSON.stringify(stateTelegram.data)); }catch(err){}
-      return stateTelegram.data;
-    }
-  }
-
+function bacaLokal(key){
   try{
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : {};
@@ -1080,68 +1178,55 @@ async function ambilDataBulan(date){
   }
 }
 
-/* Ambil data paling baru langsung dari pesan pin Telegram (bukan dari
-   variabel cache di memori), lalu gabungkan dengan cache localStorage.
-   Dipakai KHUSUS sesaat sebelum menulis/menyimpan, supaya kalau ada nama
-   lain yang barusan absen dari HP lain, datanya tidak ikut tertimpa /
-   hilang (data tiap nama tetap aman terpisah, tidak jadi 1 / ke-reset). */
-async function ambilDataTerbaruUntukTulis(date){
+//atur
+async function ambilDataBulan(date){
   const key = kunciBulan(date);
-  let data = {};
+  const bulanSekarang = kunciBulan(new Date());
 
-  const stateTelegram = await ambilStateDariTelegram();
-  if(stateTelegram && stateTelegram.month === key && stateTelegram.data){
-    data = stateTelegram.data;
-  }else{
-    try{
-      const raw = localStorage.getItem(key);
-      data = raw ? JSON.parse(raw) : {};
-    }catch(err){
-      data = {};
+  // Untuk bulan berjalan, tarik dari Telegram (sumber permanen) lalu gabung dengan cache lokal
+  if(key === bulanSekarang){
+    const stateTelegram = await ambilStateDariTelegram();
+    let dasar = {};
+    if(stateTelegram && stateTelegram.month === key && stateTelegram.data){
+      dasar = stateTelegram.data;
     }
+    const gabung = gabungData(dasar, bacaLokal(key));
+    try{ localStorage.setItem(key, JSON.stringify(gabung)); }catch(err){}
+    return gabung;
   }
 
-  // Gabungkan (bukan timpa) dengan cache lokal, jaga-jaga ada perubahan
-  // yang sempat tersimpan lokal tapi belum sempat terkirim ke Telegram.
-  try{
-    const rawLokal = localStorage.getItem(key);
-    if(rawLokal){
-      const dataLokal = JSON.parse(rawLokal);
-      Object.keys(dataLokal).forEach(tglLokal => {
-        if(!data[tglLokal]) data[tglLokal] = {};
-        Object.keys(dataLokal[tglLokal]).forEach(namaLokal => {
-          if(!data[tglLokal][namaLokal]){
-            data[tglLokal][namaLokal] = dataLokal[tglLokal][namaLokal];
-          }
-        });
-      });
-    }
-  }catch(err){}
-
-  return data;
+  return normalisasiData(bacaLokal(key));
 }
 
-async function simpanAbsenHariIni(jenis){
-  const hariIni = new Date();
-  const key = kunciBulan(hariIni);
-  const tgl = String(hariIni.getDate());
-  const jam = hariIni.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+/* Ambil data paling baru langsung dari pesan pin Telegram (bukan dari
+   variabel cache di memori), lalu gabungkan dengan cache localStorage.
+   Dipakai KHUSUS sesaat sebelum menulis/menyimpan. */
+async function ambilDataTerbaruUntukTulis(date){
+  return ambilDataBulan(date);
+}
 
-  let data = await ambilDataTerbaruUntukTulis(hariIni);
-  if(!data[tgl]) data[tgl] = {};
-  if(!data[tgl][NAMA_KARYAWAN]) data[tgl][NAMA_KARYAWAN] = {};
-  data[tgl][NAMA_KARYAWAN][jenis] = true;
-  data[tgl][NAMA_KARYAWAN][jenis + '_waktu'] = jam;
+function simpanAbsenHariIni(jenis){
+  return jalankanBerurutan(async () => {
+    const hariIni = new Date();
+    const key = kunciBulan(hariIni);
+    const tgl = String(hariIni.getDate());
+    const jam = hariIni.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
 
-  try{
-    localStorage.setItem(key, JSON.stringify(data));
-  }catch(err){
-    console.error('Gagal menyimpan status absen:', err);
-  }
+    let data = await ambilDataTerbaruUntukTulis(hariIni);
+    if(!data[tgl]) data[tgl] = {};
+    data[tgl][jenis] = true;
+    data[tgl][jenis + '_waktu'] = jam;
 
-  await simpanStateKeTelegram(data);
+    try{
+      localStorage.setItem(key, JSON.stringify(data));
+    }catch(err){
+      console.error('Gagal menyimpan status absen:', err);
+    }
 
-  return data[tgl][NAMA_KARYAWAN];
+    await simpanStateKeTelegram(data);
+
+    return data[tgl];
+  });
 }
 
 let dataHariIniGlobal = {};
@@ -1149,8 +1234,7 @@ let dataHariIniGlobal = {};
 async function muatUlangSemua(){
   const hariIni = new Date();
   const dataBulan = await ambilDataBulan(hariIni);
-  const dataTanggal = dataBulan[String(hariIni.getDate())] || {};
-  dataHariIniGlobal = dataTanggal[NAMA_KARYAWAN] || {};
+  dataHariIniGlobal = dataBulan[String(hariIni.getDate())] || {};
 
   renderKalender(dataBulan, hariIni);
   renderRiwayat(dataHariIniGlobal);
@@ -1186,8 +1270,7 @@ function renderKalender(dataBulan, sekarang){
   }
 
   for(let tgl=1; tgl<=jumlahHari; tgl++){
-    const infoTanggal = dataBulan[String(tgl)];
-    const info = infoTanggal ? infoTanggal[NAMA_KARYAWAN] : null;
+    const info = dataBulan[String(tgl)] || null;
     const lengkap = info && info.posting;
 
     const cell = document.createElement('div');
@@ -1360,24 +1443,25 @@ const INFO_LINK_POSTING = {
   6: { platform: 'TikTok',  akun: '@linemheys',    jadwal: '15.20 - 17.20 WIB' }
 };
 
-async function simpanLinkTersimpan(nomor, nilai, jam){
-  const hariIni = new Date();
-  const key = kunciBulan(hariIni);
-  const tgl = String(hariIni.getDate());
+function simpanLinkTersimpan(nomor, nilai, jam){
+  return jalankanBerurutan(async () => {
+    const hariIni = new Date();
+    const key = kunciBulan(hariIni);
+    const tgl = String(hariIni.getDate());
 
-  let data = await ambilDataTerbaruUntukTulis(hariIni);
-  if(!data[tgl]) data[tgl] = {};
-  if(!data[tgl][NAMA_KARYAWAN]) data[tgl][NAMA_KARYAWAN] = {};
-  if(!data[tgl][NAMA_KARYAWAN].links) data[tgl][NAMA_KARYAWAN].links = {};
-  data[tgl][NAMA_KARYAWAN].links[nomor] = { nilai, jam };
+    let data = await ambilDataTerbaruUntukTulis(hariIni);
+    if(!data[tgl]) data[tgl] = {};
+    if(!data[tgl].links) data[tgl].links = {};
+    data[tgl].links[nomor] = { nilai, jam };
 
-  try{
-    localStorage.setItem(key, JSON.stringify(data));
-  }catch(err){
-    console.error('Gagal menyimpan link posting:', err);
-  }
+    try{
+      localStorage.setItem(key, JSON.stringify(data));
+    }catch(err){
+      console.error('Gagal menyimpan link posting:', err);
+    }
 
-  await simpanStateKeTelegram(data);
+    await simpanStateKeTelegram(data);
+  });
 }
 
 function terapkanLinkTersimpan(dataHariIni){
@@ -1423,19 +1507,33 @@ async function cekSelesaiPosting(){
   }
 }
 
-async function kirimPesanTeksTelegram(text){
-  try{
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'HTML' })
-    });
-    const data = await res.json();
-    return !!data.ok;
-  }catch(err){
-    console.error('Gagal kirim pesan link:', err);
-    return false;
+/* Escape karakter khusus HTML. Ini penyebab utama link gagal terkirim:
+   link yang mengandung "&" (contoh: youtube.com/watch?v=xxx&t=10s atau
+   link TikTok dengan ?_t=...&_r=1) ditolak Telegram karena parse_mode HTML. */
+function escapeHTML(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* Kirim pesan: coba format HTML dulu, kalau ditolak otomatis kirim ulang
+   sebagai teks biasa. Kalau kena limit (429) tunggu sebentar lalu coba lagi.
+   Mengembalikan { ok, error }. */
+async function kirimPesanTeksTelegram(teksHTML, teksBiasa){
+  let hasil = await panggilTelegram('sendMessage', { chat_id: CHAT_ID, text: teksHTML, parse_mode: 'HTML' });
+  if(hasil.ok) return { ok:true };
+
+  if(hasil.error_code === 429){
+    const tunggu = ((hasil.parameters && hasil.parameters.retry_after) || 2) * 1000;
+    await new Promise(r => setTimeout(r, Math.min(tunggu, 8000)));
+    hasil = await panggilTelegram('sendMessage', { chat_id: CHAT_ID, text: teksHTML, parse_mode: 'HTML' });
+    if(hasil.ok) return { ok:true };
   }
+
+  // Fallback: teks biasa tanpa parse_mode
+  const cadangan = await panggilTelegram('sendMessage', { chat_id: CHAT_ID, text: teksBiasa });
+  if(cadangan.ok) return { ok:true };
+
+  console.error('Gagal kirim pesan link:', hasil.description, '|', cadangan.description);
+  return { ok:false, error: cadangan.description || hasil.description || 'tidak diketahui' };
 }
 
 async function kirimLinkCentang(nomor){
@@ -1444,6 +1542,9 @@ async function kirimLinkCentang(nomor){
   const btnCek = item.querySelector('.link-btn-cek');
   const btnHapus = item.querySelector('.link-btn-hapus');
   const waktuEl = document.getElementById(`waktu-link-${nomor}`);
+
+  // Cegah klik ganda saat proses kirim masih berjalan
+  if(btnCek.disabled) return;
 
   const nilai = input.value.trim();
   waktuEl.style.color = '';
@@ -1466,20 +1567,32 @@ async function kirimLinkCentang(nomor){
   const info = INFO_LINK_POSTING[nomor] || {};
   const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const iconPlatform = info.platform === 'YouTube' ? '▶️' : '🎵';
-  const pesan =
+
+  const pesanHTML =
 `${iconPlatform} <b>LAPORAN POSTING KONTEN</b>
 ━━━━━━━━━━━━━━━━━━━
-👤 <b>Nama</b>     : ${NAMA_KARYAWAN}
-🎬 <b>Platform</b> : ${info.platform || '-'}
-📌 <b>Akun</b>     : ${info.akun || '-'}
-🕒 <b>Jadwal</b>   : ${info.jadwal || '-'}
-🔗 <b>Link</b>     : ${nilai}
+👤 <b>Nama</b>     : ${escapeHTML(NAMA_KARYAWAN)}
+🎬 <b>Platform</b> : ${escapeHTML(info.platform || '-')}
+📌 <b>Akun</b>     : ${escapeHTML(info.akun || '-')}
+🕒 <b>Jadwal</b>   : ${escapeHTML(info.jadwal || '-')}
+🔗 <b>Link</b>     : ${escapeHTML(nilai)}
 ⏱️ <b>Dikirim</b>   : ${jam}
 ━━━━━━━━━━━━━━━━━━━`;
 
-  const ok = await kirimPesanTeksTelegram(pesan);
+  const pesanBiasa =
+`${iconPlatform} LAPORAN POSTING KONTEN
+━━━━━━━━━━━━━━━━━━━
+👤 Nama     : ${NAMA_KARYAWAN}
+🎬 Platform : ${info.platform || '-'}
+📌 Akun     : ${info.akun || '-'}
+🕒 Jadwal   : ${info.jadwal || '-'}
+🔗 Link     : ${nilai}
+⏱️ Dikirim   : ${jam}
+━━━━━━━━━━━━━━━━━━━`;
 
-  if(ok){
+  const hasil = await kirimPesanTeksTelegram(pesanHTML, pesanBiasa);
+
+  if(hasil.ok){
     input.disabled = true;
     item.classList.add('terkirim');
     waktuEl.innerHTML = `<i class="fa-regular fa-clock"></i> Terkirim pukul ${jam}`;
@@ -1488,14 +1601,23 @@ async function kirimLinkCentang(nomor){
     btnCek.style.display = 'none';
     btnHapus.style.display = 'none';
 
-    await simpanLinkTersimpan(nomor, nilai, jam);
-    await cekSelesaiPosting();
+    // Penyimpanan state tidak boleh menggagalkan proses: link sudah terkirim ke Telegram
+    try{
+      await simpanLinkTersimpan(nomor, nilai, jam);
+    }catch(err){
+      console.error('Gagal menyimpan state link:', err);
+    }
+    try{
+      await cekSelesaiPosting();
+    }catch(err){
+      console.error('Gagal menyelesaikan absen posting:', err);
+    }
   }else{
     btnCek.disabled = false;
     btnHapus.disabled = false;
     btnCek.innerHTML = iconAsli;
     input.classList.add('error');
-    waktuEl.textContent = 'Gagal kirim, coba centang lagi.';
+    waktuEl.textContent = `Gagal kirim (${hasil.error}), coba centang lagi.`;
     waktuEl.style.color = 'var(--danger)';
     waktuEl.classList.add('show');
   }
