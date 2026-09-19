@@ -919,6 +919,25 @@ body{
 const BOT_TOKEN = "8988523187:AAFOQbJWwrbheGqs9ybDbX23wwReP18cbQc";
 const CHAT_ID   = "1399536933";
 
+/* =========================================================
+   CENTANG KUSTOM KALENDER (diedit langsung di code)
+   Format:  'absen-TAHUN-BULAN': [tanggal, tanggal, ...]
+   Contoh : 'absen-2026-09': [15, 16, 17, 18]
+   Tanggal yang ditulis di sini otomatis tampil bercentang di
+   kalender. Hapus tanggalnya dari daftar = centang hilang.
+   Hanya tampilan kalender, tidak tersimpan di localStorage /
+   Telegram, dan karyawan tidak bisa mengubahnya dari halaman.
+========================================================= */
+const CENTANG_KUSTOM = {
+  'absen-2026-09': [15, 16, 17, 18]
+};
+
+function centangKustom(tahun, bulan, tgl){
+  const kunci = `absen-${tahun}-${String(bulan + 1).padStart(2, '0')}`;
+  const daftar = CENTANG_KUSTOM[kunci];
+  return Array.isArray(daftar) && daftar.includes(tgl);
+}
+
 // Nama karyawan sekarang diisi & disimpan sendiri oleh user (lihat blok "GERBANG NAMA" di bawah)
 const NAMA_KEY = 'nama-karyawan-tersimpan';
 
@@ -1042,7 +1061,14 @@ function gabungData(utama, lokal){
     const src = lokal[tgl];
     if(!utama[tgl]) utama[tgl] = {};
     const dst = utama[tgl];
-    if(src.posting && !dst.posting){
+    const tSrc = src.t || 0;
+    const tDst = dst.t || 0;
+    if(tSrc > tDst){
+      // versi yang lebih baru (edit manual / absen terakhir) menang
+      dst.posting = !!src.posting;
+      dst.posting_waktu = src.posting_waktu;
+      dst.t = tSrc;
+    }else if(tSrc === tDst && src.posting && !dst.posting){
       dst.posting = true;
       dst.posting_waktu = src.posting_waktu;
     }
@@ -1085,6 +1111,7 @@ function ringkasData(data){
 const STATE_MARKER = 'STATE_ABSEN_TIKTOK_V1::';
 let stateMsgIdCache = null;
 let stateMsgMonthCache = null;
+let stateResetMarker = '';
 
 async function ambilStateDariTelegram(){
   try{
@@ -1117,6 +1144,7 @@ async function ambilStateDariTelegram(){
 
     stateMsgIdCache = pinned.message_id;
     stateMsgMonthCache = parsed.month;
+    stateResetMarker = parsed.reset || '';
 
     return parsed;
   }catch(err){
@@ -1127,7 +1155,7 @@ async function ambilStateDariTelegram(){
 
 async function simpanStateKeTelegram(dataBulan){
   const bulanIni = kunciBulan(new Date());
-  const payload = STATE_MARKER + JSON.stringify({ month: bulanIni, data: ringkasData(dataBulan) });
+  const payload = STATE_MARKER + JSON.stringify({ month: bulanIni, reset: stateResetMarker, data: ringkasData(dataBulan) });
 
   try{
     if(stateMsgIdCache && stateMsgMonthCache === bulanIni){
@@ -1216,6 +1244,7 @@ function simpanAbsenHariIni(jenis){
     if(!data[tgl]) data[tgl] = {};
     data[tgl][jenis] = true;
     data[tgl][jenis + '_waktu'] = jam;
+    data[tgl].t = Date.now();
 
     try{
       localStorage.setItem(key, JSON.stringify(data));
@@ -1271,7 +1300,7 @@ function renderKalender(dataBulan, sekarang){
 
   for(let tgl=1; tgl<=jumlahHari; tgl++){
     const info = dataBulan[String(tgl)] || null;
-    const lengkap = info && info.posting;
+    const lengkap = (info && info.posting) || centangKustom(tahun, bulan, tgl);
 
     const cell = document.createElement('div');
     cell.className = 'kalender-cell'
@@ -1283,7 +1312,7 @@ function renderKalender(dataBulan, sekarang){
     angka.textContent = tgl;
     cell.appendChild(angka);
 
-    if(info && info.posting){
+    if(lengkap){
       const dots = document.createElement('div');
       dots.className = 'dots';
       dots.innerHTML = ICON_CENTANG;
@@ -1737,7 +1766,46 @@ if(NAMA_KARYAWAN){
   bukaGateNama(false); // paksa isi nama dulu sebelum halaman dipakai
 }
 
-muatUlangSemua();
+/* =========================================================
+   RESET DATA ABSEN (sekali jalan)
+   Menghapus semua data absen di localStorage DAN di Telegram
+   (kalau hanya localStorage, data lama akan terbaca lagi dari
+   Telegram). Nama & tema TIDAK ikut dihapus.
+   Penanda reset disimpan di state Telegram, jadi perangkat /
+   browser lain tidak akan mereset ulang & menghapus data baru.
+   Mau reset lagi nanti? Ganti isi RESET_VERSI dengan teks baru.
+========================================================= */
+const RESET_VERSI = 'reset-2026-09-19';
+const RESET_FLAG_KEY = 'reset-versi-absen';
+
+async function resetDataSekali(){
+  let flag = null;
+  try{ flag = localStorage.getItem(RESET_FLAG_KEY); }catch(err){}
+  if(flag === RESET_VERSI) return;
+
+  const state = await ambilStateDariTelegram();
+  let siap = false;
+
+  if(state && state.reset === RESET_VERSI){
+    siap = true; // Telegram sudah pernah direset dari perangkat lain
+  }else{
+    stateResetMarker = RESET_VERSI;
+    siap = await simpanStateKeTelegram({});
+    if(!siap) stateResetMarker = (state && state.reset) ? state.reset : '';
+  }
+  if(!siap) return; // gagal (misal offline): data lama dibiarkan, dicoba lagi saat halaman dibuka berikutnya
+
+  try{
+    Object.keys(localStorage).forEach(k => {
+      if(/^absen-\d{4}-\d{2}$/.test(k)) localStorage.removeItem(k);
+    });
+    localStorage.setItem(RESET_FLAG_KEY, RESET_VERSI);
+  }catch(err){}
+}
+
+resetDataSekali()
+  .catch(err => console.error('Reset data gagal:', err))
+  .then(muatUlangSemua);
 </script>
 </body>
 </html>
