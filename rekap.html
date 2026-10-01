@@ -123,7 +123,7 @@ $("dl").onclick=async()=>{msg("Menyiapkan file...");let data;
   catch(e){if(e&&e.code==="declined"){msg("Dibatalkan.");return}msg("Cara utama gagal ("+(e&&e.code||e&&e.message||"?")+"), mencoba cara lain...")}}
  try{const u=URL.createObjectURL(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
   const a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);
-  msg("Unduhan dikirim ke browser. Jika tidak muncul, klik 'Salin ke Excel' lalu paste (Ctrl+V) di Excel.")}
+  markHist();msg(d?"Unduhan dikirim ke browser. Jika tidak muncul, klik 'Salin ke Excel' lalu paste (Ctrl+V) di Excel.":"Excel diunduh: "+fn)}
  catch(e){msg("Unduhan diblokir di tampilan ini. Klik 'Salin ke Excel' lalu paste di Excel.")}};
 $("cp").onclick=async()=>{const inc=rows.filter(r=>r.inc),L=[["Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"]];
  inc.forEach(r=>L.push([r.tgl,r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih]));
