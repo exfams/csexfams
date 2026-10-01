@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><title>Rekap Laporan Penjualan FamsssPay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f5f9;--card:#fff;--tx:#14213d;--mu:#5f6b85;--bd:#dde2ec;--ac:#1f3864;--acx:#fff;--wr:#b45309;--wb:#fef3c7;--ok:#0f7b4a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--card:#1a202b;--tx:#e8ecf4;--mu:#9aa5bd;--bd:#2d3646;--ac:#4a78c9;--acx:#fff;--wr:#fbbf24;--wb:#3a2f10;--ok:#34d399}}
+:root[data-theme="dark"]{--bg:#10141c;--card:#1a202b;--tx:#e8ecf4;--mu:#9aa5bd;--bd:#2d3646;--ac:#4a78c9;--acx:#fff;--wr:#fbbf24;--wb:#3a2f10;--ok:#34d399}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1150px;margin:0 auto;padding:20px 16px 48px}h1{font-size:22px;margin:0 0 4px}p.s{color:var(--mu);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:16px}
+.drop{border:2px dashed var(--bd);border-radius:10px;padding:22px;text-align:center}
+button,label.b{background:var(--ac);color:var(--acx);border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;display:inline-block;margin:4px}
+.g{background:transparent!important;color:var(--tx)!important;border:1px solid var(--bd)!important}
+input[type=file]{display:none}.w{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:820px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{background:var(--ac);color:var(--acx);font-size:12px}.r{text-align:right}.mu{color:var(--mu);font-size:12px}
+tr.dup td{background:var(--wb);color:var(--wr)}tr.tot td{font-weight:700;border-top:2px solid var(--ac)}
+#bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-top:10px;display:none}#bar i{display:block;height:100%;width:0;background:var(--ac)}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px}.k div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px}.k b{display:block;font-size:18px}
+</style></head><body><main>
+<h1>Rekap Laporan Penjualan FamsssPay</h1>
+<p class="s">Upload semua PDF laporan harian. Sistem membaca ringkasan di halaman terakhir (total transaksi, modal, keuntungan, biaya kuota API, pendapatan bersih), mendata satu per satu, menjumlahkan per bulan, dan menandai file ganda. Diproses di browser Anda, file tidak dikirim ke server.</p>
+<div class="card"><div class="drop">
+<label class="b">📁 Pilih Folder<input type="file" id="fd" webkitdirectory directory multiple></label>
+<label class="b g">📄 Pilih File PDF<input type="file" id="fl" accept=".pdf" multiple></label>
+<div class="mu" id="st">Belum ada file.</div><div id="bar"><i></i></div></div></div>
+<div id="res" hidden>
+<div class="k" id="kp"></div>
+<div class="card"><b>Data per file</b> <span class="mu">— baris kuning = terdeteksi ganda, otomatis tidak dihitung (centang untuk tetap menghitung)</span>
+<div class="w"><table><thead><tr><th></th><th>Tanggal</th><th>File</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Modal</th><th class="r">Keuntungan Kotor</th><th class="r">Biaya Kuota API</th><th class="r">Pendapatan Bersih</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div class="card"><b>Total bulanan</b><div class="w"><table style="min-width:600px"><thead><tr><th>Bulan</th><th class="r">Hari</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Pendapatan Bersih</th></tr></thead><tbody id="tm"></tbody></table></div>
+<p><button id="dl">⬇ Unduh Excel</button><button class="g" id="rh">Reset riwayat file</button><span class="mu" id="msg"></span></p></div></div>
+<script>
+const $=id=>document.getElementById(id);let rows=[];
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const BLN=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const MON={januari:1,februari:2,maret:3,april:4,mei:5,juni:6,juli:7,agustus:8,september:9,oktober:10,november:11,desember:12};
+const p2=n=>String(n).padStart(2,"0"),fmt=n=>(+n||0).toLocaleString("id-ID"),N=s=>s?parseInt(s.replace(/\./g,""),10):0;
+const mLabel=k=>{const[y,m]=k.split("-");return BLN[+m-1]?`${BLN[+m-1]} ${y}`:k};
+let hist=[];try{hist=JSON.parse(localStorage.getItem("fp_hist")||"[]")}catch(e){}
+function saveHist(){try{localStorage.setItem("fp_hist",JSON.stringify(hist))}catch(e){}}
+async function pageText(pg){const tc=await pg.getTextContent(),map=new Map();
+ for(const it of tc.items){if(!it.str.trim())continue;const y=Math.round(it.transform[5]/3);(map.get(y)||map.set(y,[]).get(y)).push(it)}
+ return[...map.entries()].sort((a,b)=>b[0]-a[0]).map(([,a])=>a.sort((x,y)=>x.transform[4]-y.transform[4]).map(i=>i.str).join(" ")).join(" ").replace(/\s+/g," ")}
+function parse(t){const g=(re)=>{const m=t.match(re);return m?m:null};
+ let a=g(/Total Transaksi keseluruhan\s*:\s*Rp\s*([\d.]+)\s*Rp\s*([\d.]+)/i);
+ const omzet=a?N(a[1]):0,modal=a?N(a[2]):0;
+ a=g(/Keuntungan[^=]*=\s*Rp\s*([\d.]+)/i);const untung=a?N(a[1]):(omzet-modal);
+ a=g(/Total Transaksi\s*:\s*(\d+)/i);const jml=a?+a[1]:0;
+ a=g(/Total keseluruhan\s*:\s*Rp\s*[\d.]+\s*x\s*\d+\s*=\s*Rp\s*([\d.]+)/i);const kuota=a?N(a[1]):0;
+ a=g(/Pendapatan Bersih[^:]*:\s*Rp\s*([\d.]+)/i);const bersih=a?N(a[1]):(untung-kuota);
+ return{omzet,modal,untung,jml,kuota,bersih,ok:omzet>0}}
+function dateOf(t){let m=t.match(/(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
+ m=t.match(/(\d{1,2})\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+(\d{4})/i);
+ return m?`${m[3]}-${p2(MON[m[2].toLowerCase()])}-${p2(m[1])}`:""}
+async function readPdf(f){const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+ const last=await pageText(await pdf.getPage(pdf.numPages));let d=parse(last),first="";
+ if(!d.ok){let all=last;for(let i=1;i<pdf.numPages;i++)all+=" "+await pageText(await pdf.getPage(i));d=parse(all)}
+ if(pdf.numPages>1||!dateOf(last))first=await pageText(await pdf.getPage(1));
+ return{file:f.name,tgl:dateOf(last)||dateOf(first),...d}}
+async function go(list){const fs=[...list].filter(f=>/\.pdf$/i.test(f.name)).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+ if(!fs.length){$("st").textContent="Tidak ada file PDF ditemukan.";return}
+ rows=[];$("bar").style.display="block";
+ for(let i=0;i<fs.length;i++){$("st").textContent=`Membaca ${i+1} / ${fs.length}: ${fs[i].name}`;$("bar").firstChild.style.width=(i+1)/fs.length*100+"%";
+  try{rows.push(await readPdf(fs[i]))}catch(e){rows.push({file:fs[i].name,tgl:"",ok:false,omzet:0,modal:0,untung:0,jml:0,kuota:0,bersih:0})}}
+ rows.sort((a,b)=>(a.tgl+a.file).localeCompare(b.tgl+b.file));
+ const nm=new Map(),dk=new Map();
+ rows.forEach(r=>{r.key=`${r.tgl}|${r.jml}|${r.omzet}`;const n=r.file.toLowerCase();r.note="";
+  if(!r.ok)r.note="Format tidak dikenali";
+  else if(nm.has(n))r.note="Nama file sama dengan file sebelumnya";
+  else if(dk.has(r.key))r.note=`Isi sama dengan ${dk.get(r.key)}`;
+  else if(hist.includes(r.key))r.note="Pernah diupload sebelumnya";
+  nm.set(n,1);if(!dk.has(r.key))dk.set(r.key,r.file);r.inc=!r.note});
+ $("st").textContent=`Selesai: ${rows.length} file dibaca, ${rows.filter(r=>r.note).length} perlu dicek.`;draw()}
+function draw(){const tb=$("tb");tb.innerHTML="";
+ rows.forEach(r=>{const tr=document.createElement("tr");if(r.note)tr.className="dup";
+  tr.innerHTML=`<td><input type="checkbox"></td><td></td><td></td><td class="r">${r.jml}</td><td class="r">${fmt(r.omzet)}</td><td class="r">${fmt(r.modal)}</td><td class="r">${fmt(r.untung)}</td><td class="r">${fmt(r.kuota)}</td><td class="r">${fmt(r.bersih)}</td><td></td>`;
+  tr.children[1].textContent=r.tgl||"-";tr.children[2].textContent=r.file;tr.children[9].textContent=r.note||"✓ OK";
+  const cb=tr.querySelector("input");cb.checked=r.inc;cb.onchange=()=>{r.inc=cb.checked;sum()};tb.appendChild(tr)});
+ $("res").hidden=false;sum()}
+const S=a=>a.reduce((x,r)=>x+r,0);
+function monthly(){const m={};rows.filter(r=>r.inc).forEach(r=>{const k=(r.tgl||"").slice(0,7)||"Tanpa tanggal";const o=m[k]||(m[k]={h:0,j:0,o:0,b:0,u:0,q:0,m:0});o.h++;o.j+=r.jml;o.o+=r.omzet;o.m+=r.modal;o.u+=r.untung;o.q+=r.kuota;o.b+=r.bersih});return Object.entries(m).sort()}
+function sum(){const inc=rows.filter(r=>r.inc),T={h:inc.length,j:S(inc.map(r=>r.jml)),o:S(inc.map(r=>r.omzet)),b:S(inc.map(r=>r.bersih))};
+ $("kp").innerHTML=`<div>Hari terhitung<b>${T.h}</b></div><div>Total transaksi<b>${fmt(T.j)}</b></div><div>Total omzet<b>Rp${fmt(T.o)}</b></div><div>Pendapatan bersih<b>Rp${fmt(T.b)}</b></div>`;
+ $("tm").innerHTML="";const add=(a,c)=>{const tr=document.createElement("tr");if(c)tr.className=c;tr.innerHTML=`<td></td><td class="r">${a[1]}</td><td class="r">${fmt(a[2])}</td><td class="r">${fmt(a[3])}</td><td class="r">${fmt(a[4])}</td>`;tr.children[0].textContent=a[0];$("tm").appendChild(tr)};
+ monthly().forEach(([k,v])=>add([mLabel(k),v.h,v.j,v.o,v.b]));add(["TOTAL",T.h,T.j,T.o,T.b],"tot")}
+$("fd").onchange=e=>go(e.target.files);$("fl").onchange=e=>go(e.target.files);
+$("rh").onclick=()=>{hist=[];saveHist();$("msg").textContent=" Riwayat dihapus."};
+async function build(){const wb=new ExcelJS.Workbook();wb.creator="Rekap FamsssPay";
+ const NAVY="FF1F3864",LIGHT="FFEAF0FA",thin={style:"thin",color:{argb:"FFBFC8D8"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
+ const inc=rows.filter(r=>r.inc);
+ const sheet=(name,title,heads,widths)=>{const ws=wb.addWorksheet(name,{views:[{state:"frozen",ySplit:4,showGridLines:false}]});
+  ws.columns=widths.map(w=>({width:w}));const L=heads.length;
+  ws.mergeCells(1,1,1,L);const t=ws.getCell(1,1);t.value=title;t.font={name:"Calibri",size:16,bold:true,color:{argb:"FFFFFFFF"}};t.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};t.alignment={vertical:"middle",horizontal:"left",indent:1};ws.getRow(1).height=32;
+  ws.mergeCells(2,1,2,L);const s=ws.getCell(2,1);s.value=`Dicetak: ${new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})}  |  Sumber: Laporan Penjualan FamsssPay`;s.font={italic:true,size:10,color:{argb:"FF5F6B85"}};s.alignment={indent:1};
+  const h=ws.getRow(4);heads.forEach((x,i)=>{const c=h.getCell(i+1);c.value=x;c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF2F5597"}};c.border=bd;c.alignment={horizontal:"center",vertical:"middle",wrapText:true}});h.height=28;return ws};
+ const row=(ws,r,vals,z,money)=>{const x=ws.getRow(r);vals.forEach((v,i)=>{const c=x.getCell(i+1);c.value=v;c.border=bd;c.font={size:10.5};if(money.includes(i)){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(i===3&&ws.name==="Rekap Harian"){c.numFmt="#,##0";c.alignment={horizontal:"right"}}if(z){c.fill={type:"pattern",pattern:"solid",fgColor:{argb:LIGHT}}}})};
+ const tot=(ws,r,L,label,cols,a,b)=>{const x=ws.getRow(r);for(let i=1;i<=L;i++){const c=x.getCell(i);c.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};c.font={bold:true,color:{argb:"FFFFFFFF"}};c.border=bd}
+  x.getCell(1).value=label;cols.forEach(([i,res,money])=>{const col=String.fromCharCode(64+i),c=x.getCell(i);c.value={formula:`SUM(${col}${a}:${col}${b})`,result:res};c.numFmt=money?RP:"#,##0";c.alignment={horizontal:"right"}});x.height=22};
+ let ws=sheet("Rekap Harian","REKAPITULASI TRANSAKSI HARIAN",["No","Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[6,13,34,14,18,18,18,18,20]);
+ inc.forEach((r,i)=>row(ws,5+i,[i+1,r.tgl?new Date(r.tgl+"T00:00:00"):"-",r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih],i%2,[4,5,6,7,8].map(x=>x).filter(x=>x!==3)));
+ // kolom money = index 4..8 (E..I); jml index 3
+ inc.forEach((r,i)=>{const x=ws.getRow(5+i);x.getCell(2).numFmt="dd mmm yyyy";x.getCell(2).alignment={horizontal:"center"};x.getCell(1).alignment={horizontal:"center"};x.getCell(4).numFmt="#,##0";x.getCell(4).alignment={horizontal:"right"};[5,6,7,8,9].forEach(c=>{x.getCell(c).numFmt=RP;x.getCell(c).alignment={horizontal:"right"}})});
+ const a=5,b=4+inc.length,tr=b+1;tot(ws,tr,9,"TOTAL",[[4,S(inc.map(r=>r.jml)),0],[5,S(inc.map(r=>r.omzet)),1],[6,S(inc.map(r=>r.modal)),1],[7,S(inc.map(r=>r.untung)),1],[8,S(inc.map(r=>r.kuota)),1],[9,S(inc.map(r=>r.bersih)),1]],a,b);
+ ws.autoFilter={from:{row:4,column:1},to:{row:4,column:9}};
+ const w2=sheet("Total Bulanan","REKAPITULASI BULANAN",["Bulan","Jumlah Hari","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[20,14,16,18,18,18,18,20]);
+ const M=monthly();M.forEach(([k,v],i)=>{const x=w2.getRow(5+i);[mLabel(k),v.h,v.j,v.o,v.m,v.u,v.q,v.b].forEach((val,j)=>{const c=x.getCell(j+1);c.value=val;c.border=bd;c.font={size:10.5};if(i%2)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:LIGHT}};if(j>=3){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(j>0){c.numFmt="#,##0";c.alignment={horizontal:"right"}}})});
+ const e=4+M.length;tot(w2,e+1,8,"TOTAL",[[2,S(M.map(m=>m[1].h)),0],[3,S(M.map(m=>m[1].j)),0],[4,S(M.map(m=>m[1].o)),1],[5,S(M.map(m=>m[1].m)),1],[6,S(M.map(m=>m[1].u)),1],[7,S(M.map(m=>m[1].q)),1],[8,S(M.map(m=>m[1].b)),1]],5,e);
+ const ex=rows.filter(r=>!r.inc);if(ex.length){const w3=sheet("File Diabaikan","DAFTAR FILE DIABAIKAN (DUPLIKAT / TIDAK TERBACA)",["Nama File","Tanggal","Alasan"],[40,14,46]);ex.forEach((r,i)=>row(w3,5+i,[r.file,r.tgl||"-",r.note],i%2,[]))}
+ return new Uint8Array(await wb.xlsx.writeBuffer())}
+$("dl").onclick=async()=>{try{const d=window.claude&&await claude.use("downloads");if(!d){$("msg").textContent=" Unduhan tidak tersedia di tampilan ini.";return}
+ const data=await build();const mk=monthly().map(x=>x[0]);const fn=`Rekap-FamsssPay-${mk[0]||"data"}${mk.length>1?"-sd-"+mk[mk.length-1]:""}.xlsx`;
+ await d.save({filename:fn,data});rows.filter(r=>r.inc&&r.ok).forEach(r=>{if(!hist.includes(r.key))hist.push(r.key)});saveHist();$("msg").textContent=" Tersimpan."}
+ catch(e){$("msg").textContent=e&&e.code==="declined"?" Dibatalkan.":" Gagal: "+(e&&e.message||e)}};
+</script></main></body></html>
