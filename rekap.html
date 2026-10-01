@@ -33,7 +33,7 @@ tr.dup td{background:var(--wb);color:var(--wr)}tr.tot td{font-weight:700;border-
 <div class="card"><b>Data per file</b> <span class="mu">— baris kuning = terdeteksi ganda, otomatis tidak dihitung (centang untuk tetap menghitung)</span>
 <div class="w"><table><thead><tr><th></th><th>Tanggal</th><th>File</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Modal</th><th class="r">Keuntungan Kotor</th><th class="r">Biaya Kuota API</th><th class="r">Pendapatan Bersih</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div></div>
 <div class="card"><b>Total bulanan</b><div class="w"><table style="min-width:600px"><thead><tr><th>Bulan</th><th class="r">Hari</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Pendapatan Bersih</th></tr></thead><tbody id="tm"></tbody></table></div>
-<p><button id="dl">⬇ Unduh Excel</button><button class="g" id="rh">Reset riwayat file</button><span class="mu" id="msg"></span></p></div></div>
+<p><button id="dl">⬇ Unduh Excel</button><button class="g" id="cp">Salin ke Excel</button><button class="g" id="rh">Reset riwayat file</button><span class="mu" id="msg"></span></p></div></div>
 <script>
 const $=id=>document.getElementById(id);let rows=[];
 pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -112,8 +112,23 @@ async function build(){const wb=new ExcelJS.Workbook();wb.creator="Rekap FamsssP
  const e=4+M.length;tot(w2,e+1,8,"TOTAL",[[2,S(M.map(m=>m[1].h)),0],[3,S(M.map(m=>m[1].j)),0],[4,S(M.map(m=>m[1].o)),1],[5,S(M.map(m=>m[1].m)),1],[6,S(M.map(m=>m[1].u)),1],[7,S(M.map(m=>m[1].q)),1],[8,S(M.map(m=>m[1].b)),1]],5,e);
  const ex=rows.filter(r=>!r.inc);if(ex.length){const w3=sheet("File Diabaikan","DAFTAR FILE DIABAIKAN (DUPLIKAT / TIDAK TERBACA)",["Nama File","Tanggal","Alasan"],[40,14,46]);ex.forEach((r,i)=>row(w3,5+i,[r.file,r.tgl||"-",r.note],i%2,[]))}
  return new Uint8Array(await wb.xlsx.writeBuffer())}
-$("dl").onclick=async()=>{try{const d=window.claude&&await claude.use("downloads");if(!d){$("msg").textContent=" Unduhan tidak tersedia di tampilan ini.";return}
- const data=await build();const mk=monthly().map(x=>x[0]);const fn=`Rekap-FamsssPay-${mk[0]||"data"}${mk.length>1?"-sd-"+mk[mk.length-1]:""}.xlsx`;
- await d.save({filename:fn,data});rows.filter(r=>r.inc&&r.ok).forEach(r=>{if(!hist.includes(r.key))hist.push(r.key)});saveHist();$("msg").textContent=" Tersimpan."}
- catch(e){$("msg").textContent=e&&e.code==="declined"?" Dibatalkan.":" Gagal: "+(e&&e.message||e)}};
+let DLP=null;try{DLP=window.claude?claude.use("downloads"):null}catch(e){}
+const msg=t=>$("msg").textContent=" "+t;
+const markHist=()=>{rows.filter(r=>r.inc&&r.ok).forEach(r=>{if(!hist.includes(r.key))hist.push(r.key)});saveHist()};
+$("dl").onclick=async()=>{msg("Menyiapkan file...");let data;
+ try{data=await build()}catch(e){msg("Gagal membuat Excel: "+(e&&e.message||e));return}
+ const mk=monthly().map(x=>x[0]),fn=`Rekap-FamsssPay-${mk[0]||"data"}${mk.length>1?"-sd-"+mk[mk.length-1]:""}.xlsx`;
+ let d=null;try{d=DLP?await DLP:null}catch(e){}
+ if(d){try{await d.save({filename:fn,data});markHist();msg("Tersimpan.");return}
+  catch(e){if(e&&e.code==="declined"){msg("Dibatalkan.");return}msg("Cara utama gagal ("+(e&&e.code||e&&e.message||"?")+"), mencoba cara lain...")}}
+ try{const u=URL.createObjectURL(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  const a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);
+  msg("Unduhan dikirim ke browser. Jika tidak muncul, klik 'Salin ke Excel' lalu paste (Ctrl+V) di Excel.")}
+ catch(e){msg("Unduhan diblokir di tampilan ini. Klik 'Salin ke Excel' lalu paste di Excel.")}};
+$("cp").onclick=async()=>{const inc=rows.filter(r=>r.inc),L=[["Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"]];
+ inc.forEach(r=>L.push([r.tgl,r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih]));
+ L.push(["TOTAL","",S(inc.map(r=>r.jml)),S(inc.map(r=>r.omzet)),S(inc.map(r=>r.modal)),S(inc.map(r=>r.untung)),S(inc.map(r=>r.kuota)),S(inc.map(r=>r.bersih))]);
+ const tsv=L.map(r=>r.join("\t")).join("\n");let ok=false;
+ try{await navigator.clipboard.writeText(tsv);ok=true}catch(e){try{const t=document.createElement("textarea");t.value=tsv;document.body.appendChild(t);t.select();ok=document.execCommand("copy");t.remove()}catch(e2){}}
+ msg(ok?"Tabel disalin. Buka Excel lalu paste (Ctrl+V).":"Gagal menyalin, izinkan akses clipboard di browser.")};
 </script></main></body></html>
