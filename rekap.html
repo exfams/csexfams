@@ -16,6 +16,7 @@ main{max-width:1150px;margin:0 auto;padding:20px 16px 48px}h1{font-size:22px;mar
 button,label.b{background:var(--ac);color:var(--acx);border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;display:inline-block;margin:4px}
 .g{background:transparent!important;color:var(--tx)!important;border:1px solid var(--bd)!important}
 input[type=file]{display:none}.w{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:820px}
+input:not([type]){background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:7px;font:inherit}
 th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
 th{background:var(--ac);color:var(--acx);font-size:12px}.r{text-align:right}.mu{color:var(--mu);font-size:12px}
 tr.dup td{background:var(--wb);color:var(--wr)}tr.tot td{font-weight:700;border-top:2px solid var(--ac)}
@@ -28,6 +29,9 @@ tr.dup td{background:var(--wb);color:var(--wr)}tr.tot td{font-weight:700;border-
 <label class="b">📁 Pilih Folder<input type="file" id="fd" webkitdirectory directory multiple></label>
 <label class="b g">📄 Pilih File PDF<input type="file" id="fl" accept=".pdf" multiple></label>
 <div class="mu" id="st">Belum ada file.</div><div id="bar"><i></i></div></div></div>
+<div class="card"><b>Identitas laporan Excel</b> <span class="mu">(tersimpan otomatis di browser)</span>
+<div class="k" style="margin:10px 0 0"><label>Nama perusahaan<br><input id="co" style="width:100%"></label><label>Keterangan / alamat<br><input id="sb" style="width:100%"></label><label>Disiapkan oleh<br><input id="by" style="width:100%"></label><label>Disetujui oleh<br><input id="ap" style="width:100%"></label></div>
+<p style="margin:10px 0 0"><label class="b g">🖼 Ganti logo<input type="file" id="lg" accept="image/*"></label><button class="g" id="lr">Pakai logo bawaan</button><span class="mu" id="ls"></span></p></div>
 <div id="res" hidden>
 <div class="k" id="kp"></div>
 <div class="card"><b>Data per file</b> <span class="mu">— baris kuning = terdeteksi ganda, otomatis tidak dihitung (centang untuk tetap menghitung)</span>
@@ -90,27 +94,48 @@ function sum(){const inc=rows.filter(r=>r.inc),T={h:inc.length,j:S(inc.map(r=>r.
  monthly().forEach(([k,v])=>add([mLabel(k),v.h,v.j,v.o,v.b]));add(["TOTAL",T.h,T.j,T.o,T.b],"tot")}
 $("fd").onchange=e=>go(e.target.files);$("fl").onchange=e=>go(e.target.files);
 $("rh").onclick=()=>{hist=[];saveHist();$("msg").textContent=" Riwayat dihapus."};
-async function build(){const wb=new ExcelJS.Workbook();wb.creator="Rekap FamsssPay";
- const NAVY="FF1F3864",LIGHT="FFEAF0FA",thin={style:"thin",color:{argb:"FFBFC8D8"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
- const inc=rows.filter(r=>r.inc);
- const sheet=(name,title,heads,widths)=>{const ws=wb.addWorksheet(name,{views:[{state:"frozen",ySplit:4,showGridLines:false}]});
+const LOGO="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-fm.webp";
+let cfg={co:"FM Gaming",sb:"Laporan Penjualan FamsssPay",by:"",ap:""},custom=null,logoCache=null;
+try{Object.assign(cfg,JSON.parse(localStorage.getItem("fp_cfg")||"{}"));custom=JSON.parse(localStorage.getItem("fp_logo")||"null")}catch(e){}
+["co","sb","by","ap"].forEach(k=>{$(k).value=cfg[k];$(k).oninput=()=>{cfg[k]=$(k).value;try{localStorage.setItem("fp_cfg",JSON.stringify(cfg))}catch(e){}}});
+const img2png=u=>new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>{try{const c=document.createElement("canvas");c.width=i.naturalWidth;c.height=i.naturalHeight;c.getContext("2d").drawImage(i,0,0);res({d:c.toDataURL("image/png"),w:c.width,h:c.height})}catch(e){rej(e)}};i.onerror=()=>rej(new Error("img"));i.src=u});
+async function getLogo(){if(custom)return custom;if(logoCache!==null)return logoCache||null;
+ for(const u of[LOGO,"https://i0.wp.com/"+LOGO.replace("https://","")]){try{logoCache=await img2png(u);return logoCache}catch(e){}}
+ logoCache=false;return null}
+$("lg").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{custom=await img2png(URL.createObjectURL(f));try{localStorage.setItem("fp_logo",JSON.stringify(custom))}catch(x){}$("ls").textContent=" Logo diganti."}catch(x){$("ls").textContent=" Gagal membaca gambar."}};
+$("lr").onclick=()=>{custom=null;try{localStorage.removeItem("fp_logo")}catch(e){}$("ls").textContent=" Memakai logo bawaan."};
+async function build(){const wb=new ExcelJS.Workbook();wb.creator=cfg.co||"Rekap";
+ const NAVY="FF14284B",MID="FF2F5597",GOLD="FFC9A227",LIGHT="FFEEF3FA",thin={style:"thin",color:{argb:"FFC5CDDC"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
+ const fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:c}});
+ const inc=rows.filter(r=>r.inc),ds=inc.map(r=>r.tgl).filter(Boolean).sort();
+ const fd=d=>new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
+ const per=ds.length?(ds[0]===ds[ds.length-1]?fd(ds[0]):fd(ds[0])+" s/d "+fd(ds[ds.length-1])):"-";
+ const logo=await getLogo();window._logoOk=!!logo;const lid=logo?wb.addImage({base64:logo.d,extension:"png"}):null;
+ const sheet=(name,title,heads,widths,tc)=>{const ws=wb.addWorksheet(name,{views:[{state:"frozen",ySplit:6,showGridLines:false}],pageSetup:{orientation:"landscape",paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0,printTitlesRow:"1:6",margins:{left:.4,right:.4,top:.5,bottom:.6,header:.3,footer:.3}}});
+  ws.headerFooter.oddFooter="&L&8"+(cfg.co||"")+"&R&8Halaman &P dari &N";
   ws.columns=widths.map(w=>({width:w}));const L=heads.length;
-  ws.mergeCells(1,1,1,L);const t=ws.getCell(1,1);t.value=title;t.font={name:"Calibri",size:16,bold:true,color:{argb:"FFFFFFFF"}};t.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};t.alignment={vertical:"middle",horizontal:"left",indent:1};ws.getRow(1).height=32;
-  ws.mergeCells(2,1,2,L);const s=ws.getCell(2,1);s.value=`Dicetak: ${new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})}  |  Sumber: Laporan Penjualan FamsssPay`;s.font={italic:true,size:10,color:{argb:"FF5F6B85"}};s.alignment={indent:1};
-  const h=ws.getRow(4);heads.forEach((x,i)=>{const c=h.getCell(i+1);c.value=x;c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF2F5597"}};c.border=bd;c.alignment={horizontal:"center",vertical:"middle",wrapText:true}});h.height=28;return ws};
- const row=(ws,r,vals,z,money)=>{const x=ws.getRow(r);vals.forEach((v,i)=>{const c=x.getCell(i+1);c.value=v;c.border=bd;c.font={size:10.5};if(money.includes(i)){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(i===3&&ws.name==="Rekap Harian"){c.numFmt="#,##0";c.alignment={horizontal:"right"}}if(z){c.fill={type:"pattern",pattern:"solid",fgColor:{argb:LIGHT}}}})};
- const tot=(ws,r,L,label,cols,a,b)=>{const x=ws.getRow(r);for(let i=1;i<=L;i++){const c=x.getCell(i);c.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};c.font={bold:true,color:{argb:"FFFFFFFF"}};c.border=bd}
-  x.getCell(1).value=label;cols.forEach(([i,res,money])=>{const col=String.fromCharCode(64+i),c=x.getCell(i);c.value={formula:`SUM(${col}${a}:${col}${b})`,result:res};c.numFmt=money?RP:"#,##0";c.alignment={horizontal:"right"}});x.height=22};
- let ws=sheet("Rekap Harian","REKAPITULASI TRANSAKSI HARIAN",["No","Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[6,13,34,14,18,18,18,18,20]);
- inc.forEach((r,i)=>row(ws,5+i,[i+1,r.tgl?new Date(r.tgl+"T00:00:00"):"-",r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih],i%2,[4,5,6,7,8].map(x=>x).filter(x=>x!==3)));
- // kolom money = index 4..8 (E..I); jml index 3
- inc.forEach((r,i)=>{const x=ws.getRow(5+i);x.getCell(2).numFmt="dd mmm yyyy";x.getCell(2).alignment={horizontal:"center"};x.getCell(1).alignment={horizontal:"center"};x.getCell(4).numFmt="#,##0";x.getCell(4).alignment={horizontal:"right"};[5,6,7,8,9].forEach(c=>{x.getCell(c).numFmt=RP;x.getCell(c).alignment={horizontal:"right"}})});
- const a=5,b=4+inc.length,tr=b+1;tot(ws,tr,9,"TOTAL",[[4,S(inc.map(r=>r.jml)),0],[5,S(inc.map(r=>r.omzet)),1],[6,S(inc.map(r=>r.modal)),1],[7,S(inc.map(r=>r.untung)),1],[8,S(inc.map(r=>r.kuota)),1],[9,S(inc.map(r=>r.bersih)),1]],a,b);
- ws.autoFilter={from:{row:4,column:1},to:{row:4,column:9}};
- const w2=sheet("Total Bulanan","REKAPITULASI BULANAN",["Bulan","Jumlah Hari","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[20,14,16,18,18,18,18,20]);
- const M=monthly();M.forEach(([k,v],i)=>{const x=w2.getRow(5+i);[mLabel(k),v.h,v.j,v.o,v.m,v.u,v.q,v.b].forEach((val,j)=>{const c=x.getCell(j+1);c.value=val;c.border=bd;c.font={size:10.5};if(i%2)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:LIGHT}};if(j>=3){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(j>0){c.numFmt="#,##0";c.alignment={horizontal:"right"}}})});
- const e=4+M.length;tot(w2,e+1,8,"TOTAL",[[2,S(M.map(m=>m[1].h)),0],[3,S(M.map(m=>m[1].j)),0],[4,S(M.map(m=>m[1].o)),1],[5,S(M.map(m=>m[1].m)),1],[6,S(M.map(m=>m[1].u)),1],[7,S(M.map(m=>m[1].q)),1],[8,S(M.map(m=>m[1].b)),1]],5,e);
- const ex=rows.filter(r=>!r.inc);if(ex.length){const w3=sheet("File Diabaikan","DAFTAR FILE DIABAIKAN (DUPLIKAT / TIDAK TERBACA)",["Nama File","Tanggal","Alasan"],[40,14,46]);ex.forEach((r,i)=>row(w3,5+i,[r.file,r.tgl||"-",r.note],i%2,[]))}
+  [26,18,22,18].forEach((h,r)=>{ws.getRow(r+1).height=h;for(let c=1;c<=L;c++)ws.getCell(r+1,c).fill=fill(NAVY)});
+  ws.getRow(5).height=4;for(let c=1;c<=L;c++)ws.getCell(5,c).fill=fill(GOLD);
+  const put=(r,v,font)=>{ws.mergeCells(r,tc,r,L);const c=ws.getCell(r,tc);c.value=v;c.font=Object.assign({name:"Calibri"},font);c.alignment={vertical:"middle",horizontal:"left",indent:1}};
+  put(1,(cfg.co||"").toUpperCase(),{size:20,bold:true,color:{argb:"FFFFFFFF"}});
+  put(2,cfg.sb||"",{size:10,color:{argb:"FFC6D4EE"}});
+  put(3,title,{size:13,bold:true,color:{argb:"FFFFD966"}});
+  put(4,`Periode: ${per}   |   Dicetak: ${fd(new Date().toISOString().slice(0,10))}`,{size:10,italic:true,color:{argb:"FFE3EAF7"}});
+  if(logo){const s=Math.min(150/logo.w,100/logo.h);ws.addImage(lid,{tl:{col:.12,row:.12},ext:{width:logo.w*s,height:logo.h*s},editAs:"oneCell"})}
+  ws.getRow(6).height=30;heads.forEach((x,i)=>{const c=ws.getRow(6).getCell(i+1);c.value=x;c.font={bold:true,size:10.5,color:{argb:"FFFFFFFF"}};c.fill=fill(MID);c.border=bd;c.alignment={horizontal:"center",vertical:"middle",wrapText:true}});return ws};
+ const row=(ws,r,vals,z,money)=>{const x=ws.getRow(r);vals.forEach((v,i)=>{const c=x.getCell(i+1);c.value=v;c.border=bd;c.font={size:10.5};if(money.includes(i)){c.numFmt=RP;c.alignment={horizontal:"right"}}if(z)c.fill=fill(LIGHT)})};
+ const tot=(ws,r,L,label,cols,a,b)=>{const x=ws.getRow(r);for(let i=1;i<=L;i++){const c=x.getCell(i);c.fill=fill(NAVY);c.font={bold:true,color:{argb:"FFFFFFFF"}};c.border=bd}
+  x.getCell(1).value=label;cols.forEach(([i,res,money])=>{const col=String.fromCharCode(64+i),c=x.getCell(i);c.value={formula:`SUM(${col}${a}:${col}${b})`,result:res};c.numFmt=money?RP:"#,##0";c.alignment={horizontal:"right"}});x.height=24};
+ let ws=sheet("Rekap Harian","REKAPITULASI TRANSAKSI HARIAN",["No","Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[8,14,34,14,18,18,18,18,20],3);
+ inc.forEach((r,i)=>{row(ws,7+i,[i+1,r.tgl?new Date(r.tgl+"T00:00:00"):"-",r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih],i%2,[4,5,6,7,8]);const x=ws.getRow(7+i);
+  x.getCell(2).numFmt="dd mmm yyyy";x.getCell(1).alignment=x.getCell(2).alignment={horizontal:"center"};x.getCell(4).numFmt="#,##0";x.getCell(4).alignment={horizontal:"right"};x.getCell(9).font={size:10.5,bold:true}});
+ const a=7,b=6+inc.length,tr=b+1;tot(ws,tr,9,"TOTAL",[[4,S(inc.map(r=>r.jml)),0],[5,S(inc.map(r=>r.omzet)),1],[6,S(inc.map(r=>r.modal)),1],[7,S(inc.map(r=>r.untung)),1],[8,S(inc.map(r=>r.kuota)),1],[9,S(inc.map(r=>r.bersih)),1]],a,b);
+ ws.autoFilter={from:{row:6,column:1},to:{row:6,column:9}};
+ [[3,"Disiapkan oleh,",cfg.by],[8,"Disetujui oleh,",cfg.ap]].forEach(([col,lab,nm])=>{ws.getCell(tr+3,col).value=lab;ws.getCell(tr+3,col).font={size:10};const n=ws.getCell(tr+8,col);n.value=nm||"(................................)";n.font={bold:true,size:10.5};n.border={top:{style:"thin"}}});
+ const w2=sheet("Total Bulanan","REKAPITULASI BULANAN",["Bulan","Jumlah Hari","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[22,14,16,18,18,18,18,20],2);
+ const M=monthly();M.forEach(([k,v],i)=>{const x=w2.getRow(7+i);[mLabel(k),v.h,v.j,v.o,v.m,v.u,v.q,v.b].forEach((val,j)=>{const c=x.getCell(j+1);c.value=val;c.border=bd;c.font={size:10.5,bold:j===7};if(i%2)c.fill=fill(LIGHT);if(j>=3){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(j>0){c.numFmt="#,##0";c.alignment={horizontal:"right"}}})});
+ const e=6+M.length;tot(w2,e+1,8,"TOTAL",[[2,S(M.map(m=>m[1].h)),0],[3,S(M.map(m=>m[1].j)),0],[4,S(M.map(m=>m[1].o)),1],[5,S(M.map(m=>m[1].m)),1],[6,S(M.map(m=>m[1].u)),1],[7,S(M.map(m=>m[1].q)),1],[8,S(M.map(m=>m[1].b)),1]],7,e);
+ const ex=rows.filter(r=>!r.inc);if(ex.length){const w3=sheet("File Diabaikan","FILE DIABAIKAN (DUPLIKAT / TIDAK TERBACA)",["Nama File","Tanggal","Alasan"],[40,14,46],2);ex.forEach((r,i)=>row(w3,7+i,[r.file,r.tgl||"-",r.note],i%2,[]))}
  return new Uint8Array(await wb.xlsx.writeBuffer())}
 let DLP=null;try{DLP=window.claude?claude.use("downloads"):null}catch(e){}
 const msg=t=>$("msg").textContent=" "+t;
@@ -123,7 +148,7 @@ $("dl").onclick=async()=>{msg("Menyiapkan file...");let data;
   catch(e){if(e&&e.code==="declined"){msg("Dibatalkan.");return}msg("Cara utama gagal ("+(e&&e.code||e&&e.message||"?")+"), mencoba cara lain...")}}
  try{const u=URL.createObjectURL(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
   const a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);
-  markHist();msg(d?"Unduhan dikirim ke browser. Jika tidak muncul, klik 'Salin ke Excel' lalu paste (Ctrl+V) di Excel.":"Excel diunduh: "+fn)}
+  markHist();msg((window._logoOk?"":"(Logo tidak bisa dimuat, klik Ganti logo untuk unggah manual) ")+(d?"Unduhan dikirim ke browser. Jika tidak muncul, klik 'Salin ke Excel' lalu paste (Ctrl+V) di Excel.":"Excel diunduh: "+fn))}
  catch(e){msg("Unduhan diblokir di tampilan ini. Klik 'Salin ke Excel' lalu paste di Excel.")}};
 $("cp").onclick=async()=>{const inc=rows.filter(r=>r.inc),L=[["Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"]];
  inc.forEach(r=>L.push([r.tgl,r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih]));
