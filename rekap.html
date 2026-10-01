@@ -35,7 +35,8 @@ tr.dup td{background:var(--wb);color:var(--wr)}tr.tot td{font-weight:700;border-
 <div id="res" hidden>
 <div class="k" id="kp"></div>
 <div class="card"><b>Data per file</b> <span class="mu">— baris kuning = terdeteksi ganda, otomatis tidak dihitung (centang untuk tetap menghitung)</span>
-<div class="w"><table><thead><tr><th></th><th>Tanggal</th><th>File</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Modal</th><th class="r">Keuntungan Kotor</th><th class="r">Biaya Kuota API</th><th class="r">Pendapatan Bersih</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div style="margin:8px 0 4px"><button class="g" id="sa">☑ Pilih semua</button><button class="g" id="sn">☐ Kosongkan semua</button></div>
+<div class="w"><table><thead><tr><th><input type="checkbox" id="all" title="Pilih semua"></th><th>Tanggal</th><th>File</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Modal</th><th class="r">Keuntungan Kotor</th><th class="r">Biaya Kuota API</th><th class="r">Pendapatan Bersih</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div></div>
 <div class="card"><b>Total bulanan</b><div class="w"><table style="min-width:600px"><thead><tr><th>Bulan</th><th class="r">Hari</th><th class="r">Jml Trx</th><th class="r">Total Transaksi</th><th class="r">Pendapatan Bersih</th></tr></thead><tbody id="tm"></tbody></table></div>
 <p><button id="dl">⬇ Unduh Excel</button><button class="g" id="cp">Salin ke Excel</button><button class="g" id="rh">Reset riwayat file</button><span class="mu" id="msg"></span></p></div></div>
 <script>
@@ -86,9 +87,11 @@ function draw(){const tb=$("tb");tb.innerHTML="";
   tr.children[1].textContent=r.tgl||"-";tr.children[2].textContent=r.file;tr.children[9].textContent=r.note||"✓ OK";
   const cb=tr.querySelector("input");cb.checked=r.inc;cb.onchange=()=>{r.inc=cb.checked;sum()};tb.appendChild(tr)});
  $("res").hidden=false;sum()}
+function setAll(v){rows.forEach(r=>r.inc=v);document.querySelectorAll("#tb input").forEach(c=>c.checked=v);sum()}
+$("all").onchange=e=>setAll(e.target.checked);$("sa").onclick=()=>setAll(true);$("sn").onclick=()=>setAll(false);
 const S=a=>a.reduce((x,r)=>x+r,0);
 function monthly(){const m={};rows.filter(r=>r.inc).forEach(r=>{const k=(r.tgl||"").slice(0,7)||"Tanpa tanggal";const o=m[k]||(m[k]={h:0,j:0,o:0,b:0,u:0,q:0,m:0});o.h++;o.j+=r.jml;o.o+=r.omzet;o.m+=r.modal;o.u+=r.untung;o.q+=r.kuota;o.b+=r.bersih});return Object.entries(m).sort()}
-function sum(){const inc=rows.filter(r=>r.inc),T={h:inc.length,j:S(inc.map(r=>r.jml)),o:S(inc.map(r=>r.omzet)),b:S(inc.map(r=>r.bersih))};
+function sum(){const inc=rows.filter(r=>r.inc);$("all").checked=inc.length>0&&inc.length===rows.length;$("all").indeterminate=inc.length>0&&inc.length<rows.length;const T={h:inc.length,j:S(inc.map(r=>r.jml)),o:S(inc.map(r=>r.omzet)),b:S(inc.map(r=>r.bersih))};
  $("kp").innerHTML=`<div>Hari terhitung<b>${T.h}</b></div><div>Total transaksi<b>${fmt(T.j)}</b></div><div>Total omzet<b>Rp${fmt(T.o)}</b></div><div>Pendapatan bersih<b>Rp${fmt(T.b)}</b></div>`;
  $("tm").innerHTML="";const add=(a,c)=>{const tr=document.createElement("tr");if(c)tr.className=c;tr.innerHTML=`<td></td><td class="r">${a[1]}</td><td class="r">${fmt(a[2])}</td><td class="r">${fmt(a[3])}</td><td class="r">${fmt(a[4])}</td>`;tr.children[0].textContent=a[0];$("tm").appendChild(tr)};
  monthly().forEach(([k,v])=>add([mLabel(k),v.h,v.j,v.o,v.b]));add(["TOTAL",T.h,T.j,T.o,T.b],"tot")}
@@ -105,7 +108,7 @@ async function getLogo(){if(custom)return custom;if(logoCache!==null)return logo
 $("lg").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{custom=await img2png(URL.createObjectURL(f));try{localStorage.setItem("fp_logo",JSON.stringify(custom))}catch(x){}$("ls").textContent=" Logo diganti."}catch(x){$("ls").textContent=" Gagal membaca gambar."}};
 $("lr").onclick=()=>{custom=null;try{localStorage.removeItem("fp_logo")}catch(e){}$("ls").textContent=" Memakai logo bawaan."};
 async function build(){const wb=new ExcelJS.Workbook();wb.creator=cfg.co||"Rekap";
- const NAVY="FF0D47A1",MID="FF2196F3",GOLD="FFFFC107",LIGHT="FFE3F2FD",thin={style:"thin",color:{argb:"FFBBDEFB"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
+ const NAVY="FF2196F3",MID="FF2196F3",GOLD="FF2196F3",LIGHT="FFEAF4FE",thin={style:"thin",color:{argb:"FFBBDEFB"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
  const fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:c}});
  const lerp=(t)=>{const A=[13,71,161],B=[33,150,243];return"FF"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join("").toUpperCase()};
  const inc=rows.filter(r=>r.inc),ds=inc.map(r=>r.tgl).filter(Boolean).sort();
@@ -115,17 +118,17 @@ async function build(){const wb=new ExcelJS.Workbook();wb.creator=cfg.co||"Rekap
  const sheet=(name,title,heads,widths,tc)=>{const ws=wb.addWorksheet(name,{views:[{state:"frozen",ySplit:6,showGridLines:false}],pageSetup:{orientation:"landscape",paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0,printTitlesRow:"1:6",margins:{left:.4,right:.4,top:.5,bottom:.6,header:.3,footer:.3}}});
   ws.headerFooter.oddFooter="&L&8"+(cfg.co||"")+"&R&8Halaman &P dari &N";
   ws.columns=widths.map(w=>({width:w}));const L=heads.length;
-  [26,18,22,18].forEach((h,r)=>{ws.getRow(r+1).height=h;for(let c=1;c<=L;c++)ws.getCell(r+1,c).fill=fill(lerp((c-1)/Math.max(L-1,1)))});
+  [26,18,22,18].forEach((h,r)=>{ws.getRow(r+1).height=h});ws.properties.tabColor={argb:"FF2196F3"};
   ws.getRow(5).height=4;for(let c=1;c<=L;c++)ws.getCell(5,c).fill=fill(GOLD);
   const put=(r,v,font)=>{ws.mergeCells(r,tc,r,L);const c=ws.getCell(r,tc);c.value=v;c.font=Object.assign({name:"Calibri"},font);c.alignment={vertical:"middle",horizontal:"left",indent:1}};
-  put(1,(cfg.co||"").toUpperCase(),{size:20,bold:true,color:{argb:"FFFFFFFF"}});
-  put(2,cfg.sb||"",{size:10,color:{argb:"FFBBDEFB"}});
-  put(3,title,{size:13,bold:true,color:{argb:"FFFFE082"}});
-  put(4,`Periode: ${per}   |   Dicetak: ${fd(new Date().toISOString().slice(0,10))}`,{size:10,italic:true,color:{argb:"FFE3F2FD"}});
+  put(1,(cfg.co||"").toUpperCase(),{size:20,bold:true,color:{argb:"FF1565C0"}});
+  put(2,cfg.sb||"",{size:10,color:{argb:"FF5B7083"}});
+  put(3,title,{size:13,bold:true,color:{argb:"FF2196F3"}});
+  put(4,`Periode: ${per}   |   Dicetak: ${fd(new Date().toISOString().slice(0,10))}`,{size:10,italic:true,color:{argb:"FF5B7083"}});
   if(logo){const s=Math.min(150/logo.w,100/logo.h);ws.addImage(lid,{tl:{col:.12,row:.12},ext:{width:logo.w*s,height:logo.h*s},editAs:"oneCell"})}
   ws.getRow(6).height=30;heads.forEach((x,i)=>{const c=ws.getRow(6).getCell(i+1);c.value=x;c.font={bold:true,size:10.5,color:{argb:"FFFFFFFF"}};c.fill=fill(MID);c.border=bd;c.alignment={horizontal:"center",vertical:"middle",wrapText:true}});return ws};
  const row=(ws,r,vals,z,money)=>{const x=ws.getRow(r);vals.forEach((v,i)=>{const c=x.getCell(i+1);c.value=v;c.border=bd;c.font={size:10.5};if(money.includes(i)){c.numFmt=RP;c.alignment={horizontal:"right"}}if(z)c.fill=fill(LIGHT)})};
- const tot=(ws,r,L,label,cols,a,b)=>{const x=ws.getRow(r);for(let i=1;i<=L;i++){const c=x.getCell(i);c.fill=fill(NAVY);c.font={bold:true,color:{argb:"FFFFFFFF"}};c.border=bd}
+ const tot=(ws,r,L,label,cols,a,b)=>{const x=ws.getRow(r);for(let i=1;i<=L;i++){const c=x.getCell(i);c.fill=fill(LIGHT);c.font={bold:true,size:11,color:{argb:"FF1565C0"}};const bl={style:"medium",color:{argb:"FF2196F3"}};c.border={top:bl,bottom:bl,left:thin,right:thin}}
   x.getCell(1).value=label;cols.forEach(([i,res,money])=>{const col=String.fromCharCode(64+i),c=x.getCell(i);c.value={formula:`SUM(${col}${a}:${col}${b})`,result:res};c.numFmt=money?RP:"#,##0";c.alignment={horizontal:"right"}});x.height=24};
 const T=k=>S(inc.map(r=>r[k])),best=inc.slice().sort((x,y)=>y.bersih-x.bersih)[0],nd=inc.length||1;
  const sm=sheet("Ringkasan","RINGKASAN LAPORAN",["Indikator","Nilai","Keterangan"],[34,26,44],2);
@@ -136,7 +139,7 @@ const T=k=>S(inc.map(r=>r[k])),best=inc.slice().sort((x,y)=>y.bersih-x.bersih)[0
   x.getCell(2).numFmt="dd mmm yyyy";x.getCell(1).alignment=x.getCell(2).alignment={horizontal:"center"};x.getCell(4).numFmt="#,##0";x.getCell(4).alignment={horizontal:"right"};x.getCell(9).font={size:10.5,bold:true}});
  const a=7,b=6+inc.length,tr=b+1;tot(ws,tr,9,"TOTAL",[[4,S(inc.map(r=>r.jml)),0],[5,S(inc.map(r=>r.omzet)),1],[6,S(inc.map(r=>r.modal)),1],[7,S(inc.map(r=>r.untung)),1],[8,S(inc.map(r=>r.kuota)),1],[9,S(inc.map(r=>r.bersih)),1]],a,b);
  ws.autoFilter={from:{row:6,column:1},to:{row:6,column:9}};
- if(inc.length>1)ws.addConditionalFormatting({ref:`I7:I${b}`,rules:[{type:"dataBar",priority:1,cfvo:[{type:"min"},{type:"max"}],color:{argb:"FF90CAF9"},gradient:true}]});
+ if(inc.length>1)ws.addConditionalFormatting({ref:`I7:I${b}`,rules:[{type:"dataBar",priority:1,cfvo:[{type:"min"},{type:"max"}],color:{argb:"FF90CAF9"},gradient:false}]});
  [[3,"Disiapkan oleh,",cfg.by],[8,"Disetujui oleh,",cfg.ap]].forEach(([col,lab,nm])=>{ws.getCell(tr+3,col).value=lab;ws.getCell(tr+3,col).font={size:10};const n=ws.getCell(tr+8,col);n.value=nm||"(................................)";n.font={bold:true,size:10.5};n.border={top:{style:"thin"}}});
  const w2=sheet("Total Bulanan","REKAPITULASI BULANAN",["Bulan","Jumlah Hari","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[22,14,16,18,18,18,18,20],2);
  const M=monthly();M.forEach(([k,v],i)=>{const x=w2.getRow(7+i);[mLabel(k),v.h,v.j,v.o,v.m,v.u,v.q,v.b].forEach((val,j)=>{const c=x.getCell(j+1);c.value=val;c.border=bd;c.font={size:10.5,bold:j===7};if(i%2)c.fill=fill(LIGHT);if(j>=3){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(j>0){c.numFmt="#,##0";c.alignment={horizontal:"right"}}})});
