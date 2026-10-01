@@ -5,10 +5,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f5f9;--card:#fff;--tx:#14213d;--mu:#5f6b85;--bd:#dde2ec;--ac:#1f3864;--acx:#fff;--wr:#b45309;--wb:#fef3c7;--ok:#0f7b4a}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f5f9;--card:#fff;--tx:#14213d;--mu:#5f6b85;--bd:#dde2ec;--ac:#1976d2;--acx:#fff;--wr:#b45309;--wb:#fef3c7;--ok:#0f7b4a}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--card:#1a202b;--tx:#e8ecf4;--mu:#9aa5bd;--bd:#2d3646;--ac:#4a78c9;--acx:#fff;--wr:#fbbf24;--wb:#3a2f10;--ok:#34d399}}
-:root[data-theme="dark"]{--bg:#10141c;--card:#1a202b;--tx:#e8ecf4;--mu:#9aa5bd;--bd:#2d3646;--ac:#4a78c9;--acx:#fff;--wr:#fbbf24;--wb:#3a2f10;--ok:#34d399}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--card:#1a202b;--tx:#e8ecf4;--mu:#9aa5bd;--bd:#2d3646;--ac:#2196f3;--acx:#fff;--wr:#fbbf24;--wb:#3a2f10;--ok:#34d399}}
+:root[data-theme="dark"]{--bg:#10141c;--card:#1a202b;--tx:#e8ecf4;--mu:#9aa5bd;--bd:#2d3646;--ac:#2196f3;--acx:#fff;--wr:#fbbf24;--wb:#3a2f10;--ok:#34d399}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:1150px;margin:0 auto;padding:20px 16px 48px}h1{font-size:22px;margin:0 0 4px}p.s{color:var(--mu);margin:0 0 16px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:16px}
@@ -105,8 +105,9 @@ async function getLogo(){if(custom)return custom;if(logoCache!==null)return logo
 $("lg").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{custom=await img2png(URL.createObjectURL(f));try{localStorage.setItem("fp_logo",JSON.stringify(custom))}catch(x){}$("ls").textContent=" Logo diganti."}catch(x){$("ls").textContent=" Gagal membaca gambar."}};
 $("lr").onclick=()=>{custom=null;try{localStorage.removeItem("fp_logo")}catch(e){}$("ls").textContent=" Memakai logo bawaan."};
 async function build(){const wb=new ExcelJS.Workbook();wb.creator=cfg.co||"Rekap";
- const NAVY="FF14284B",MID="FF2F5597",GOLD="FFC9A227",LIGHT="FFEEF3FA",thin={style:"thin",color:{argb:"FFC5CDDC"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
+ const NAVY="FF0D47A1",MID="FF2196F3",GOLD="FFFFC107",LIGHT="FFE3F2FD",thin={style:"thin",color:{argb:"FFBBDEFB"}},bd={top:thin,bottom:thin,left:thin,right:thin},RP='"Rp" #,##0';
  const fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:c}});
+ const lerp=(t)=>{const A=[13,71,161],B=[33,150,243];return"FF"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join("").toUpperCase()};
  const inc=rows.filter(r=>r.inc),ds=inc.map(r=>r.tgl).filter(Boolean).sort();
  const fd=d=>new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
  const per=ds.length?(ds[0]===ds[ds.length-1]?fd(ds[0]):fd(ds[0])+" s/d "+fd(ds[ds.length-1])):"-";
@@ -114,23 +115,28 @@ async function build(){const wb=new ExcelJS.Workbook();wb.creator=cfg.co||"Rekap
  const sheet=(name,title,heads,widths,tc)=>{const ws=wb.addWorksheet(name,{views:[{state:"frozen",ySplit:6,showGridLines:false}],pageSetup:{orientation:"landscape",paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0,printTitlesRow:"1:6",margins:{left:.4,right:.4,top:.5,bottom:.6,header:.3,footer:.3}}});
   ws.headerFooter.oddFooter="&L&8"+(cfg.co||"")+"&R&8Halaman &P dari &N";
   ws.columns=widths.map(w=>({width:w}));const L=heads.length;
-  [26,18,22,18].forEach((h,r)=>{ws.getRow(r+1).height=h;for(let c=1;c<=L;c++)ws.getCell(r+1,c).fill=fill(NAVY)});
+  [26,18,22,18].forEach((h,r)=>{ws.getRow(r+1).height=h;for(let c=1;c<=L;c++)ws.getCell(r+1,c).fill=fill(lerp((c-1)/Math.max(L-1,1)))});
   ws.getRow(5).height=4;for(let c=1;c<=L;c++)ws.getCell(5,c).fill=fill(GOLD);
   const put=(r,v,font)=>{ws.mergeCells(r,tc,r,L);const c=ws.getCell(r,tc);c.value=v;c.font=Object.assign({name:"Calibri"},font);c.alignment={vertical:"middle",horizontal:"left",indent:1}};
   put(1,(cfg.co||"").toUpperCase(),{size:20,bold:true,color:{argb:"FFFFFFFF"}});
-  put(2,cfg.sb||"",{size:10,color:{argb:"FFC6D4EE"}});
-  put(3,title,{size:13,bold:true,color:{argb:"FFFFD966"}});
-  put(4,`Periode: ${per}   |   Dicetak: ${fd(new Date().toISOString().slice(0,10))}`,{size:10,italic:true,color:{argb:"FFE3EAF7"}});
+  put(2,cfg.sb||"",{size:10,color:{argb:"FFBBDEFB"}});
+  put(3,title,{size:13,bold:true,color:{argb:"FFFFE082"}});
+  put(4,`Periode: ${per}   |   Dicetak: ${fd(new Date().toISOString().slice(0,10))}`,{size:10,italic:true,color:{argb:"FFE3F2FD"}});
   if(logo){const s=Math.min(150/logo.w,100/logo.h);ws.addImage(lid,{tl:{col:.12,row:.12},ext:{width:logo.w*s,height:logo.h*s},editAs:"oneCell"})}
   ws.getRow(6).height=30;heads.forEach((x,i)=>{const c=ws.getRow(6).getCell(i+1);c.value=x;c.font={bold:true,size:10.5,color:{argb:"FFFFFFFF"}};c.fill=fill(MID);c.border=bd;c.alignment={horizontal:"center",vertical:"middle",wrapText:true}});return ws};
  const row=(ws,r,vals,z,money)=>{const x=ws.getRow(r);vals.forEach((v,i)=>{const c=x.getCell(i+1);c.value=v;c.border=bd;c.font={size:10.5};if(money.includes(i)){c.numFmt=RP;c.alignment={horizontal:"right"}}if(z)c.fill=fill(LIGHT)})};
  const tot=(ws,r,L,label,cols,a,b)=>{const x=ws.getRow(r);for(let i=1;i<=L;i++){const c=x.getCell(i);c.fill=fill(NAVY);c.font={bold:true,color:{argb:"FFFFFFFF"}};c.border=bd}
   x.getCell(1).value=label;cols.forEach(([i,res,money])=>{const col=String.fromCharCode(64+i),c=x.getCell(i);c.value={formula:`SUM(${col}${a}:${col}${b})`,result:res};c.numFmt=money?RP:"#,##0";c.alignment={horizontal:"right"}});x.height=24};
+const T=k=>S(inc.map(r=>r[k])),best=inc.slice().sort((x,y)=>y.bersih-x.bersih)[0],nd=inc.length||1;
+ const sm=sheet("Ringkasan","RINGKASAN LAPORAN",["Indikator","Nilai","Keterangan"],[34,26,44],2);
+ [["Jumlah hari terhitung",inc.length,0,"Periode "+per],["Total transaksi (trx)",T("jml"),0,"Rata-rata "+Math.round(T("jml")/nd).toLocaleString("id-ID")+" trx per hari"],["Total omzet",T("omzet"),1,"Jumlah seluruh Total Transaksi"],["Total modal",T("modal"),1,"Jumlah seluruh Modal"],["Keuntungan kotor",T("untung"),1,"Omzet dikurangi modal"],["Biaya kuota API",T("kuota"),1,"Rp70 per transaksi"],["PENDAPATAN BERSIH",T("bersih"),1,"Keuntungan kotor dikurangi biaya kuota API"],["Rata-rata bersih per hari",Math.round(T("bersih")/nd),1,"Pendapatan bersih dibagi jumlah hari"],["Hari terbaik",best?best.bersih:0,1,best?"Tanggal "+fd(best.tgl):"-"]].forEach((v,i)=>{row(sm,7+i,[v[0],v[1],v[3]],i%2,[1]);const x=sm.getRow(7+i);x.height=24;x.getCell(1).font={bold:true,size:11};x.getCell(2).alignment={horizontal:"right",vertical:"middle"};x.getCell(2).numFmt=v[2]?RP:"#,##0";x.getCell(3).font={size:10,italic:true,color:{argb:"FF5F6B85"}};x.getCell(1).alignment={vertical:"middle",indent:1};x.getCell(3).alignment={vertical:"middle",indent:1};
+  if(v[0]==="PENDAPATAN BERSIH"){for(let c=1;c<=3;c++){x.getCell(c).fill=fill(NAVY);x.getCell(c).font={bold:true,size:c===3?10:13,color:{argb:"FFFFFFFF"}}};x.height=30}});
  let ws=sheet("Rekap Harian","REKAPITULASI TRANSAKSI HARIAN",["No","Tanggal","Nama File","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[8,14,34,14,18,18,18,18,20],3);
  inc.forEach((r,i)=>{row(ws,7+i,[i+1,r.tgl?new Date(r.tgl+"T00:00:00"):"-",r.file,r.jml,r.omzet,r.modal,r.untung,r.kuota,r.bersih],i%2,[4,5,6,7,8]);const x=ws.getRow(7+i);
   x.getCell(2).numFmt="dd mmm yyyy";x.getCell(1).alignment=x.getCell(2).alignment={horizontal:"center"};x.getCell(4).numFmt="#,##0";x.getCell(4).alignment={horizontal:"right"};x.getCell(9).font={size:10.5,bold:true}});
  const a=7,b=6+inc.length,tr=b+1;tot(ws,tr,9,"TOTAL",[[4,S(inc.map(r=>r.jml)),0],[5,S(inc.map(r=>r.omzet)),1],[6,S(inc.map(r=>r.modal)),1],[7,S(inc.map(r=>r.untung)),1],[8,S(inc.map(r=>r.kuota)),1],[9,S(inc.map(r=>r.bersih)),1]],a,b);
  ws.autoFilter={from:{row:6,column:1},to:{row:6,column:9}};
+ if(inc.length>1)ws.addConditionalFormatting({ref:`I7:I${b}`,rules:[{type:"dataBar",priority:1,cfvo:[{type:"min"},{type:"max"}],color:{argb:"FF90CAF9"},gradient:true}]});
  [[3,"Disiapkan oleh,",cfg.by],[8,"Disetujui oleh,",cfg.ap]].forEach(([col,lab,nm])=>{ws.getCell(tr+3,col).value=lab;ws.getCell(tr+3,col).font={size:10};const n=ws.getCell(tr+8,col);n.value=nm||"(................................)";n.font={bold:true,size:10.5};n.border={top:{style:"thin"}}});
  const w2=sheet("Total Bulanan","REKAPITULASI BULANAN",["Bulan","Jumlah Hari","Jml Transaksi","Total Transaksi","Modal","Keuntungan Kotor","Biaya Kuota API","Pendapatan Bersih"],[22,14,16,18,18,18,18,20],2);
  const M=monthly();M.forEach(([k,v],i)=>{const x=w2.getRow(7+i);[mLabel(k),v.h,v.j,v.o,v.m,v.u,v.q,v.b].forEach((val,j)=>{const c=x.getCell(j+1);c.value=val;c.border=bd;c.font={size:10.5,bold:j===7};if(i%2)c.fill=fill(LIGHT);if(j>=3){c.numFmt=RP;c.alignment={horizontal:"right"}}else if(j>0){c.numFmt="#,##0";c.alignment={horizontal:"right"}}})});
