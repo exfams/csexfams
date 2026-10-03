@@ -1,0 +1,5148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Dashboard Komplain - Pakaidonk</title>
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+>
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+>
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
+
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Gabarito", sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    min-width: 0;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+
+/* =====================================================
+   COLOR
+===================================================== */
+
+:root {
+
+    --pk-red: #d71920;
+
+    --pk-red-dark: #b9141a;
+
+    --pk-orange: #f36b21;
+
+    --pk-teal: #2aaba4;
+
+    --pk-dark: #242424;
+
+    --pk-text: #252525;
+
+    --pk-muted: #777;
+
+    --pk-border: #e5e5e5;
+
+    --pk-bg: #f5f6f8;
+
+}
+
+
+/* =====================================================
+   TOPBAR
+===================================================== */
+
+.topbar {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 64px;
+
+    background: #fff;
+
+    border-bottom: 1px solid #e6e6e6;
+
+    display: flex;
+
+    align-items: center;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 2px 12px rgba(0,0,0,.05);
+
+}
+
+
+.menu-toggle {
+
+    width: 64px;
+
+    height: 64px;
+
+    border: 0;
+
+    background: var(--pk-red);
+
+    color: #fff;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding-left: 18px;
+
+}
+
+
+.brand img {
+
+    width: 125px;
+
+    height: auto;
+
+    display: block;
+
+}
+
+
+.brand-title {
+
+    padding-left: 12px;
+
+    border-left: 1px solid #ddd;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #333;
+
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar {
+
+    position: fixed;
+
+    top: 64px;
+
+    left: 0;
+
+    bottom: 0;
+
+    width: 72px;
+
+    background: #fff;
+
+    border-right: 1px solid #e5e5e5;
+
+    z-index: 999;
+
+    transition: .25s ease;
+
+    overflow: hidden;
+
+}
+
+
+.sidebar.active {
+
+    width: 235px;
+
+}
+
+
+.sidebar-menu {
+
+    padding: 14px 9px;
+
+}
+
+
+.menu-item {
+
+    height: 48px;
+
+    margin-bottom: 6px;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    color: #666;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+    white-space: nowrap;
+
+}
+
+
+.menu-item:hover {
+
+    background: #fff1f1;
+
+    color: var(--pk-red);
+
+}
+
+
+.menu-item.active {
+
+    background: var(--pk-red);
+
+    color: #fff;
+
+}
+
+
+.menu-icon {
+
+    width: 54px;
+
+    min-width: 54px;
+
+    text-align: center;
+
+    font-size: 16px;
+
+}
+
+
+.menu-text {
+
+    font-size: 13px;
+
+    opacity: 0;
+
+    transition: .15s;
+
+}
+
+
+.sidebar.active .menu-text {
+
+    opacity: 1;
+
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main {
+
+    margin-left: 72px;
+
+    padding-top: 64px;
+
+    min-height: 100vh;
+
+    transition: .25s ease;
+
+}
+
+
+.sidebar.active ~ .main {
+
+    margin-left: 235px;
+
+}
+
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.page-header {
+
+    background: #fff;
+
+    min-height: 76px;
+
+    padding: 16px 25px;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.page-title {
+
+    font-size: 21px;
+
+    font-weight: 600;
+
+    color: #222;
+
+}
+
+
+.page-subtitle {
+
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    color: #888;
+
+}
+
+
+.breadcrumb {
+
+    font-size: 11px;
+
+    color: #999;
+
+}
+
+
+.breadcrumb span {
+
+    color: var(--pk-red);
+
+}
+
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
+.content {
+
+    padding: 20px 25px 40px;
+
+}
+
+
+/* =====================================================
+   DASHBOARD SUMMARY
+===================================================== */
+
+.dashboard-summary {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.summary-card {
+
+    background: #fff;
+
+    border: 1px solid #e4e4e4;
+
+    border-radius: 10px;
+
+    padding: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    min-height: 88px;
+
+    box-shadow:
+        0 3px 14px rgba(0,0,0,.035);
+
+}
+
+
+.summary-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.summary-icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 9px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 16px;
+
+}
+
+
+.summary-icon.red {
+
+    background: #fff0f1;
+
+    color: var(--pk-red);
+
+}
+
+
+.summary-icon.orange {
+
+    background: #fff3e9;
+
+    color: var(--pk-orange);
+
+}
+
+
+.summary-icon.green {
+
+    background: #edf9f3;
+
+    color: #15935b;
+
+}
+
+
+.summary-label {
+
+    font-size: 10px;
+
+    color: #888;
+
+    margin-bottom: 4px;
+
+}
+
+
+.summary-value {
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #222;
+
+}
+
+
+.summary-right {
+
+    color: #bbb;
+
+    font-size: 13px;
+
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card {
+
+    background: #fff;
+
+    border: 1px solid #e4e4e4;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 3px 14px rgba(0,0,0,.04);
+
+    margin-bottom: 20px;
+
+    overflow: hidden;
+
+}
+
+
+.card-header {
+
+    min-height: 58px;
+
+    padding: 13px 18px;
+
+    border-bottom: 1px solid #eee;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.card-title {
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #222;
+
+}
+
+
+.card-title i {
+
+    color: var(--pk-red);
+
+    margin-right: 7px;
+
+}
+
+
+.card-body {
+
+    padding: 18px;
+
+}
+
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.btn {
+
+    border: 0;
+
+    border-radius: 7px;
+
+    padding: 10px 15px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    transition: .2s;
+
+}
+
+
+.btn-primary {
+
+    background: var(--pk-red);
+
+    color: #fff;
+
+}
+
+
+.btn-primary:hover {
+
+    background: var(--pk-red-dark);
+
+}
+
+
+.btn-orange {
+
+    background: var(--pk-orange);
+
+    color: #fff;
+
+}
+
+
+.btn-dark {
+
+    background: #252525;
+
+    color: #fff;
+
+}
+
+
+.btn-dark:hover {
+
+    background: #111;
+
+}
+
+
+.btn-light {
+
+    background: #f2f3f5;
+
+    color: #444;
+
+}
+
+
+.btn-screenshot {
+
+    background: #fff1f1;
+
+    color: var(--pk-red);
+
+    border: 1px solid #ffd0d0;
+
+    padding: 7px 10px;
+
+    font-size: 10px;
+
+}
+
+
+.btn-screenshot:hover {
+
+    background: var(--pk-red);
+
+    color: #fff;
+
+}
+
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.toolbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.toolbar-info {
+
+    font-size: 12px;
+
+    color: #777;
+
+}
+
+
+.search-box {
+
+    position: relative;
+
+    width: 250px;
+
+}
+
+
+.search-box i {
+
+    position: absolute;
+
+    left: 11px;
+
+    top: 11px;
+
+    color: #999;
+
+    font-size: 12px;
+
+}
+
+
+.search-box input {
+
+    width: 100%;
+
+    height: 36px;
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 7px;
+
+    padding: 0 10px 0 33px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+}
+
+
+.search-box input:focus {
+
+    border-color: var(--pk-red);
+
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-wrap {
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1100px;
+
+}
+
+
+thead th {
+
+    background: var(--pk-red);
+
+    color: #fff;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    padding: 12px 9px;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+}
+
+
+tbody td {
+
+    border-bottom: 1px solid #eee;
+
+    padding: 11px 9px;
+
+    font-size: 11px;
+
+    vertical-align: middle;
+
+}
+
+
+tbody tr:hover {
+
+    background: #fff8f8;
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    background: #fff4e9;
+
+    color: #c65408;
+
+    border: 1px solid #ffd9bd;
+
+    border-radius: 5px;
+
+    padding: 5px 8px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+.status i {
+
+    font-size: 8px;
+
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 15px;
+
+}
+
+
+.form-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+.form-group.full {
+
+    grid-column: 1 / -1;
+
+}
+
+
+.form-label {
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #333;
+
+}
+
+
+.form-label span {
+
+    color: var(--pk-red);
+
+}
+
+
+.form-control {
+
+    width: 100%;
+
+    min-height: 40px;
+
+    border: 1px solid #d4d4d4;
+
+    border-radius: 7px;
+
+    padding: 9px 11px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    background: #fff;
+
+}
+
+
+.form-control:focus {
+
+    border-color: var(--pk-red);
+
+    box-shadow:
+        0 0 0 3px rgba(215,25,32,.08);
+
+}
+
+
+.form-control[readonly] {
+
+    background: #f6f6f6;
+
+    color: #666;
+
+}
+
+
+/* =====================================================
+   STATUS INPUT
+===================================================== */
+
+.status-input-wrap {
+
+    position: relative;
+
+}
+
+
+.status-input-wrap i {
+
+    position: absolute;
+
+    left: 12px;
+
+    top: 13px;
+
+    color: var(--pk-red);
+
+    font-size: 12px;
+
+}
+
+
+.status-input {
+
+    padding-left: 33px;
+
+}
+
+
+/* =====================================================
+   UPLOAD
+===================================================== */
+
+.upload-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 15px;
+
+}
+
+
+.upload-box {
+
+    position: relative;
+
+}
+
+
+.upload-area {
+
+    border: 1.5px dashed #cfcfcf;
+
+    border-radius: 9px;
+
+    min-height: 145px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+    background: #fafafa;
+
+}
+
+
+.upload-area:hover {
+
+    border-color: var(--pk-red);
+
+    background: #fff8f8;
+
+}
+
+
+.upload-area i {
+
+    font-size: 27px;
+
+    color: var(--pk-red);
+
+}
+
+
+.upload-area strong {
+
+    font-size: 12px;
+
+    color: #555;
+
+}
+
+
+.upload-area span {
+
+    font-size: 11px;
+
+    color: #888;
+
+}
+
+
+.upload-area small {
+
+    font-size: 9px;
+
+    color: #aaa;
+
+}
+
+
+.image-input {
+
+    display: none;
+
+}
+
+
+.preview-container {
+
+    margin-top: 10px;
+
+    display: none;
+
+    position: relative;
+
+}
+
+
+.preview-container img {
+
+    width: 100%;
+
+    max-height: 190px;
+
+    object-fit: contain;
+
+    background: #f8f8f8;
+
+    border: 1px solid #ddd;
+
+    border-radius: 7px;
+
+    padding: 5px;
+
+}
+
+
+/* =====================================================
+   FORM FOOTER
+===================================================== */
+
+.form-footer {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: 18px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #eee;
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.55);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 3000;
+
+    padding: 20px;
+
+}
+
+
+.modal.show {
+
+    display: flex;
+
+}
+
+
+.modal-box {
+
+    background: #fff;
+
+    width: 440px;
+
+    max-width: 100%;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.25);
+
+    animation: modalIn .2s ease;
+
+}
+
+
+@keyframes modalIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(15px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+.modal-header {
+
+    background: var(--pk-red);
+
+    color: #fff;
+
+    padding: 15px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+}
+
+
+.modal-body {
+
+    padding: 22px;
+
+}
+
+
+.success-icon {
+
+    width: 50px;
+
+    height: 50px;
+
+    border-radius: 50%;
+
+    background: #eaf8f1;
+
+    color: #15935b;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0 auto 12px;
+
+    font-size: 20px;
+
+}
+
+
+.success-title {
+
+    text-align: center;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+}
+
+
+.success-text {
+
+    text-align: center;
+
+    font-size: 12px;
+
+    color: #777;
+
+    line-height: 1.6;
+
+    margin-top: 6px;
+
+}
+
+
+.complaint-id {
+
+    margin-top: 15px;
+
+    padding: 13px;
+
+    background: #f7f7f7;
+
+    border: 1px solid #eee;
+
+    border-radius: 7px;
+
+    text-align: center;
+
+    font-weight: 700;
+
+    letter-spacing: .8px;
+
+    color: var(--pk-red);
+
+}
+
+
+.modal-footer {
+
+    padding: 12px 18px;
+
+    border-top: 1px solid #eee;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+}
+
+
+/* =====================================================
+   REPORT SCREENSHOT
+   PORTRAIT / MEMANJANG
+===================================================== */
+
+#reportScreenshot {
+
+    position: fixed;
+
+    left: -100000px;
+
+    top: 0;
+
+    width: 720px;
+
+    background: #fff;
+
+    font-family: "Gabarito", sans-serif;
+
+    color: #222;
+
+    z-index: -1;
+
+}
+
+
+/* =====================================================
+   REPORT TOP
+===================================================== */
+
+.report-top {
+
+    background: #fff;
+
+    padding: 26px 34px 22px;
+
+    border-top: 7px solid var(--pk-red);
+
+    border-bottom: 1px solid #e6e6e6;
+
+}
+
+
+.report-top-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.report-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.report-logo {
+
+    width: 150px;
+
+    height: auto;
+
+    display: block;
+
+}
+
+
+.report-brand-divider {
+
+    height: 40px;
+
+    width: 1px;
+
+    background: #ddd;
+
+}
+
+
+.report-brand-text {
+
+    font-size: 10px;
+
+    color: #777;
+
+    line-height: 1.55;
+
+}
+
+
+.report-small {
+
+    text-align: right;
+
+    color: #777;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+
+    white-space: nowrap;
+
+}
+
+
+.report-small strong {
+
+    display: block;
+
+    color: #222;
+
+    font-size: 10px;
+
+    letter-spacing: .3px;
+
+}
+
+
+/* =====================================================
+   REPORT BODY
+===================================================== */
+
+.report-body {
+
+    padding: 27px 34px 35px;
+
+}
+
+
+.report-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-end;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.report-title {
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #222;
+
+}
+
+
+.report-subtitle {
+
+    margin-top: 4px;
+
+    color: #8a8a8a;
+
+    font-size: 9px;
+
+}
+
+
+.report-code {
+
+    font-size: 9px;
+
+    color: #999;
+
+    text-align: right;
+
+}
+
+
+.report-code strong {
+
+    display: block;
+
+    color: var(--pk-red);
+
+    font-size: 10px;
+
+    margin-bottom: 2px;
+
+}
+
+
+/* =====================================================
+   REPORT STATUS CARD
+===================================================== */
+
+.report-status-card {
+
+    background: #fff8f1;
+
+    border: 1px solid #ffd8bd;
+
+    border-radius: 9px;
+
+    padding: 13px 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.report-status-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+}
+
+
+.report-status-icon {
+
+    width: 32px;
+
+    height: 32px;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    border: 1px solid #ffd5b9;
+
+    color: var(--pk-orange);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 13px;
+
+}
+
+
+.report-status-label {
+
+    font-size: 8px;
+
+    color: #9a9a9a;
+
+    margin-bottom: 2px;
+
+}
+
+
+.report-status-value {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #b74f08;
+
+}
+
+
+.report-status-right {
+
+    font-size: 8px;
+
+    color: #999;
+
+    text-align: right;
+
+}
+
+
+/* =====================================================
+   REPORT SECTION TITLE
+===================================================== */
+
+.report-section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: #333;
+
+    margin-bottom: 9px;
+
+}
+
+
+.report-section-title i {
+
+    color: var(--pk-red);
+
+    font-size: 10px;
+
+}
+
+
+/* =====================================================
+   REPORT DETAIL
+===================================================== */
+
+.report-detail {
+
+    border: 1px solid #e1e1e1;
+
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    background: #fff;
+
+}
+
+
+.report-detail-row {
+
+    display: grid;
+
+    grid-template-columns: 180px 1fr;
+
+    min-height: 45px;
+
+    border-bottom: 1px solid #ededed;
+
+}
+
+
+.report-detail-row:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.report-detail-label {
+
+    padding: 12px 14px;
+
+    background: #fafafa;
+
+    color: #888;
+
+    font-size: 9px;
+
+    border-right: 1px solid #ededed;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+.report-detail-value {
+
+    padding: 12px 14px;
+
+    color: #222;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    display: flex;
+
+    align-items: center;
+
+    word-break: break-word;
+
+}
+
+
+.report-detail-value.highlight {
+
+    color: var(--pk-red);
+
+    letter-spacing: .3px;
+
+}
+
+
+/* =====================================================
+   REPORT PROOF
+===================================================== */
+
+.report-proof {
+
+    margin-top: 20px;
+
+}
+
+
+.report-proof-head {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 9px;
+
+}
+
+
+.report-proof-count {
+
+    font-size: 8px;
+
+    color: #999;
+
+}
+
+
+.report-images {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+
+.report-image-box {
+
+    border: 1px solid #dedede;
+
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    background: #fafafa;
+
+}
+
+
+.report-image-label {
+
+    min-height: 31px;
+
+    padding: 8px 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    font-size: 8px;
+
+    color: #777;
+
+    background: #f7f7f7;
+
+    border-bottom: 1px solid #e5e5e5;
+
+}
+
+
+.report-image-label span {
+
+    color: #aaa;
+
+}
+
+
+.report-image-box img {
+
+    display: block;
+
+    width: 100%;
+
+    max-height: 430px;
+
+    object-fit: contain;
+
+    background: #fff;
+
+    padding: 8px;
+
+}
+
+
+.no-proof {
+
+    height: 105px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #999;
+
+    font-size: 9px;
+
+    background: #fafafa;
+
+}
+
+
+/* =====================================================
+   REPORT NOTE
+===================================================== */
+
+.report-note {
+
+    margin-top: 18px;
+
+    padding: 12px 14px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #e6e6e6;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    gap: 10px;
+
+    align-items: flex-start;
+
+}
+
+
+.report-note i {
+
+    color: #999;
+
+    font-size: 10px;
+
+    margin-top: 2px;
+
+}
+
+
+.report-note-text {
+
+    color: #888;
+
+    font-size: 8px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =====================================================
+   REPORT FOOTER
+===================================================== */
+
+.report-footer {
+
+    margin-top: 24px;
+
+    padding-top: 13px;
+
+    border-top: 1px solid #ddd;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    color: #999;
+
+    font-size: 8px;
+
+}
+
+
+.report-footer-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #777;
+
+    font-weight: 600;
+
+}
+
+
+.report-footer-brand i {
+
+    color: var(--pk-red);
+
+}
+
+
+.report-footer-right {
+
+    text-align: right;
+
+}
+
+
+/* =====================================================
+   SCREENSHOT MODAL
+===================================================== */
+
+.screenshot-modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.72);
+
+    z-index: 5000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 15px;
+
+}
+
+
+.screenshot-modal.show {
+
+    display: flex;
+
+}
+
+
+.screenshot-box {
+
+    width: 780px;
+
+    max-width: 100%;
+
+    max-height: 94vh;
+
+    background: #fff;
+
+    border-radius: 12px;
+
+    overflow: auto;
+
+    padding: 15px;
+
+}
+
+
+.screenshot-preview {
+
+    width: 720px;
+
+    max-width: 100%;
+
+    display: block;
+
+    margin: auto;
+
+    border: 1px solid #ddd;
+
+}
+
+
+.screenshot-actions {
+
+    padding-top: 12px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer {
+
+    padding: 16px 25px;
+
+    color: #999;
+
+    font-size: 10px;
+
+    border-top: 1px solid #ddd;
+
+    background: #fff;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .topbar {
+
+        height: 58px;
+
+    }
+
+
+    .menu-toggle {
+
+        width: 58px;
+
+        height: 58px;
+
+    }
+
+
+    .brand {
+
+        padding-left: 12px;
+
+    }
+
+
+    .brand img {
+
+        width: 105px;
+
+    }
+
+
+    .brand-title {
+
+        display: none;
+
+    }
+
+
+    .sidebar {
+
+        top: 58px;
+
+        width: 0;
+
+        box-shadow: 4px 0 20px rgba(0,0,0,.08);
+
+    }
+
+
+    .sidebar.active {
+
+        width: 235px;
+
+    }
+
+
+    .main,
+    .sidebar.active ~ .main {
+
+        margin-left: 0;
+
+        padding-top: 58px;
+
+    }
+
+
+    .page-header {
+
+        padding: 15px;
+
+        min-height: auto;
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 7px;
+
+    }
+
+
+    .page-title {
+
+        font-size: 18px;
+
+    }
+
+
+    .breadcrumb {
+
+        font-size: 10px;
+
+    }
+
+
+    .content {
+
+        padding: 12px;
+
+    }
+
+
+    .dashboard-summary {
+
+        grid-template-columns: 1fr;
+
+        gap: 9px;
+
+        margin-bottom: 14px;
+
+    }
+
+
+    .summary-card {
+
+        min-height: 75px;
+
+        padding: 13px;
+
+    }
+
+
+    .summary-value {
+
+        font-size: 18px;
+
+    }
+
+
+    .card {
+
+        border-radius: 9px;
+
+        margin-bottom: 14px;
+
+    }
+
+
+    .card-header {
+
+        padding: 13px;
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .card-body {
+
+        padding: 13px;
+
+    }
+
+
+    .toolbar {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .search-box {
+
+        width: 100%;
+
+    }
+
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+
+    }
+
+
+    .form-group.full {
+
+        grid-column: auto;
+
+    }
+
+
+    .upload-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .upload-area {
+
+        min-height: 130px;
+
+    }
+
+
+    .form-footer {
+
+        flex-direction: column-reverse;
+
+    }
+
+
+    .form-footer .btn {
+
+        width: 100%;
+
+    }
+
+
+    .modal {
+
+        padding: 12px;
+
+    }
+
+
+    .modal-box {
+
+        border-radius: 10px;
+
+    }
+
+
+    .screenshot-modal {
+
+        padding: 7px;
+
+    }
+
+
+    .screenshot-box {
+
+        padding: 7px;
+
+        border-radius: 9px;
+
+    }
+
+
+    .screenshot-actions {
+
+        flex-direction: column-reverse;
+
+    }
+
+
+    .screenshot-actions .btn {
+
+        width: 100%;
+
+    }
+
+
+    .footer {
+
+        padding: 14px;
+
+    }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 420px) {
+
+    .brand img {
+
+        width: 95px;
+
+    }
+
+
+    .page-title {
+
+        font-size: 16px;
+
+    }
+
+
+    .card-title {
+
+        font-size: 14px;
+
+    }
+
+
+    .btn {
+
+        font-size: 11px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOPBAR
+===================================================== -->
+
+<header class="topbar">
+
+    <button
+        class="menu-toggle"
+        onclick="toggleSidebar()"
+        aria-label="Menu">
+
+        <i class="fa-solid fa-bars"></i>
+
+    </button>
+
+
+    <div class="brand">
+
+        <img
+            src="https://pakaidonk.id/logo-pakaidonk.png"
+            alt="Pakaidonk"
+        >
+
+        <div class="brand-title">
+
+            Dashboard Komplain
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside
+    class="sidebar"
+    id="sidebar">
+
+    <div class="sidebar-menu">
+
+
+        <div class="menu-item active">
+
+            <div class="menu-icon">
+
+                <i class="fa-solid fa-table-columns"></i>
+
+            </div>
+
+            <div class="menu-text">
+
+                Dashboard
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="menu-item"
+            onclick="scrollToForm()">
+
+            <div class="menu-icon">
+
+                <i class="fa-solid fa-file-circle-plus"></i>
+
+            </div>
+
+            <div class="menu-text">
+
+                Buat Komplain
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="menu-item"
+            onclick="scrollToTable()">
+
+            <div class="menu-icon">
+
+                <i class="fa-solid fa-list-check"></i>
+
+            </div>
+
+            <div class="menu-text">
+
+                Data Komplain
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="menu-item"
+            onclick="scrollToTable()">
+
+            <div class="menu-icon">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+            </div>
+
+            <div class="menu-text">
+
+                Riwayat
+
+            </div>
+
+        </div>
+
+
+        <div class="menu-item">
+
+            <div class="menu-icon">
+
+                <i class="fa-solid fa-gear"></i>
+
+            </div>
+
+            <div class="menu-text">
+
+                Pengaturan
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+
+    <div class="page-header">
+
+        <div>
+
+            <div class="page-title">
+
+                Informasi Komplain Transaksi
+
+            </div>
+
+            <div class="page-subtitle">
+
+                Kelola laporan dan informasi kendala transaksi
+
+            </div>
+
+        </div>
+
+
+        <div class="breadcrumb">
+
+            Home
+
+            &nbsp;/&nbsp;
+
+            <span>Komplain Transaksi</span>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="content">
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================= -->
+
+        <div class="dashboard-summary">
+
+
+            <div class="summary-card">
+
+                <div class="summary-left">
+
+                    <div class="summary-icon red">
+
+                        <i class="fa-solid fa-file-circle-exclamation"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+
+                            Total Komplain
+
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="totalComplaints">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-right">
+
+                    <i class="fa-solid fa-chart-simple"></i>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="summary-card">
+
+                <div class="summary-left">
+
+                    <div class="summary-icon orange">
+
+                        <i class="fa-solid fa-hourglass-half"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+
+                            Dalam Proses
+
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="processComplaints">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-right">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="summary-card">
+
+                <div class="summary-left">
+
+                    <div class="summary-icon green">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+
+                            Sukses / Selesai
+
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="successComplaints">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-right">
+
+                    <i class="fa-solid fa-check"></i>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             DATA KOMPLAIN
+        ================================================= -->
+
+        <section
+            class="card"
+            id="tableSection">
+
+
+            <div class="card-header">
+
+                <div class="card-title">
+
+                    <i class="fa-solid fa-list-check"></i>
+
+                    Daftar Komplain Transaksi
+
+                </div>
+
+
+                <button
+                    class="btn btn-primary"
+                    onclick="scrollToForm()">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    &nbsp;
+
+                    Buat Komplain
+
+                </button>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <div class="toolbar">
+
+
+                    <div class="toolbar-info">
+
+                        Data komplain transaksi
+
+                    </div>
+
+
+                    <div class="search-box">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Cari komplain..."
+                            oninput="searchTable()"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table id="complaintTable">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>No</th>
+
+                                <th>ID Komplain</th>
+
+                                <th>Nominal</th>
+
+                                <th>User Merchant</th>
+
+                                <th>Status Komplain</th>
+
+                                <th>Tanggal & Waktu</th>
+
+                                <th>Bukti</th>
+
+                                <th>Screenshot</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="complaintBody">
+
+                        </tbody>
+
+
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             FORM
+        ================================================= -->
+
+        <section
+            class="card"
+            id="formSection">
+
+
+            <div class="card-header">
+
+                <div class="card-title">
+
+                    <i class="fa-solid fa-file-circle-plus"></i>
+
+                    Form Komplain Transaksi
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <form id="complaintForm">
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+
+                                Nominal <span>*</span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="nominal"
+                                placeholder="Rp 0"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+
+                                User Merchant
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="merchant"
+                                value="FamsssPay App"
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+
+                                Status Komplain <span>*</span>
+
+                            </label>
+
+
+                            <div class="status-input-wrap">
+
+                                <i class="fa-solid fa-circle-info"></i>
+
+
+                                <input
+                                    type="text"
+                                    class="form-control status-input"
+                                    id="status"
+                                    value="Terkendala Transaksi"
+                                    placeholder="Contoh: Diterima, Sukses, Diproses..."
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+
+                                ID Komplain
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="complaintId"
+                                readonly
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+
+                                Tanggal <span>*</span>
+
+                            </label>
+
+
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="complaintDate"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+
+                                Waktu <span>*</span>
+
+                            </label>
+
+
+                            <input
+                                type="time"
+                                class="form-control"
+                                id="complaintTime"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group full">
+
+                            <label class="form-label">
+
+                                Bukti Transaksi
+
+                            </label>
+
+
+                            <div class="upload-grid">
+
+
+                                <!-- BUKTI 1 -->
+
+                                <div class="upload-box">
+
+
+                                    <label
+                                        class="upload-area"
+                                        for="imageInput1">
+
+                                        <i class="fa-solid fa-image"></i>
+
+
+                                        <strong>
+
+                                            Bukti Transaksi 1
+
+                                        </strong>
+
+
+                                        <span>
+
+                                            Klik untuk upload gambar
+
+                                        </span>
+
+
+                                        <small>
+
+                                            JPG, JPEG, PNG
+
+                                        </small>
+
+                                    </label>
+
+
+                                    <input
+                                        type="file"
+                                        class="image-input"
+                                        id="imageInput1"
+                                        accept="image/*"
+                                    >
+
+
+                                    <div
+                                        class="preview-container"
+                                        id="previewContainer1">
+
+                                        <img
+                                            id="previewImage1"
+                                            alt="Preview Bukti 1"
+                                        >
+
+                                    </div>
+
+
+                                </div>
+
+
+
+                                <!-- BUKTI 2 -->
+
+                                <div class="upload-box">
+
+
+                                    <label
+                                        class="upload-area"
+                                        for="imageInput2">
+
+                                        <i class="fa-solid fa-images"></i>
+
+
+                                        <strong>
+
+                                            Bukti Transaksi 2
+
+                                        </strong>
+
+
+                                        <span>
+
+                                            Klik untuk upload gambar
+
+                                        </span>
+
+
+                                        <small>
+
+                                            JPG, JPEG, PNG
+
+                                        </small>
+
+                                    </label>
+
+
+                                    <input
+                                        type="file"
+                                        class="image-input"
+                                        id="imageInput2"
+                                        accept="image/*"
+                                    >
+
+
+                                    <div
+                                        class="preview-container"
+                                        id="previewContainer2">
+
+                                        <img
+                                            id="previewImage2"
+                                            alt="Preview Bukti 2"
+                                        >
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="form-footer">
+
+
+                        <button
+                            type="button"
+                            class="btn btn-light"
+                            onclick="resetForm()">
+
+                            <i class="fa-solid fa-rotate-left"></i>
+
+                            &nbsp;
+
+                            Reset
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                            &nbsp;
+
+                            Buat Komplain
+
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+
+    <footer class="footer">
+
+        Dashboard Komplain Transaksi
+
+        &nbsp;•&nbsp;
+
+        © 2026 Pakaidonk
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     SUCCESS MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="successModal">
+
+
+    <div class="modal-box">
+
+
+        <div class="modal-header">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+            Komplain Berhasil Dibuat
+
+        </div>
+
+
+        <div class="modal-body">
+
+
+            <div class="success-icon">
+
+                <i class="fa-solid fa-check"></i>
+
+            </div>
+
+
+            <div class="success-title">
+
+                Komplain berhasil ditambahkan
+
+            </div>
+
+
+            <div class="success-text">
+
+                Data komplain sudah masuk ke daftar
+                komplain transaksi.
+
+            </div>
+
+
+            <div
+                class="complaint-id"
+                id="successComplaintId">
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="btn btn-primary"
+                onclick="closeModal()">
+
+                Tutup
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     REPORT SCREENSHOT
+     FORMAT MEMANJANG
+===================================================== -->
+
+<div id="reportScreenshot">
+
+
+    <div class="report-top">
+
+
+        <div class="report-top-row">
+
+
+            <div class="report-brand">
+
+
+                <img
+                    class="report-logo"
+                    src="https://pakaidonk.id/logo-pakaidonk.png"
+                    crossorigin="anonymous"
+                    alt="Pakaidonk"
+                >
+
+
+                <div class="report-brand-divider"></div>
+
+
+                <div class="report-brand-text">
+
+                    Laporan Komplain<br>
+
+                    Informasi Kendala Transaksi
+
+                </div>
+
+
+            </div>
+
+
+            <div class="report-small">
+
+                <strong>COMPLAINT REPORT</strong>
+
+                Dokumen informasi transaksi
+
+                <br>
+
+                <span id="reportDateTop">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="report-body">
+
+
+        <div class="report-heading">
+
+
+            <div>
+
+                <div class="report-title">
+
+                    Laporan Komplain
+
+                </div>
+
+
+                <div class="report-subtitle">
+
+                    Informasi detail laporan komplain transaksi
+
+                </div>
+
+            </div>
+
+
+            <div class="report-code">
+
+                <strong id="reportCode">
+
+                    CMP
+
+                </strong>
+
+                ID KOMPLAIN
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- STATUS -->
+
+        <div class="report-status-card">
+
+
+            <div class="report-status-left">
+
+
+                <div class="report-status-icon">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                </div>
+
+
+                <div>
+
+                    <div class="report-status-label">
+
+                        STATUS KOMPLAIN
+
+                    </div>
+
+
+                    <div
+                        class="report-status-value"
+                        id="reportStatus">
+
+                        Terkendala Transaksi
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="report-status-right">
+
+                Status laporan<br>
+
+                tercatat dalam sistem
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- DETAIL -->
+
+        <div class="report-section-title">
+
+            <i class="fa-solid fa-receipt"></i>
+
+            Detail Transaksi
+
+        </div>
+
+
+        <div class="report-detail">
+
+
+            <div class="report-detail-row">
+
+
+                <div class="report-detail-label">
+
+                    ID Komplain
+
+                </div>
+
+
+                <div
+                    class="report-detail-value highlight"
+                    id="reportId">
+
+                    -
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="report-detail-row">
+
+
+                <div class="report-detail-label">
+
+                    Nominal Transaksi
+
+                </div>
+
+
+                <div
+                    class="report-detail-value"
+                    id="reportNominal">
+
+                    -
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="report-detail-row">
+
+
+                <div class="report-detail-label">
+
+                    User Merchant
+
+                </div>
+
+
+                <div
+                    class="report-detail-value"
+                    id="reportMerchant">
+
+                    FamsssPay App
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="report-detail-row">
+
+
+                <div class="report-detail-label">
+
+                    Status Komplain
+
+                </div>
+
+
+                <div
+                    class="report-detail-value"
+                    id="reportStatus2">
+
+                    Terkendala Transaksi
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="report-detail-row">
+
+
+                <div class="report-detail-label">
+
+                    Tanggal Transaksi
+
+                </div>
+
+
+                <div
+                    class="report-detail-value"
+                    id="reportDate">
+
+                    -
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="report-detail-row">
+
+
+                <div class="report-detail-label">
+
+                    Waktu Transaksi
+
+                </div>
+
+
+                <div
+                    class="report-detail-value"
+                    id="reportTime">
+
+                    -
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- BUKTI -->
+
+        <div class="report-proof">
+
+
+            <div class="report-proof-head">
+
+
+                <div class="report-section-title"
+                    style="margin-bottom:0;">
+
+                    <i class="fa-solid fa-images"></i>
+
+                    Bukti Transaksi
+
+                </div>
+
+
+                <div
+                    class="report-proof-count"
+                    id="reportProofCount">
+
+                    0 bukti
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                class="report-images"
+                id="reportProofContainer">
+
+
+                <div class="report-image-box">
+
+
+                    <div class="report-image-label">
+
+                        Bukti Transaksi 1
+
+                        <span>
+
+                            Lampiran
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="no-proof">
+
+                        Tidak ada gambar
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="report-image-box">
+
+
+                    <div class="report-image-label">
+
+                        Bukti Transaksi 2
+
+                        <span>
+
+                            Lampiran
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="no-proof">
+
+                        Tidak ada gambar
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- NOTE -->
+
+        <div class="report-note">
+
+
+            <i class="fa-solid fa-circle-info"></i>
+
+
+            <div class="report-note-text">
+
+                Dokumen ini merupakan informasi laporan komplain
+                transaksi yang dibuat melalui Dashboard Komplain.
+                Detail laporan mengikuti data yang dimasukkan pada
+                saat pembuatan komplain.
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="report-footer">
+
+
+            <div class="report-footer-brand">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                Pakaidonk
+
+            </div>
+
+
+            <div class="report-footer-right">
+
+                Complaint Report
+
+                <br>
+
+                Informasi Transaksi
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     SCREENSHOT PREVIEW
+===================================================== -->
+
+<div
+    class="screenshot-modal"
+    id="screenshotModal">
+
+
+    <div class="screenshot-box">
+
+
+        <img
+            id="screenshotPreview"
+            class="screenshot-preview"
+            alt="Screenshot laporan komplain"
+        >
+
+
+        <div class="screenshot-actions">
+
+
+            <button
+                class="btn btn-light"
+                onclick="closeScreenshot()">
+
+                Tutup
+
+            </button>
+
+
+            <button
+                class="btn btn-primary"
+                onclick="downloadScreenshot()">
+
+                <i class="fa-solid fa-download"></i>
+
+                &nbsp;
+
+                Unduh PNG
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let complaints = [];
+
+let currentScreenshotData = null;
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+function toggleSidebar() {
+
+    document
+        .getElementById("sidebar")
+        .classList
+        .toggle("active");
+
+}
+
+
+/* =====================================================
+   SCROLL FORM
+===================================================== */
+
+function scrollToForm() {
+
+    document
+        .getElementById("formSection")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+
+    if (window.innerWidth <= 768) {
+
+        document
+            .getElementById("sidebar")
+            .classList
+            .remove("active");
+
+    }
+
+}
+
+
+/* =====================================================
+   SCROLL TABLE
+===================================================== */
+
+function scrollToTable() {
+
+    document
+        .getElementById("tableSection")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+
+    if (window.innerWidth <= 768) {
+
+        document
+            .getElementById("sidebar")
+            .classList
+            .remove("active");
+
+    }
+
+}
+
+
+/* =====================================================
+   GENERATE COMPLAINT ID
+===================================================== */
+
+function generateComplaintID() {
+
+    const now = new Date();
+
+
+    const year =
+        now
+        .getFullYear()
+        .toString()
+        .slice(-2);
+
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const random =
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        );
+
+
+    return "CMP-" +
+        year +
+        month +
+        "-" +
+        random;
+
+}
+
+
+/* =====================================================
+   DEFAULT DATE TIME
+===================================================== */
+
+function setDefaultDateTime() {
+
+    const now = new Date();
+
+
+    const year =
+        now.getFullYear();
+
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2, "0");
+
+
+    const hours =
+        String(
+            now.getHours()
+        ).padStart(2, "0");
+
+
+    const minutes =
+        String(
+            now.getMinutes()
+        ).padStart(2, "0");
+
+
+    document
+        .getElementById("complaintDate")
+        .value =
+        `${year}-${month}-${day}`;
+
+
+    document
+        .getElementById("complaintTime")
+        .value =
+        `${hours}:${minutes}`;
+
+}
+
+
+/* =====================================================
+   NOMINAL FORMAT
+===================================================== */
+
+document
+    .getElementById("nominal")
+    .addEventListener(
+        "input",
+        function () {
+
+
+            let value =
+                this.value.replace(
+                    /\D/g,
+                    ""
+                );
+
+
+            if (!value) {
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            this.value =
+                "Rp " +
+                Number(value)
+                    .toLocaleString("id-ID");
+
+        }
+    );
+
+
+/* =====================================================
+   IMAGE UPLOAD
+===================================================== */
+
+function setupImageUpload(
+    inputId,
+    previewId,
+    containerId
+) {
+
+
+    document
+        .getElementById(inputId)
+        .addEventListener(
+            "change",
+            function () {
+
+
+                const file =
+                    this.files[0];
+
+
+                if (!file) return;
+
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function(e) {
+
+
+                        document
+                            .getElementById(
+                                previewId
+                            )
+                            .src =
+                            e.target.result;
+
+
+                        document
+                            .getElementById(
+                                containerId
+                            )
+                            .style.display =
+                            "block";
+
+                    };
+
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+
+}
+
+
+setupImageUpload(
+    "imageInput1",
+    "previewImage1",
+    "previewContainer1"
+);
+
+
+setupImageUpload(
+    "imageInput2",
+    "previewImage2",
+    "previewContainer2"
+);
+
+
+/* =====================================================
+   FORMAT DATE
+===================================================== */
+
+function formatDate(date) {
+
+    const obj =
+        new Date(
+            date + "T00:00:00"
+        );
+
+
+    return String(
+        obj.getDate()
+    ).padStart(2, "0")
+
+    + "-"
+
+    +
+
+    String(
+        obj.getMonth() + 1
+    ).padStart(2, "0")
+
+    + "-"
+
+    +
+
+    obj.getFullYear();
+
+}
+
+
+/* =====================================================
+   STATUS CLASS
+===================================================== */
+
+function getStatusClass(status) {
+
+    const text =
+        status
+            .toLowerCase()
+            .trim();
+
+
+    if (
+        text.includes("sukses") ||
+        text.includes("selesai") ||
+        text.includes("berhasil") ||
+        text.includes("diterima")
+    ) {
+
+        return "success";
+
+    }
+
+
+    if (
+        text.includes("gagal") ||
+        text.includes("ditolak") ||
+        text.includes("error")
+    ) {
+
+        return "danger";
+
+    }
+
+
+    if (
+        text.includes("proses") ||
+        text.includes("diproses")
+    ) {
+
+        return "process";
+
+    }
+
+
+    return "warning";
+
+}
+
+
+/* =====================================================
+   UPDATE SUMMARY
+===================================================== */
+
+function updateSummary() {
+
+    const total =
+        complaints.length;
+
+
+    let process = 0;
+
+    let success = 0;
+
+
+    complaints.forEach(
+        function(item) {
+
+            const status =
+                item.status
+                    .toLowerCase();
+
+
+            if (
+                status.includes("proses") ||
+                status.includes("diterima")
+            ) {
+
+                process++;
+
+            }
+
+
+            if (
+                status.includes("sukses") ||
+                status.includes("selesai") ||
+                status.includes("berhasil")
+            ) {
+
+                success++;
+
+            }
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "totalComplaints"
+        )
+        .textContent =
+        total;
+
+
+    document
+        .getElementById(
+            "processComplaints"
+        )
+        .textContent =
+        process;
+
+
+    document
+        .getElementById(
+            "successComplaints"
+        )
+        .textContent =
+        success;
+
+}
+
+
+/* =====================================================
+   SUBMIT
+===================================================== */
+
+document
+    .getElementById("complaintForm")
+    .addEventListener(
+        "submit",
+        function(e) {
+
+
+            e.preventDefault();
+
+
+            const nominal =
+                document
+                    .getElementById("nominal")
+                    .value;
+
+
+            const merchant =
+                document
+                    .getElementById("merchant")
+                    .value;
+
+
+            const status =
+                document
+                    .getElementById("status")
+                    .value;
+
+
+            /*
+             * Generate ID baru
+             * setiap membuat komplain
+             */
+
+            const complaintId =
+                generateComplaintID();
+
+
+            document
+                .getElementById(
+                    "complaintId"
+                )
+                .value =
+                complaintId;
+
+
+            const date =
+                document
+                    .getElementById("complaintDate")
+                    .value;
+
+
+            const time =
+                document
+                    .getElementById("complaintTime")
+                    .value;
+
+
+            const imageInput1 =
+                document
+                    .getElementById("imageInput1");
+
+
+            const imageInput2 =
+                document
+                    .getElementById("imageInput2");
+
+
+            if (!nominal) {
+
+                alert(
+                    "Nominal transaksi belum diisi."
+                );
+
+                return;
+
+            }
+
+
+            if (!status.trim()) {
+
+                alert(
+                    "Status komplain belum diisi."
+                );
+
+                return;
+
+            }
+
+
+            let imageData1 = "";
+
+            let imageData2 = "";
+
+
+            if (
+                imageInput1.files &&
+                imageInput1.files[0]
+            ) {
+
+                imageData1 =
+                    document
+                        .getElementById(
+                            "previewImage1"
+                        )
+                        .src;
+
+            }
+
+
+            if (
+                imageInput2.files &&
+                imageInput2.files[0]
+            ) {
+
+                imageData2 =
+                    document
+                        .getElementById(
+                            "previewImage2"
+                        )
+                        .src;
+
+            }
+
+
+            const complaint = {
+
+                id:
+                    complaintId,
+
+                nominal:
+                    nominal,
+
+                merchant:
+                    merchant,
+
+                status:
+                    status.trim(),
+
+                date:
+                    date,
+
+                time:
+                    time,
+
+                image1:
+                    imageData1,
+
+                image2:
+                    imageData2
+
+            };
+
+
+            complaints.unshift(
+                complaint
+            );
+
+
+            renderTable();
+
+            updateSummary();
+
+
+            document
+                .getElementById(
+                    "successComplaintId"
+                )
+                .textContent =
+                complaintId;
+
+
+            document
+                .getElementById(
+                    "successModal"
+                )
+                .classList
+                .add("show");
+
+        }
+    );
+
+
+/* =====================================================
+   RENDER TABLE
+===================================================== */
+
+function renderTable() {
+
+    const tbody =
+        document
+            .getElementById(
+                "complaintBody"
+            );
+
+
+    tbody.innerHTML = "";
+
+
+    complaints.forEach(
+        function(item, index) {
+
+
+            const row =
+                tbody.insertRow();
+
+
+            const statusClass =
+                getStatusClass(
+                    item.status
+                );
+
+
+            let statusIcon =
+                "fa-circle-exclamation";
+
+
+            if (
+                statusClass === "success"
+            ) {
+
+                statusIcon =
+                    "fa-circle-check";
+
+            }
+
+
+            if (
+                statusClass === "danger"
+            ) {
+
+                statusIcon =
+                    "fa-circle-xmark";
+
+            }
+
+
+            if (
+                statusClass === "process"
+            ) {
+
+                statusIcon =
+                    "fa-clock";
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    <strong>
+                        ${item.id}
+                    </strong>
+                </td>
+
+                <td>
+                    ${item.nominal}
+                </td>
+
+                <td>
+                    ${item.merchant}
+                </td>
+
+                <td>
+
+                    <span class="status">
+
+                        <i class="fa-solid ${statusIcon}"></i>
+
+                        ${item.status}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${formatDate(item.date)}
+
+                    <br>
+
+                    <span style="color:#888;">
+
+                        ${item.time} WIB
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${
+                        item.image1 || item.image2
+
+                        ?
+
+                        `
+
+                        <span
+                            style="
+                            display:inline-flex;
+                            align-items:center;
+                            gap:5px;
+                            color:#d71920;
+                            ">
+
+                            <i class="fa-solid fa-images"></i>
+
+                            ${
+                                (item.image1 ? 1 : 0)
+                                +
+                                (item.image2 ? 1 : 0)
+                            }
+
+                        </span>
+
+                        `
+
+                        :
+
+                        `
+
+                        <span style="color:#aaa;">
+                            -
+                        </span>
+
+                        `
+                    }
+
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn btn-screenshot"
+                        onclick="makeScreenshot(${index})">
+
+                        <i class="fa-solid fa-camera"></i>
+
+                        Screenshot
+
+                    </button>
+
+                </td>
+
+            `;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   MAKE SCREENSHOT
+===================================================== */
+
+async function makeScreenshot(index) {
+
+    const item =
+        complaints[index];
+
+
+    if (!item) return;
+
+
+    /* ================================================
+       DATA LAPORAN
+    ================================================ */
+
+
+    document
+        .getElementById("reportId")
+        .textContent =
+        item.id;
+
+
+    document
+        .getElementById("reportCode")
+        .textContent =
+        item.id;
+
+
+    document
+        .getElementById("reportNominal")
+        .textContent =
+        item.nominal;
+
+
+    document
+        .getElementById("reportMerchant")
+        .textContent =
+        item.merchant;
+
+
+    document
+        .getElementById("reportStatus")
+        .textContent =
+        item.status;
+
+
+    document
+        .getElementById("reportStatus2")
+        .textContent =
+        item.status;
+
+
+    document
+        .getElementById("reportDate")
+        .textContent =
+        formatDate(item.date);
+
+
+    document
+        .getElementById("reportTime")
+        .textContent =
+        item.time + " WIB";
+
+
+    document
+        .getElementById("reportDateTop")
+        .textContent =
+        formatDate(item.date);
+
+
+    /* ================================================
+       BUKTI
+    ================================================ */
+
+    const proof =
+        document
+            .getElementById(
+                "reportProofContainer"
+            );
+
+
+    let proofCount = 0;
+
+
+    if (item.image1) {
+
+        proofCount++;
+
+    }
+
+
+    if (item.image2) {
+
+        proofCount++;
+
+    }
+
+
+    document
+        .getElementById(
+            "reportProofCount"
+        )
+        .textContent =
+        proofCount +
+        (
+            proofCount === 1
+                ? " bukti"
+                : " bukti"
+        );
+
+
+    proof.innerHTML = `
+
+        <div class="report-image-box">
+
+            <div class="report-image-label">
+
+                <span
+                    style="
+                    color:#555;
+                    font-weight:600;
+                    ">
+
+                    Bukti Transaksi 1
+
+                </span>
+
+                <span>
+
+                    Lampiran 01
+
+                </span>
+
+            </div>
+
+            ${
+                item.image1
+
+                ?
+
+                `
+
+                <img
+                    src="${item.image1}"
+                    alt="Bukti transaksi 1"
+                >
+
+                `
+
+                :
+
+                `
+
+                <div class="no-proof">
+
+                    Tidak ada gambar
+
+                </div>
+
+                `
+            }
+
+        </div>
+
+
+
+        <div class="report-image-box">
+
+            <div class="report-image-label">
+
+                <span
+                    style="
+                    color:#555;
+                    font-weight:600;
+                    ">
+
+                    Bukti Transaksi 2
+
+                </span>
+
+                <span>
+
+                    Lampiran 02
+
+                </span>
+
+            </div>
+
+            ${
+                item.image2
+
+                ?
+
+                `
+
+                <img
+                    src="${item.image2}"
+                    alt="Bukti transaksi 2"
+                >
+
+                `
+
+                :
+
+                `
+
+                <div class="no-proof">
+
+                    Tidak ada gambar
+
+                </div>
+
+                `
+            }
+
+        </div>
+
+    `;
+
+
+    /* ================================================
+       WAIT IMAGE
+    ================================================ */
+
+    await waitForImages(
+        document.getElementById(
+            "reportScreenshot"
+        )
+    );
+
+
+    /* ================================================
+       SCREENSHOT
+    ================================================ */
+
+    const report =
+        document.getElementById(
+            "reportScreenshot"
+        );
+
+
+    const canvas =
+        await html2canvas(
+            report,
+            {
+
+                scale: 2,
+
+                useCORS: true,
+
+                allowTaint: true,
+
+                backgroundColor: "#ffffff",
+
+                logging: false,
+
+                imageTimeout: 15000
+
+            }
+        );
+
+
+    currentScreenshotData =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    document
+        .getElementById(
+            "screenshotPreview"
+        )
+        .src =
+        currentScreenshotData;
+
+
+    document
+        .getElementById(
+            "screenshotModal"
+        )
+        .classList
+        .add("show");
+
+}
+
+
+/* =====================================================
+   WAIT IMAGE
+===================================================== */
+
+function waitForImages(element) {
+
+    const images =
+        element.querySelectorAll(
+            "img"
+        );
+
+
+    const promises = [];
+
+
+    images.forEach(
+        function(img) {
+
+
+            if (!img.complete) {
+
+                promises.push(
+
+                    new Promise(
+                        function(resolve) {
+
+
+                            img.onload =
+                                resolve;
+
+
+                            img.onerror =
+                                resolve;
+
+                        }
+                    )
+
+                );
+
+            }
+
+        }
+    );
+
+
+    return Promise.all(
+        promises
+    );
+
+}
+
+
+/* =====================================================
+   DOWNLOAD SCREENSHOT
+===================================================== */
+
+function downloadScreenshot() {
+
+    if (!currentScreenshotData) {
+
+        return;
+
+    }
+
+
+    const id =
+        document
+            .getElementById(
+                "reportId"
+            )
+            .textContent;
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        currentScreenshotData;
+
+
+    link.download =
+        "Laporan-Komplain-" +
+        id +
+        ".png";
+
+
+    document
+        .body
+        .appendChild(link);
+
+
+    link.click();
+
+
+    link.remove();
+
+}
+
+
+/* =====================================================
+   CLOSE SCREENSHOT
+===================================================== */
+
+function closeScreenshot() {
+
+    document
+        .getElementById(
+            "screenshotModal"
+        )
+        .classList
+        .remove("show");
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+function searchTable() {
+
+    const keyword =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase();
+
+
+    const rows =
+        document.querySelectorAll(
+            "#complaintBody tr"
+        );
+
+
+    rows.forEach(
+        function(row) {
+
+
+            const text =
+                row.innerText
+                    .toLowerCase();
+
+
+            row.style.display =
+                text.includes(keyword)
+                    ? ""
+                    : "none";
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetForm() {
+
+    document
+        .getElementById(
+            "complaintForm"
+        )
+        .reset();
+
+
+    document
+        .getElementById(
+            "merchant"
+        )
+        .value =
+        "FamsssPay App";
+
+
+    document
+        .getElementById(
+            "status"
+        )
+        .value =
+        "Terkendala Transaksi";
+
+
+    document
+        .getElementById(
+            "complaintId"
+        )
+        .value =
+        generateComplaintID();
+
+
+    setDefaultDateTime();
+
+
+    document
+        .getElementById(
+            "previewContainer1"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "previewContainer2"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "previewImage1"
+        )
+        .src = "";
+
+
+    document
+        .getElementById(
+            "previewImage2"
+        )
+        .src = "";
+
+}
+
+
+/* =====================================================
+   CLOSE SUCCESS MODAL
+===================================================== */
+
+function closeModal() {
+
+    document
+        .getElementById(
+            "successModal"
+        )
+        .classList
+        .remove("show");
+
+
+    resetForm();
+
+}
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+
+        document
+            .getElementById(
+                "complaintId"
+            )
+            .value =
+            generateComplaintID();
+
+
+        setDefaultDateTime();
+
+
+        updateSummary();
+
+
+    }
+);
+
+</script>
+
+</body>
+</html>
