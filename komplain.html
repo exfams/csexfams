@@ -368,6 +368,7 @@ select {
 }
 
 
+
 .page-subtitle {
 
     margin-top: 3px;
@@ -802,7 +803,7 @@ table {
 
     border-collapse: collapse;
 
-    min-width: 1100px;
+    min-width: 900px;
 
 }
 
@@ -1419,9 +1420,11 @@ tbody tr:hover {
 
 .report-logo {
 
-    width: 130px;
+    width: auto;
 
-    height: auto;
+    height: 44px;
+
+    max-width: 120px;
 
     display: block;
 
@@ -1851,19 +1854,37 @@ tbody tr:hover {
 }
 
 
+.report-image-wrap {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+    padding: 10px;
+
+    background: #fff;
+
+}
+
+
+/* FIX: jangan paksa width 100% + max-height + object-fit,
+   karena html2canvas tidak mendukung object-fit sehingga
+   gambar jadi gepeng. Biarkan rasio asli gambar terjaga. */
 .report-image-box img {
 
     display: block;
 
-    width: 100%;
+    width: auto;
 
-    max-height: 430px;
+    height: auto;
 
-    object-fit: contain;
+    max-width: 100%;
 
-    background: #fff;
+    max-height: 380px;
 
-    padding: 8px;
+    margin: 0 auto;
 
 }
 
@@ -2053,9 +2074,11 @@ tbody tr:hover {
 
 .screenshot-preview {
 
-    width: 720px;
+    width: auto;
 
     max-width: 100%;
+
+    max-height: calc(94vh - 100px);
 
     display: block;
 
@@ -2101,6 +2124,180 @@ tbody tr:hover {
 /* =====================================================
    MOBILE
 ===================================================== */
+
+/* =====================================================
+   RIWAYAT: HAPUS TERPILIH / CLEAR ALL
+===================================================== */
+
+.toolbar {
+    flex-wrap: wrap;
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar-actions .btn {
+    padding: 9px 12px;
+    font-size: 11px;
+}
+
+.btn-danger {
+    background: #fff1f1;
+    color: var(--pk-red);
+    border: 1px solid #ffd0d0;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--pk-red);
+    color: #fff;
+}
+
+.btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.col-check {
+    width: 38px;
+    text-align: center !important;
+}
+
+.col-check input {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--pk-red);
+    cursor: pointer;
+}
+
+tbody tr.row-selected {
+    background: #fff3f3;
+}
+
+.empty-row td {
+    text-align: center;
+    color: #999;
+    padding: 34px 10px;
+}
+
+.storage-note {
+    margin-top: 10px;
+    font-size: 10px;
+    color: #999;
+}
+
+/* =====================================================
+   TOMBOL EDIT & SCREENSHOT DI TOOLBAR
+===================================================== */
+
+.btn-edit {
+    background: #f2f3f5;
+    color: #444;
+    border: 1px solid #e1e3e6;
+}
+
+.btn-edit:hover:not(:disabled) {
+    background: #252525;
+    color: #fff;
+}
+
+.btn-screenshot {
+    padding: 9px 12px;
+    font-size: 11px;
+}
+
+.btn-screenshot:hover:not(:disabled) {
+    background: var(--pk-red);
+    color: #fff;
+}
+
+#editSelectedBtn.is-hidden {
+    display: none;
+}
+
+/* Tulisan "Data komplain transaksi" = saklar tersembunyi tombol Edit */
+#toolbarInfo {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* =====================================================
+   MOBILE: TABEL SEJAJAR KE KANAN, DIPADATKAN
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .table-wrap {
+        overflow-x: auto;
+    }
+
+    #complaintTable {
+        min-width: 0;
+        width: 100%;
+        table-layout: auto;
+    }
+
+    #complaintTable thead th {
+        font-size: 8.5px;
+        padding: 9px 4px;
+        white-space: normal;
+        line-height: 1.25;
+    }
+
+    #complaintTable tbody td {
+        font-size: 9px;
+        padding: 8px 4px;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    #tableSection .card-body {
+        padding: 8px;
+    }
+
+    #complaintTable .col-check {
+        width: 22px;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    #complaintTable tbody td:nth-child(5) {
+        word-break: normal;
+    }
+
+    #complaintTable .status {
+        font-size: 8px;
+        padding: 4px 6px;
+        gap: 3px;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: normal;
+    }
+
+    #complaintTable .status i {
+        font-size: 7px;
+    }
+
+    .toolbar-actions {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .toolbar-actions .btn {
+        padding: 8px 10px;
+        font-size: 10.5px;
+    }
+
+    .toolbar-actions .search-box {
+        flex: 1 1 100%;
+    }
+
+}
 
 @media (max-width: 768px) {
 
@@ -2775,29 +2972,67 @@ tbody tr:hover {
                 <div class="toolbar">
 
 
-                    <div class="toolbar-info">
+                    <div class="toolbar-info" id="toolbarInfo" onclick="toggleEditButtons()">
 
                         Data komplain transaksi
 
                     </div>
 
 
-                    <div class="search-box">
+                    <div class="toolbar-actions">
 
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <button
+                            class="btn btn-danger"
+                            id="deleteSelectedBtn"
+                            onclick="askDeleteSelected()"
+                            disabled>
+                            <i class="fa-solid fa-trash"></i>
+                            &nbsp;
+                            Hapus (<span id="selectedCount">0</span>)
+                        </button>
 
-                        <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="Cari komplain..."
-                            oninput="searchTable()"
-                        >
+                        <button
+                            class="btn btn-dark"
+                            id="clearAllBtn"
+                            onclick="askClearAll()">
+                            <i class="fa-solid fa-broom"></i>
+                            &nbsp;
+                            Clear All
+                        </button>
+
+                        <button
+                            class="btn btn-edit"
+                            id="editSelectedBtn"
+                            onclick="editSelected()"
+                            disabled>
+                            <i class="fa-solid fa-pen"></i>
+                            &nbsp;
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn btn-screenshot"
+                            id="screenshotSelectedBtn"
+                            onclick="screenshotSelected()"
+                            disabled>
+                            <i class="fa-solid fa-camera"></i>
+                            &nbsp;
+                            Screenshot
+                        </button>
+
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Cari komplain..."
+                                oninput="searchTable()"
+                            >
+                        </div>
 
                     </div>
 
-
                 </div>
-
 
                 <div class="table-wrap">
 
@@ -2808,6 +3043,13 @@ tbody tr:hover {
 
                             <tr>
 
+                                <th class="col-check">
+                                    <input
+                                        type="checkbox"
+                                        id="selectAll"
+                                        title="Pilih semua"
+                                        onchange="toggleSelectAll(this.checked)">
+                                </th>
                                 <th>No</th>
 
                                 <th>ID Komplain</th>
@@ -2822,7 +3064,7 @@ tbody tr:hover {
 
                                 <th>Bukti</th>
 
-                                <th>Screenshot</th>
+                                
 
                             </tr>
 
@@ -2835,8 +3077,9 @@ tbody tr:hover {
 
 
                     </table>
-
                 </div>
+
+                <div class="storage-note" id="storageInfo"></div>
 
 
             </div>
@@ -3035,7 +3278,7 @@ tbody tr:hover {
 
                                         <strong>
 
-                                            Bukti Transaksi 1
+                                            Foto Merchant/QRIS
 
                                         </strong>
 
@@ -3070,7 +3313,7 @@ tbody tr:hover {
 
                                         <img
                                             id="previewImage1"
-                                            alt="Preview Bukti 1"
+                                            alt="Preview Foto Merchant/QRIS"
                                         >
 
                                     </div>
@@ -3212,6 +3455,131 @@ tbody tr:hover {
 <!-- =====================================================
      SUCCESS MODAL
 ===================================================== -->
+
+<!-- =====================================================
+     EDIT MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="editModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <i class="fa-solid fa-pen"></i>
+            Edit Komplain
+        </div>
+
+        <div class="modal-body" style="text-align:left;">
+
+            <div
+                id="editComplaintId"
+                class="complaint-id"
+                style="margin-bottom:14px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom:13px;">
+                <label class="form-label">
+                    Status Komplain <span>*</span>
+                </label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="editStatus"
+                    list="statusSuggestions"
+                    placeholder="Contoh: Komplain Diterima"
+                >
+                <datalist id="statusSuggestions">
+                    <option value="Terkendala Transaksi">
+                    <option value="Komplain Diterima">
+                    <option value="Sedang Diproses">
+                    <option value="Dalam Pengecekan">
+                    <option value="Selesai">
+                    <option value="Berhasil">
+                </datalist>
+            </div>
+
+            <div class="form-group" style="margin-bottom:13px;">
+                <label class="form-label">
+                    Tanggal <span>*</span>
+                </label>
+                <input
+                    type="date"
+                    class="form-control"
+                    id="editDate"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    Waktu <span>*</span>
+                </label>
+                <input
+                    type="time"
+                    class="form-control"
+                    id="editTime"
+                >
+            </div>
+
+        </div>
+
+        <div class="modal-footer" style="gap:8px;">
+            <button
+                class="btn btn-light"
+                onclick="closeEdit()">
+                Batal
+            </button>
+            <button
+                class="btn btn-primary"
+                onclick="saveEdit()">
+                Simpan
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     CONFIRM MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="confirmModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="confirmTitle">Konfirmasi</span>
+        </div>
+
+        <div class="modal-body">
+            <div
+                id="confirmText"
+                style="text-align:center;font-size:13px;color:#444;line-height:1.6;">
+            </div>
+        </div>
+
+        <div class="modal-footer" style="gap:8px;">
+            <button
+                class="btn btn-light"
+                onclick="closeConfirm()">
+                Batal
+            </button>
+            <button
+                class="btn btn-primary"
+                id="confirmOkBtn"
+                onclick="runConfirm()">
+                Ya, Hapus
+            </button>
+        </div>
+
+    </div>
+
+</div>
 
 <div
     class="modal"
@@ -3636,7 +4004,7 @@ tbody tr:hover {
 
                     <div class="report-image-label">
 
-                        Bukti Transaksi 1
+                        Foto Merchant/QRIS
 
                         <span>
 
@@ -3812,9 +4180,542 @@ tbody tr:hover {
    VARIABLES
 ===================================================== */
 
-let complaints = [];
+const STORAGE_KEY = "dashboard_komplain_riwayat_v1";
+
+let complaints = loadComplaints();
+
+const selectedIds = new Set();
+
+let pendingConfirmAction = null;
 
 let currentScreenshotData = null;
+
+
+/* =====================================================
+   LOCAL STORAGE (RIWAYAT TIDAK HILANG SAMPAI DIHAPUS MANUAL)
+===================================================== */
+
+function loadComplaints() {
+
+    try {
+
+        const raw =
+            localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) return [];
+
+        const data = JSON.parse(raw);
+
+        return Array.isArray(data) ? data : [];
+
+    } catch (err) {
+
+        console.error("Gagal membaca riwayat:", err);
+
+        return [];
+
+    }
+
+}
+
+
+function saveComplaints() {
+
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(complaints)
+        );
+
+        updateStorageInfo();
+
+        return true;
+
+    } catch (err) {
+
+        console.error("Gagal menyimpan riwayat:", err);
+
+        alert(
+            "Penyimpanan browser penuh atau tidak tersedia.\n" +
+            "Data terbaru hanya ada sementara dan akan hilang " +
+            "jika halaman di-refresh.\n\n" +
+            "Hapus riwayat lama (centang lalu Hapus) atau gunakan Clear All."
+        );
+
+        return false;
+
+    }
+
+}
+
+
+function updateStorageInfo() {
+
+    const el =
+        document.getElementById("storageInfo");
+
+    if (!el) return;
+
+    let chars = 0;
+
+    try {
+
+        chars =
+            (localStorage.getItem(STORAGE_KEY) || "")
+                .length;
+
+    } catch (err) {}
+
+    const mb = (chars / 1048576).toFixed(2);
+
+    el.textContent =
+        "Riwayat tersimpan di browser ini (" +
+        complaints.length + " data, ±" + mb +
+        " MB dari batas ±5 MB). " +
+        "Data tidak akan hilang sebelum dihapus manual.";
+
+}
+
+
+/* Kompres gambar agar muat di localStorage */
+
+function compressImage(
+    dataUrl,
+    maxSide = 1400,
+    quality = 0.75
+) {
+
+    return new Promise(function(resolve) {
+
+        if (!dataUrl) return resolve("");
+
+        const img = new Image();
+
+        img.onload = function() {
+
+            const ratio =
+                Math.min(
+                    1,
+                    maxSide /
+                    Math.max(
+                        img.naturalWidth,
+                        img.naturalHeight
+                    )
+                );
+
+            const w =
+                Math.round(img.naturalWidth * ratio);
+
+            const h =
+                Math.round(img.naturalHeight * ratio);
+
+            const c =
+                document.createElement("canvas");
+
+            c.width = w;
+            c.height = h;
+
+            const ctx = c.getContext("2d");
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+
+            try {
+                resolve(
+                    c.toDataURL("image/jpeg", quality)
+                );
+            } catch (err) {
+                resolve(dataUrl);
+            }
+
+        };
+
+        img.onerror = function() {
+            resolve(dataUrl);
+        };
+
+        img.src = dataUrl;
+
+    });
+
+}
+
+
+function esc(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+}
+
+
+/* =====================================================
+   PILIH / HAPUS RIWAYAT
+===================================================== */
+
+function toggleRow(id, checked, tr) {
+
+    if (checked) {
+        selectedIds.add(id);
+    } else {
+        selectedIds.delete(id);
+    }
+
+    tr.classList.toggle("row-selected", checked);
+
+    updateSelectionUI();
+
+}
+
+
+function toggleSelectAll(checked) {
+
+    document
+        .querySelectorAll("#complaintBody tr[data-id]")
+        .forEach(function(tr) {
+
+            if (tr.style.display === "none") return;
+
+            const id = tr.dataset.id;
+
+            const cb = tr.querySelector(".row-check");
+
+            if (cb) cb.checked = checked;
+
+            if (checked) {
+                selectedIds.add(id);
+            } else {
+                selectedIds.delete(id);
+            }
+
+            tr.classList.toggle("row-selected", checked);
+
+        });
+
+    updateSelectionUI();
+
+}
+
+
+function updateSelectionUI() {
+
+    const count = selectedIds.size;
+
+    document
+        .getElementById("selectedCount")
+        .textContent = count;
+
+    document
+        .getElementById("deleteSelectedBtn")
+        .disabled = count === 0;
+
+    document
+        .getElementById("clearAllBtn")
+        .disabled = complaints.length === 0;
+
+    document
+        .getElementById("editSelectedBtn")
+        .disabled = count !== 1;
+
+    document
+        .getElementById("screenshotSelectedBtn")
+        .disabled = count !== 1;
+
+    const visible =
+        Array.from(
+            document.querySelectorAll(
+                "#complaintBody tr[data-id]"
+            )
+        ).filter(function(tr) {
+            return tr.style.display !== "none";
+        });
+
+    const checkedVisible =
+        visible.filter(function(tr) {
+            return selectedIds.has(tr.dataset.id);
+        }).length;
+
+    const all =
+        document.getElementById("selectAll");
+
+    all.checked =
+        visible.length > 0 &&
+        checkedVisible === visible.length;
+
+    all.indeterminate =
+        checkedVisible > 0 &&
+        checkedVisible < visible.length;
+
+}
+
+
+/* =====================================================
+   SAKLAR TERSEMBUNYI: SEMBUNYIKAN / TAMPILKAN TOMBOL EDIT
+   (klik tulisan "Data komplain transaksi" di atas tabel)
+===================================================== */
+
+const EDIT_HIDDEN_KEY = "dashboard_komplain_edit_hidden";
+
+function applyEditVisibility() {
+
+    let hidden = false;
+
+    try {
+        hidden =
+            localStorage.getItem(EDIT_HIDDEN_KEY) === "1";
+    } catch (err) {}
+
+    document
+        .getElementById("editSelectedBtn")
+        .classList
+        .toggle("is-hidden", hidden);
+
+}
+
+
+function toggleEditButtons() {
+
+    const btn =
+        document.getElementById("editSelectedBtn");
+
+    const hidden =
+        !btn.classList.contains("is-hidden");
+
+    btn.classList.toggle("is-hidden", hidden);
+
+    try {
+        localStorage.setItem(
+            EDIT_HIDDEN_KEY,
+            hidden ? "1" : "0"
+        );
+    } catch (err) {}
+
+}
+
+
+/* =====================================================
+   EDIT & SCREENSHOT UNTUK BARIS YANG DICENTANG (HANYA 1)
+===================================================== */
+
+function editSelected() {
+
+    if (selectedIds.size !== 1) return;
+
+    openEdit(Array.from(selectedIds)[0]);
+
+}
+
+
+function screenshotSelected() {
+
+    if (selectedIds.size !== 1) return;
+
+    const id = Array.from(selectedIds)[0];
+
+    const index =
+        complaints.findIndex(function(c) {
+            return c.id === id;
+        });
+
+    if (index >= 0) makeScreenshot(index);
+
+}
+
+
+/* =====================================================
+   EDIT STATUS / TANGGAL / WAKTU
+===================================================== */
+
+let editingId = null;
+
+function openEdit(id) {
+
+    const item =
+        complaints.find(function(c) {
+            return c.id === id;
+        });
+
+    if (!item) return;
+
+    editingId = id;
+
+    document.getElementById("editComplaintId").textContent = item.id;
+    document.getElementById("editStatus").value = item.status;
+    document.getElementById("editDate").value = item.date;
+    document.getElementById("editTime").value = item.time;
+
+    document
+        .getElementById("editModal")
+        .classList
+        .add("show");
+
+}
+
+
+function closeEdit() {
+
+    editingId = null;
+
+    document
+        .getElementById("editModal")
+        .classList
+        .remove("show");
+
+}
+
+
+function saveEdit() {
+
+    const status =
+        document.getElementById("editStatus").value.trim();
+
+    const date =
+        document.getElementById("editDate").value;
+
+    const time =
+        document.getElementById("editTime").value;
+
+    if (!status || !date || !time) {
+
+        alert("Status, tanggal, dan waktu wajib diisi.");
+
+        return;
+
+    }
+
+    const item =
+        complaints.find(function(c) {
+            return c.id === editingId;
+        });
+
+    if (!item) return closeEdit();
+
+    item.status = status;
+    item.date = date;
+    item.time = time;
+
+    saveComplaints();
+    renderTable();
+    updateSummary();
+    searchTable();
+
+    closeEdit();
+
+}
+
+
+function openConfirm(title, text, okLabel, action) {
+
+    document
+        .getElementById("confirmTitle")
+        .textContent = title;
+
+    document
+        .getElementById("confirmText")
+        .textContent = text;
+
+    document
+        .getElementById("confirmOkBtn")
+        .textContent = okLabel;
+
+    pendingConfirmAction = action;
+
+    document
+        .getElementById("confirmModal")
+        .classList
+        .add("show");
+
+}
+
+
+function closeConfirm() {
+
+    pendingConfirmAction = null;
+
+    document
+        .getElementById("confirmModal")
+        .classList
+        .remove("show");
+
+}
+
+
+function runConfirm() {
+
+    const action = pendingConfirmAction;
+
+    closeConfirm();
+
+    if (action) action();
+
+}
+
+
+function askDeleteSelected() {
+
+    const count = selectedIds.size;
+
+    if (!count) return;
+
+    openConfirm(
+        "Hapus Komplain Terpilih",
+        "Hapus " + count + " komplain yang dicentang? " +
+        "Data yang dihapus tidak bisa dikembalikan.",
+        "Ya, Hapus",
+        function() {
+
+            complaints =
+                complaints.filter(function(item) {
+                    return !selectedIds.has(item.id);
+                });
+
+            selectedIds.clear();
+
+            saveComplaints();
+            renderTable();
+            updateSummary();
+
+        }
+    );
+
+}
+
+
+function askClearAll() {
+
+    if (!complaints.length) return;
+
+    openConfirm(
+        "Clear All Riwayat",
+        "Hapus SEMUA " + complaints.length +
+        " riwayat komplain? Data yang dihapus " +
+        "tidak bisa dikembalikan.",
+        "Ya, Hapus Semua",
+        function() {
+
+            complaints = [];
+
+            selectedIds.clear();
+
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (err) {}
+
+            renderTable();
+            updateSummary();
+            updateStorageInfo();
+
+        }
+    );
+
+}
+
 
 
 /* =====================================================
@@ -4243,7 +5144,7 @@ document
     .getElementById("complaintForm")
     .addEventListener(
         "submit",
-        function(e) {
+        async function(e) {
 
 
             e.preventDefault();
@@ -4362,6 +5263,8 @@ document
 
             }
 
+            imageData1 = await compressImage(imageData1);
+            imageData2 = await compressImage(imageData2);
 
             const complaint = {
 
@@ -4396,6 +5299,8 @@ document
                 complaint
             );
 
+            saveComplaints();
+
 
             renderTable();
 
@@ -4428,169 +5333,116 @@ document
 function renderTable() {
 
     const tbody =
-        document
-            .getElementById(
-                "complaintBody"
-            );
-
+        document.getElementById("complaintBody");
 
     tbody.innerHTML = "";
 
+    if (!complaints.length) {
+
+        tbody.innerHTML = `
+            <tr class="empty-row">
+                <td colspan="8">
+                    Belum ada riwayat komplain.
+                </td>
+            </tr>
+        `;
+
+        updateSelectionUI();
+        updateStorageInfo();
+
+        return;
+
+    }
 
     complaints.forEach(
         function(item, index) {
 
+            const row = tbody.insertRow();
 
-            const row =
-                tbody.insertRow();
+            row.dataset.id = item.id;
 
+            if (selectedIds.has(item.id)) {
+                row.classList.add("row-selected");
+            }
 
             const statusClass =
-                getStatusClass(
-                    item.status
-                );
-
+                getStatusClass(item.status);
 
             let statusIcon =
                 "fa-circle-exclamation";
 
-
-            if (
-                statusClass === "success"
-            ) {
-
-                statusIcon =
-                    "fa-circle-check";
-
+            if (statusClass === "success") {
+                statusIcon = "fa-circle-check";
             }
 
-
-            if (
-                statusClass === "danger"
-            ) {
-
-                statusIcon =
-                    "fa-circle-xmark";
-
+            if (statusClass === "danger") {
+                statusIcon = "fa-circle-xmark";
             }
 
-
-            if (
-                statusClass === "process"
-            ) {
-
-                statusIcon =
-                    "fa-clock";
-
+            if (statusClass === "process") {
+                statusIcon = "fa-clock";
             }
 
+            const proofCount =
+                (item.image1 ? 1 : 0) +
+                (item.image2 ? 1 : 0);
 
             row.innerHTML = `
 
-                <td>
-                    ${index + 1}
+                <td class="col-check" data-label="Pilih">
+                    <input
+                        type="checkbox"
+                        class="row-check"
+                        ${selectedIds.has(item.id) ? "checked" : ""}>
                 </td>
 
-                <td>
-                    <strong>
-                        ${item.id}
-                    </strong>
+                <td data-label="No">${index + 1}</td>
+
+                <td data-label="ID Komplain">
+                    <strong>${esc(item.id)}</strong>
                 </td>
 
-                <td>
-                    ${item.nominal}
-                </td>
+                <td data-label="Nominal">${esc(item.nominal)}</td>
 
-                <td>
-                    ${item.merchant}
-                </td>
+                <td data-label="User Merchant">${esc(item.merchant)}</td>
 
-                <td>
-
+                <td data-label="Status">
                     <span class="status">
-
                         <i class="fa-solid ${statusIcon}"></i>
-
-                        ${item.status}
-
+                        ${esc(item.status)}
                     </span>
-
                 </td>
 
-                <td>
-
+                <td data-label="Tanggal & Waktu">
+                    <div>
                     ${formatDate(item.date)}
-
                     <br>
-
                     <span style="color:#888;">
-
-                        ${item.time} WIB
-
+                        ${esc(item.time)} WIB
                     </span>
-
+                    </div>
                 </td>
 
-                <td>
-
+                <td data-label="Bukti">
                     ${
-                        item.image1 || item.image2
-
+                        proofCount
                         ?
-
-                        `
-
-                        <span
-                            style="
-                            display:inline-flex;
-                            align-items:center;
-                            gap:5px;
-                            color:#d71920;
-                            ">
-
+                        `<span style="display:inline-flex;align-items:center;gap:5px;color:#d71920;">
                             <i class="fa-solid fa-images"></i>
-
-                            ${
-                                (item.image1 ? 1 : 0)
-                                +
-                                (item.image2 ? 1 : 0)
-                            }
-
-                        </span>
-
-                        `
-
+                            ${proofCount}
+                        </span>`
                         :
-
-                        `
-
-                        <span style="color:#aaa;">
-                            -
-                        </span>
-
-                        `
+                        `<span style="color:#aaa;">-</span>`
                     }
-
-                </td>
-
-                <td>
-
-                    <button
-                        class="btn btn-screenshot"
-                        onclick="makeScreenshot(${index})">
-
-                        <i class="fa-solid fa-camera"></i>
-
-                        Screenshot
-
-                    </button>
-
                 </td>
 
             `;
 
         }
     );
+
+    updateSelectionUI();
+    updateStorageInfo();
 
 }
 
@@ -4720,7 +5572,7 @@ async function makeScreenshot(index) {
                     font-weight:600;
                     ">
 
-                    Bukti Transaksi 1
+                    Foto Merchant/QRIS
 
                 </span>
 
@@ -4739,10 +5591,12 @@ async function makeScreenshot(index) {
 
                 `
 
-                <img
-                    src="${item.image1}"
-                    alt="Bukti transaksi 1"
-                >
+                <div class="report-image-wrap">
+                    <img
+                        src="${item.image1}"
+                        alt="Foto Merchant/QRIS"
+                    >
+                </div>
 
                 `
 
@@ -4792,10 +5646,12 @@ async function makeScreenshot(index) {
 
                 `
 
-                <img
-                    src="${item.image2}"
-                    alt="Bukti transaksi 2"
-                >
+                <div class="report-image-wrap">
+                    <img
+                        src="${item.image2}"
+                        alt="Bukti transaksi 2"
+                    >
+                </div>
 
                 `
 
@@ -4838,12 +5694,59 @@ async function makeScreenshot(index) {
         );
 
 
-    const canvas =
+    /* ================================================
+       UKURAN OUTPUT: 1080 x 1920 (9:16)
+       Layout dirender 720px lalu di-scale 1.5x = 1080px
+    ================================================ */
+
+    const OUT_W = 1080;
+    const OUT_H = 1920;
+    const BASE_W = 720;
+    const SCALE = OUT_W / BASE_W;
+    const MAX_CSS_H = OUT_H / SCALE;
+
+
+    /* Kecilkan gambar bukti (rasio tetap terjaga)
+       kalau konten melebihi tinggi 1920px */
+
+    const proofImgs =
+        report.querySelectorAll(
+            ".report-image-wrap img"
+        );
+
+    for (let i = 0; i < 3; i++) {
+
+        const overflow =
+            report.offsetHeight - MAX_CSS_H;
+
+        if (overflow <= 0 || !proofImgs.length) {
+            break;
+        }
+
+        const cut =
+            overflow / proofImgs.length;
+
+        proofImgs.forEach(img => {
+
+            const h =
+                img.getBoundingClientRect().height;
+
+            img.style.maxHeight =
+                Math.max(100, h - cut) + "px";
+
+        });
+
+    }
+
+
+    const rawCanvas =
         await html2canvas(
             report,
             {
 
-                scale: 2,
+                scale: SCALE,
+
+                width: BASE_W,
 
                 useCORS: true,
 
@@ -4857,6 +5760,41 @@ async function makeScreenshot(index) {
 
             }
         );
+
+
+    /* Kanvas final tepat 1080 x 1920, latar putih */
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.width = OUT_W;
+    canvas.height = OUT_H;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, OUT_W, OUT_H);
+
+    let drawW = rawCanvas.width;
+    let drawH = rawCanvas.height;
+
+    /* Fallback: jika masih lebih tinggi dari 1920, perkecil proporsional */
+    if (drawH > OUT_H) {
+
+        const ratio = OUT_H / drawH;
+
+        drawW = drawW * ratio;
+        drawH = OUT_H;
+
+    }
+
+    ctx.drawImage(
+        rawCanvas,
+        (OUT_W - drawW) / 2,
+        0,
+        drawW,
+        drawH
+    );
 
 
     currentScreenshotData =
@@ -5009,35 +5947,25 @@ function searchTable() {
 
     const keyword =
         document
-            .getElementById(
-                "searchInput"
-            )
+            .getElementById("searchInput")
             .value
             .toLowerCase();
 
-
-    const rows =
-        document.querySelectorAll(
-            "#complaintBody tr"
-        );
-
-
-    rows.forEach(
-        function(row) {
-
+    document
+        .querySelectorAll("#complaintBody tr[data-id]")
+        .forEach(function(row) {
 
             const text =
-                row.innerText
-                    .toLowerCase();
-
+                row.textContent.toLowerCase();
 
             row.style.display =
                 text.includes(keyword)
                     ? ""
                     : "none";
 
-        }
-    );
+        });
+
+    updateSelectionUI();
 
 }
 
@@ -5152,13 +6080,57 @@ document.addEventListener(
 
         setDefaultDateTime();
 
+        document
+            .getElementById("complaintBody")
+            .addEventListener(
+                "change",
+                function(e) {
 
+                    if (
+                        e.target.classList.contains(
+                            "row-check"
+                        )
+                    ) {
+
+                        const tr =
+                            e.target.closest("tr");
+
+                        toggleRow(
+                            tr.dataset.id,
+                            e.target.checked,
+                            tr
+                        );
+
+                    }
+
+                }
+            );
+
+        applyEditVisibility();
+        renderTable();
         updateSummary();
-
 
     }
 );
 
+
+/* Sinkron jika riwayat diubah dari tab lain */
+
+window.addEventListener(
+    "storage",
+    function(e) {
+
+        if (e.key !== STORAGE_KEY) return;
+
+        complaints = loadComplaints();
+
+        selectedIds.clear();
+
+        renderTable();
+        updateSummary();
+
+    }
+);
 </script>
 
 </body>
