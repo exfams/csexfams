@@ -1419,11 +1419,13 @@ tbody tr:hover {
 
 .report-logo {
 
-    width: 150px;
+    width: 130px;
 
     height: auto;
 
     display: block;
+
+    object-fit: contain;
 
 }
 
@@ -1965,18 +1967,28 @@ tbody tr:hover {
 
     align-items: center;
 
-    gap: 6px;
-
-    color: #777;
-
-    font-weight: 600;
+    gap: 8px;
 
 }
 
 
-.report-footer-brand i {
+.report-footer-logo {
 
-    color: var(--pk-red);
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: block;
+    object-fit: cover;
+
+}
+
+
+.report-footer-brand-name {
+
+    font-size: 9px;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: .3px;
 
 }
 
@@ -3292,9 +3304,9 @@ tbody tr:hover {
 
                 <img
                     class="report-logo"
-                    src="https://pakaidonk.id/logo-pakaidonk.png"
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGNmrPJzq7-3ZAtBs6LLjgiTkpL_U2RKBuWDunvzTw3XUU0YJr5pGVPcY&s=10"
                     crossorigin="anonymous"
-                    alt="Pakaidonk"
+                    alt="Logo"
                 >
 
 
@@ -3707,9 +3719,14 @@ tbody tr:hover {
 
             <div class="report-footer-brand">
 
-                <i class="fa-solid fa-shield-halved"></i>
+                <img
+                    class="report-footer-logo"
+                    src="https://play-lh.googleusercontent.com/qLyTwznFft0mN-05Ql1TsE3W8ud7wNnD0dhsHH18YduDsuc4CBr-mF45zsZjXkJg-6iQTk5QWbk5V8IXKKtK0N8"
+                    crossorigin="anonymous"
+                    alt="Pakaidonk"
+                >
 
-                Pakaidonk
+                <span class="report-footer-brand-name">Pakaidonk</span>
 
             </div>
 
