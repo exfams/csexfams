@@ -27,7 +27,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .side{position:fixed;inset:0 auto 0 0;width:260px;background:var(--card);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:50;transition:transform .25s}
 .brand{display:flex;align-items:center;gap:10px;padding:20px 22px 14px;font-size:20px;font-weight:700;color:var(--hd)}
 .brand i{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;display:grid;place-items:center;font-size:15px}
-.nav{flex:1;overflow-y:auto;padding:4px 12px 16px}
+.nav{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 12px 16px}
 .nav h6{font-size:11px;font-weight:500;letter-spacing:.4px;color:var(--mut);margin:16px 10px 8px}
 .nav a{display:flex;align-items:center;gap:11px;padding:9px 12px;margin-bottom:3px;border-radius:7px;color:var(--tx);text-decoration:none;font-size:14px;cursor:pointer}
 .nav a:hover{background:var(--soft)}
@@ -36,8 +36,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .shade{display:none;position:fixed;inset:0;background:rgba(20,20,40,.45);z-index:40}
 
 /* MAIN */
-.main{margin-left:260px;padding:14px 22px 18px;height:100vh;display:flex;flex-direction:column}
-#home{flex:1;min-height:0;overflow-y:auto;padding-bottom:6px}
+.main{margin-left:260px;padding:14px 22px 18px;height:100vh;height:100dvh;display:flex;flex-direction:column}
+#home{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:12px}
 .top{flex-shrink:0;display:flex;align-items:center;gap:12px;background:var(--card);border-radius:8px;padding:10px 18px;margin-bottom:22px;box-shadow:0 2px 8px rgba(75,70,92,.08)}
 .top .ttl{flex:1;font-weight:600;color:var(--hd);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;color:var(--tx)}
@@ -53,7 +53,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .st b{display:block;font-size:16px;color:var(--hd);font-weight:600}
 .st small{color:var(--mut)}
 .bub{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:17px;flex-shrink:0;background:var(--soft);color:var(--pr)}
-.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:22px}
 .groups .card{margin:0}
 .grp a{display:flex;align-items:center;gap:11px;padding:10px 8px;border-radius:8px;cursor:pointer;color:var(--tx);text-decoration:none}
 .grp a:hover{background:var(--soft)}
@@ -62,7 +62,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 
 /* PREVIEW */
 #view{display:none;padding:0;overflow:hidden;position:relative;flex:1;min-height:0;margin:0;flex-direction:column}
-.vh{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--bd)}
+.vh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--bd)}
 .vh b{flex:1;color:var(--hd);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vh button,.vh a{padding:7px 11px;border-radius:7px;font-size:13px;color:var(--tx);text-decoration:none;background:var(--soft)}
 .vu{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--bg)}
@@ -71,8 +71,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 #vc{width:32px;height:32px;border-radius:7px;background:var(--soft);color:var(--pr);display:grid;place-items:center;flex-shrink:0}
 #vc:hover{background:var(--pr);color:#fff}
 #vc.ok{background:#28c76f;color:#fff}
-.vb{flex:1;min-height:0;position:relative;display:flex}
-#frame{flex:1;width:100%;border:0;background:#fff}
+.vb{flex:1;min-height:0;position:relative;display:flex;overflow:hidden}
+#frame{flex:1;width:100%;height:100%;display:block;border:0;background:#fff}
 #load{position:absolute;inset:0;z-index:1;display:grid;place-items:center;background:var(--card);color:var(--mut)}
 #load::before{content:"";width:34px;height:34px;border:3px solid var(--soft);border-top-color:var(--pr);border-radius:50%;animation:sp .8s linear infinite;margin-bottom:60px;position:absolute}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -87,6 +87,39 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
  .user div{display:none}
  .stats{grid-template-columns:repeat(2,1fr)}
 }
+
+/* FULLSCREEN PREVIEW */
+#view.fs{position:fixed;inset:0;z-index:200;border-radius:0;height:100vh;height:100dvh}
+#view.fs .vh{padding-top:max(10px,env(safe-area-inset-top))}
+
+/* MODE DEVICE */
+.dev{display:flex;gap:2px;padding:2px;border-radius:9px;background:var(--soft)}
+.vh .dev button{padding:6px 10px;background:none;color:var(--mut)}
+.vh .dev button.on{background:var(--pr);color:#fff}
+.vb{background:var(--bg)}
+
+/* TAMBAH LINK */
+.pl{margin-left:auto;width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--pr);font-size:12px}
+.pl:hover{background:var(--pr);color:#fff}
+.grp h3{display:flex;align-items:center}
+.grp a .del{width:28px;height:28px;border-radius:50%;color:#ea5455;font-size:12px;flex-shrink:0}
+.grp a .del:hover{background:rgba(234,84,85,.12)}
+.mdl{display:none;position:fixed;inset:0;z-index:300;background:rgba(20,20,40,.55);align-items:center;justify-content:center;padding:16px}
+.mdl.open{display:flex}
+.mbox{width:100%;max-width:420px;max-height:100%;overflow-y:auto;background:var(--card);border-radius:12px;padding:20px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+.mbox h3{font-size:17px;color:var(--hd);margin-bottom:4px}
+.mbox label{display:block;font-size:12px;color:var(--mut);margin:12px 0 4px}
+.mbox input,.mbox select{width:100%;padding:11px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;outline:none}
+.mbox input:focus,.mbox select:focus{border-color:var(--pr)}
+#aNew{display:none;margin-top:8px}
+.icons{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.icons button{height:38px;border-radius:8px;background:var(--soft);color:var(--pr)}
+.icons button.on{background:var(--pr);color:#fff}
+.mact{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.mact button{padding:10px 18px;border-radius:8px;background:var(--soft)}
+.mact .pri{background:linear-gradient(72deg,var(--pr),var(--pr2));color:#fff;font-weight:600}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b3d53;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:400;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
 
 /* GATE */
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99999}
@@ -138,6 +171,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
     <button class="ic" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
     <div class="ttl" id="ttl">Dashboard</div>
     <button class="ic" id="mode" title="Mode gelap" aria-label="Mode gelap"><i class="fa-solid fa-moon" id="modeIc"></i></button>
+    <button class="ic" id="addBtn" title="Tambah link" aria-label="Tambah link"><i class="fa-solid fa-plus"></i></button>
+    <button class="ic" id="expBtn" title="Simpan permanen ke kode" aria-label="Simpan permanen ke kode"><i class="fa-solid fa-download"></i></button>
     <button class="ic" id="out" title="Reset akses" aria-label="Reset akses"><i class="fa-solid fa-rotate-left"></i></button>
     <div class="user"><div>Admin<small>panduan</small></div><div class="av">A</div></div>
   </header>
@@ -158,7 +193,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   <section class="card" id="view">
     <div class="vh">
       <b id="vt"></b>
+      <div class="dev" id="dev"><button data-dev="desktop" title="Mode desktop" aria-label="Mode desktop"><i class="fa-solid fa-desktop"></i></button><button data-dev="mobile" title="Mode mobile" aria-label="Mode mobile"><i class="fa-solid fa-mobile-screen"></i></button></div>
       <button id="vr">Muat ulang</button>
+      <button id="vf"><i class="fa-solid fa-expand"></i> Layar penuh</button>
       <a id="vo" target="_blank" rel="noopener">Tab baru</a>
     </div>
     <div class="vu">
@@ -166,32 +203,38 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
       <span id="vl"></span>
       <button id="vc" title="Salin link" aria-label="Salin link"><i class="fa-regular fa-copy"></i></button>
     </div>
-    <div class="vb">
+    <div class="vb" id="vb">
       <div id="load">Memuat halaman...</div>
       <iframe id="frame" title="Preview halaman"></iframe>
     </div>
   </section>
 </div>
 
+<div class="mdl" id="mdl"><div class="mbox">
+  <h3>Tambah link</h3>
+  <label for="aN">Nama</label><input id="aN" placeholder="Contoh: Absen Harian" autocomplete="off">
+  <label for="aU">Link</label><input id="aU" placeholder="/absen atau https://situs.com" autocomplete="off" inputmode="url">
+  <label for="aG">Kategori</label><select id="aG"></select><input id="aNew" placeholder="Nama kategori baru">
+  <label>Ikon</label><div class="icons" id="aI"></div>
+  <div class="mact"><button id="aC">Batal</button><button class="pri" id="aS">Simpan</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
 <!-- ================= ANTI DEVTOOLS ================= -->
 <script>
+/* Sembunyikan konten bila DevTools terdocking (hanya desktop). Tidak lagi membekukan browser. */
 setInterval(() => {
-  if (
-    window.outerWidth - window.innerWidth > 150 ||
-    window.outerHeight - window.innerHeight > 150
-  ){
-    document.documentElement.innerHTML = "";
-    document.body.style.display = "none";
-    while(true){
-      history.pushState(null,null,location.href);
-    }
-  }
-},300);
+  const touch = matchMedia("(pointer:coarse)").matches;
+  const open = !touch && !document.fullscreenElement &&
+    (window.outerWidth - window.innerWidth > 200 || window.outerHeight - window.innerHeight > 260);
+  document.body.style.visibility = open ? "hidden" : "";
+}, 500);
 </script>
 
 <script>
 /* ================= DATA MENU ================= */
-const MENU = [
+/*MENU_START*/
+const DEFAULT_MENU = [
  {g:"Panduan", items:[
   ["fa-wallet","Cara Topup E-Wallet","/cara-topup-ewallet"],
   ["fa-circle-play","Tutorial QRIS MerchantPay","/MerchantPay"],
@@ -215,30 +258,110 @@ const MENU = [
   ["fa-receipt","REKAP TRX","/rekap"],
   ["fa-comment-dots","KOMPLAIN","/komplain"]]}
 ];
-const FLAT = []; MENU.forEach(m => m.items.forEach(i => FLAT.push(i)));
+/*MENU_END*/
 
 const $ = id => document.getElementById(id);
 const side = $("side"), shade = $("shade");
 
-/* ================= RENDER ================= */
-let nav = '<a data-i="-1" class="on"><span><i class="fa-solid fa-house"></i></span><span>Dashboard</span></a>', groups = '', n = 0;
-MENU.forEach(m => {
-  nav += '<h6>' + m.g + '</h6>';
-  groups += '<div class="card grp"><h3>' + m.g + '</h3>';
-  m.items.forEach(it => {
-    nav += '<a data-i="' + n + '"><span><i class="fa-solid ' + it[0] + '"></i></span><span>' + it[1] + '</span></a>';
-    groups += '<a data-i="' + n + '"><div class="bub"><i class="fa-solid ' + it[0] + '"></i></div><span>' + it[1] + '</span><em><i class="fa-solid fa-chevron-right"></i></em></a>';
-    n++;
+/* ================= LINK TAMBAHAN (auto save) ================= */
+const KEY = "dash_custom";
+const esc = t => String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const getC = () => { try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ return []; } };
+const setC = c => { try{ localStorage.setItem(KEY, JSON.stringify(c)); }catch(e){ toast("Gagal menyimpan: penyimpanan browser nonaktif."); } };
+let tt; function toast(m){ const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 3500); }
+
+let MENU = [], FLAT = [];
+function build(){
+  MENU = JSON.parse(JSON.stringify(DEFAULT_MENU));
+  getC().forEach((c, ci) => {
+    if(MENU.some(m => m.items.some(i => i[2] === c.it[2]))) return;   // sudah ada di kode permanen
+    let m = MENU.find(m => m.g === c.g);
+    if(!m){ m = {g:c.g, items:[]}; MENU.push(m); }
+    m.items.push([c.it[0], c.it[1], c.it[2], ci + 1]);                 // item ke-4 = penanda link tambahan
   });
-  groups += '</div>';
-});
-$("nav").innerHTML = nav;
-$("groups").innerHTML = groups;
-$("sTot").textContent = FLAT.length;
-$("sGrp").textContent = MENU.length;
+  FLAT = []; MENU.forEach(m => m.items.forEach(i => FLAT.push(i)));
+}
+
+/* ================= RENDER ================= */
+function render(){
+  build();
+  let nav = '<a data-i="-1" class="on"><span><i class="fa-solid fa-house"></i></span><span>Dashboard</span></a>', groups = '', n = 0;
+  MENU.forEach(m => {
+    nav += '<h6>' + esc(m.g) + '</h6>';
+    groups += '<div class="card grp"><h3>' + esc(m.g) + '<button class="pl" data-add="' + esc(m.g) + '" title="Tambah link di ' + esc(m.g) + '" aria-label="Tambah link"><i class="fa-solid fa-plus"></i></button></h3>';
+    m.items.forEach(it => {
+      nav += '<a data-i="' + n + '"><span><i class="fa-solid ' + it[0] + '"></i></span><span>' + esc(it[1]) + '</span></a>';
+      groups += '<a data-i="' + n + '"><div class="bub"><i class="fa-solid ' + it[0] + '"></i></div><span>' + esc(it[1]) + '</span><em><i class="fa-solid fa-chevron-right"></i></em>' +
+        (it[3] ? '<button class="del" data-del="' + (it[3] - 1) + '" title="Hapus link" aria-label="Hapus link"><i class="fa-solid fa-trash"></i></button>' : '') + '</a>';
+      n++;
+    });
+    groups += '</div>';
+  });
+  $("nav").innerHTML = nav;
+  $("groups").innerHTML = groups;
+  $("sTot").textContent = FLAT.length;
+  $("sGrp").textContent = MENU.length;
+}
+render();
+
+/* ----- modal tambah link ----- */
+const ICONS = ["fa-link","fa-globe","fa-file-lines","fa-book","fa-wallet","fa-headset","fa-chart-line","fa-user-check","fa-bell","fa-receipt","fa-mobile-screen","fa-star"];
+let aIcon = ICONS[0];
+function pickIcon(i){ aIcon = i; $("aI").innerHTML = ICONS.map(x => '<button type="button" data-ic="' + x + '" class="' + (x === aIcon ? "on" : "") + '"><i class="fa-solid ' + x + '"></i></button>').join(""); }
+function openAdd(g){
+  $("aG").innerHTML = MENU.map(m => '<option>' + esc(m.g) + '</option>').join("") + '<option value="__new">+ Kategori baru...</option>';
+  if(g) $("aG").value = g;
+  $("aN").value = $("aU").value = $("aNew").value = "";
+  $("aNew").style.display = $("aG").value === "__new" ? "block" : "none";
+  pickIcon(ICONS[0]);
+  $("mdl").classList.add("open");
+  setTimeout(() => $("aN").focus(), 50);
+}
+function closeAdd(){ $("mdl").classList.remove("open"); }
+function saveAdd(){
+  const name = $("aN").value.trim();
+  let url = $("aU").value.trim(), g = $("aG").value;
+  if(g === "__new") g = $("aNew").value.trim();
+  if(!name || !url || !g){ toast("Nama, link, dan kategori wajib diisi."); return; }
+  if(!/^(\/|\.\/|https?:\/\/)/i.test(url)) url = "https://" + url;
+  const c = getC(); c.push({g:g, it:[aIcon, name, url]}); setC(c);   // auto save
+  closeAdd(); render();
+  toast("Link tersimpan. Klik ikon unduh untuk menjadikannya permanen di kode.");
+  if(location.hash) location.hash = ""; else route();
+}
+$("addBtn").onclick = () => openAdd();
+$("aC").onclick = closeAdd;
+$("aS").onclick = saveAdd;
+$("aI").onclick = e => { const b = e.target.closest("[data-ic]"); if(b) pickIcon(b.dataset.ic); };
+$("aG").onchange = () => { $("aNew").style.display = $("aG").value === "__new" ? "block" : "none"; };
+$("mdl").addEventListener("mousedown", e => { if(e.target === $("mdl")) closeAdd(); });
+["aN","aU","aNew"].forEach(id => $(id).addEventListener("keydown", e => { if(e.key === "Enter") saveAdd(); }));
+
+/* ----- simpan permanen: tulis link ke blok DEFAULT_MENU lalu unduh file baru ----- */
+$("expBtn").onclick = async () => {
+  const data = MENU.map(m => ({g:m.g, items:m.items.map(i => [i[0], i[1], i[2]])}));
+  const js = "const DEFAULT_MENU = " + JSON.stringify(data, null, 1).replace(/<\//g, "<\\/") + ";";
+  const A = "/*MENU_" + "START*/", B = "/*MENU_" + "END*/";
+  let src = "";
+  try{ src = await (await fetch(location.href.split("#")[0], {cache:"no-store"})).text(); }catch(e){}
+  const i = src.indexOf(A), j = src.indexOf(B, i);
+  if(i > -1 && j > i){
+    src = src.slice(0, i + A.length) + "\n" + js + "\n" + src.slice(j);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([src], {type:"text/html"}));
+    a.download = "dashboard.html";
+    document.body.appendChild(a); a.click(); a.remove();
+    toast("File baru terunduh. Upload untuk menggantikan file lama agar permanen.");
+  }else{
+    try{ await navigator.clipboard.writeText(js); toast("Kode menu disalin. Tempel menggantikan blok DEFAULT_MENU di file."); }
+    catch(e){ prompt("Salin kode ini lalu tempel menggantikan blok DEFAULT_MENU:", js); }
+  }
+};
 
 /* ================= PREVIEW DI DALAM DASHBOARD ================= */
+let homeY = 0;
 function show(i){
+  if($("home").style.display !== "none") homeY = $("home").scrollTop;
   const home = i < 0 || !FLAT[i];
   $("home").style.display = home ? "block" : "none";
   $("view").style.display = home ? "none" : "flex";
@@ -246,7 +369,7 @@ function show(i){
   $("ttl").textContent = home ? "Dashboard" : FLAT[i][1];
   if(!home){
     const url = FLAT[i][2];
-    $("vt").innerHTML = '<i class="fa-solid ' + FLAT[i][0] + '"></i>&nbsp; ' + FLAT[i][1];
+    $("vt").innerHTML = '<i class="fa-solid ' + FLAT[i][0] + '"></i>&nbsp; ' + esc(FLAT[i][1]);
     const full = new URL(url, location.href).href;
     $("vo").href = full;
     $("vl").textContent = full;
@@ -255,9 +378,10 @@ function show(i){
     $("frame").src = url;
   } else {
     $("frame").src = "about:blank";
+    fs(false);
   }
   closeSide();
-  $("home").scrollTop = 0;
+  if(home) $("home").scrollTop = homeY; else fit();
 }
 function go(i){ location.hash = i < 0 ? "" : "#m" + i; }
 function route(){
@@ -265,6 +389,10 @@ function route(){
   show(m ? +m[1] : -1);
 }
 document.addEventListener("click", e => {
+  const d = e.target.closest("[data-del]");
+  if(d){ if(confirm("Hapus link ini?")){ const c = getC(); c.splice(+d.dataset.del, 1); setC(c); render(); route(); } return; }
+  const p = e.target.closest("[data-add]");
+  if(p){ openAdd(p.dataset.add); return; }
   const a = e.target.closest("[data-i]");
   if(a) go(+a.dataset.i);
 });
@@ -287,6 +415,47 @@ $("vc").onclick = async () => {
   setTimeout(() => { b.classList.remove("ok"); b.innerHTML = '<i class="fa-regular fa-copy"></i>'; }, 1500);
 };
 $("vr").onclick = () => { $("load").style.display = "grid"; $("frame").src = $("frame").src; };
+
+/* mode desktop / mobile pada preview */
+let dev = localStorage.getItem("dash_dev") === "mobile" ? "mobile" : "desktop";
+function fit(){
+  const vb = $("vb"), f = $("frame"), W = vb.clientWidth, H = vb.clientHeight;
+  document.querySelectorAll("#dev button").forEach(b => b.classList.toggle("on", b.dataset.dev === dev));
+  f.style.cssText = "";
+  if(!W || !H) return;
+  if(dev === "mobile"){
+    f.style.cssText = W > 430
+      ? "flex:none;width:390px;max-width:100%;height:calc(100% - 28px);margin:14px auto;border-radius:20px;box-shadow:0 0 0 8px #1b2634,0 10px 30px rgba(0,0,0,.3)"
+      : "";
+  }else if(W < 1000){                      // layar sempit: tampilkan lebar desktop 1280px, diperkecil
+    const sc = W / 1280;
+    f.style.cssText = "flex:none;width:1280px;height:" + (H / sc) + "px;transform:scale(" + sc + ");transform-origin:0 0";
+  }
+}
+$("dev").onclick = e => {
+  const b = e.target.closest("[data-dev]");
+  if(!b) return;
+  dev = b.dataset.dev; localStorage.setItem("dash_dev", dev); fit();
+};
+window.addEventListener("resize", fit);
+
+/* preview layar penuh */
+function fs(on){
+  const v = $("view");
+  if(on === undefined) on = !v.classList.contains("fs");
+  if(on === v.classList.contains("fs")) return;
+  v.classList.toggle("fs", on);
+  setTimeout(fit, 150);
+  $("vf").innerHTML = on ? '<i class="fa-solid fa-compress"></i> Keluar' : '<i class="fa-solid fa-expand"></i> Layar penuh';
+  if(on && v.requestFullscreen) v.requestFullscreen().catch(() => {});
+  else if(!on && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+}
+$("vf").onclick = () => fs();
+document.addEventListener("fullscreenchange", () => { if(!document.fullscreenElement) fs(false); });
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  if($("mdl").classList.contains("open")) closeAdd(); else fs(false);
+});
 
 /* sidebar mobile */
 function openSide(){ side.classList.add("open"); shade.classList.add("open"); }
