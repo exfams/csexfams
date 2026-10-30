@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/1000630391.jpg">
 <link rel="apple-touch-icon" href="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/1000630391.jpg">
 <meta name="theme-color" content="#0F1115">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -296,12 +297,12 @@ button:not(:disabled):active{opacity:.8}
 </div>
 
 <div class="card">
-  <h2>Omset Kotor & PPH</h2>
-  <label>Omset Kotor (Rp)</label>
+  <h2>OMSET TRANSAKSI & MODAL</h2>
+  <label>OMSET TRANSAKSI (Rp)</label>
   <input type="text" id="omsetKotorManual" inputmode="numeric" value="">
 
-  <label>PPH (Rp)</label>
-  <input type="text" id="pphManual" inputmode="numeric" value="">
+  <label>MODAL (Rp)</label>
+  <input type="text" id="MODALManual" inputmode="numeric" value="">
 </div>
 
 <div class="card">
@@ -348,7 +349,7 @@ document.getElementById('omsetKotorManual').addEventListener('input', function(e
   e.target.setSelectionRange(pos, pos);
 });
 
-document.getElementById('pphManual').addEventListener('input', function(e){
+document.getElementById('MODALManual').addEventListener('input', function(e){
   const posDariKanan = e.target.value.length - e.target.selectionStart;
   e.target.value = formatRibuan(e.target.value);
   const pos = e.target.value.length - posDariKanan;
@@ -361,7 +362,7 @@ function angka(){
     trx: parseFloat(document.getElementById('totalTransaksi').value) || 0,
     kotor: parseFloat(document.getElementById('pendapatanKotor').value.replace(/\D/g, "")) || 0,
     omsetManual: parseFloat(document.getElementById('omsetKotorManual').value.replace(/\D/g, "")) || 0,
-    pphManual: parseFloat(document.getElementById('pphManual').value.replace(/\D/g, "")) || 0
+    MODALManual: parseFloat(document.getElementById('MODALManual').value.replace(/\D/g, "")) || 0
   };
 }
 
@@ -374,12 +375,28 @@ function hitung(){
     "<strong>Kuota API : " + rp(kuota) + " x " + trx + " Total Transaksi = " + rp(biayaKuota) + "</strong>" +
     "<strong>Pendapatan Kotor Harian : " + rp(kotor) + "</strong>" +
     "<strong>Total keseluruhan : " + rp(kotor) + " - " + rp(biayaKuota) + "</strong>" +
-    "<strong>Total Pendapatan Bersih Harian dikurangi Kuota API = " + rp(bersih) + "</strong>";
+
+'<strong>Total Pendapatan Bersih Harian dikurangi Kuota API = ' +
+rp(bersih) +
+' <span onclick="salinBersih(this, ' + bersih + ')" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:#2196F3;vertical-align:middle;font-weight:500;">' +
+'<span class="material-symbols-outlined" style="font-size:19px;">content_copy</span>' +
+'<span class="teks-salin"></span>' +
+'</span></strong>';
+
 }
 
 ['kuotaApi','totalTransaksi','pendapatanKotor'].forEach(id=>{
   document.getElementById(id).addEventListener('input', hitung);
 });
+
+
+function salinBersih(el, nominal) {
+  navigator.clipboard.writeText(rp(nominal)).then(() => {
+    el.querySelector('.material-symbols-outlined').textContent = 'check';
+    el.querySelector('.teks-salin').textContent = 'Tersalin.';
+  });
+}
+
 
 let uploadedBytes = null;
 let posisiMode = 'baru';
@@ -454,7 +471,7 @@ function terbilangRupiah(n){
 async function editPdf(){
   if(!uploadedBytes){ document.getElementById('status').innerText = "Upload PDF dulu."; return null; }
 
-  const {kuota, trx, kotor, omsetManual, pphManual} = angka();
+  const {kuota, trx, kotor, omsetManual, MODALManual} = angka();
   const biayaKuota = kuota * trx;
   const bersih = kotor - biayaKuota;
 
@@ -480,12 +497,12 @@ async function editPdf(){
 
   page.drawRectangle({x:margin, y:topRowY, width:halfW, height:30, color:darkBlue});
   page.drawText(
-    "OMSET KOTOR : " + rp(omsetManual),
+    "OMSET TRANSAKSI : " + rp(omsetManual),
     {x:margin+8, y:topRowY+11, size:13, font:fontBold, color:white});
 
   page.drawRectangle({x:margin+halfW+8, y:topRowY, width:halfW, height:30, color:darkBlue});
   page.drawText(
-    "PPH : " + rp(pphManual),
+    "MODAL : " + rp(MODALManual),
     {x:margin+halfW+8+8, y:topRowY+11, size:13, font:fontBold, color:white});
 
   page.drawRectangle({x:margin, y:startY, width:boxW, height:30, color:blue});
