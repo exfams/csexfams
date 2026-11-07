@@ -14,9 +14,9 @@
 *{box-sizing:border-box}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  max-width:480px;
-  margin:0 auto;
-  padding:28px 18px 56px;
+  margin:0;
+  padding:0;
+  overflow:hidden;
   background:#0F1115;
   color:#E6E9EF;
   -webkit-font-smoothing:antialiased;
@@ -46,37 +46,43 @@ body{
   background:#181B21;
   border:1px solid #262B34;
   border-radius:10px;
-  padding:22px;
-  margin-bottom:16px;
+  padding:12px 14px;
+  margin-bottom:10px;
 }
 h2{
-  font-size:14px;
+  font-size:12px;
   font-weight:600;
   color:#9AA3B2;
-  margin:0 0 16px;
+  margin:0 0 8px;
   letter-spacing:.2px;
 }
 label{
   display:block;
-  font-size:13px;
+  font-size:12px;
   font-weight:600;
   color:#C4CAD4;
-  margin-top:14px;
+  margin-top:8px;
 }
 label:first-of-type{margin-top:0}
 input[type="text"],
 input[type="number"],
+input[type="date"],
 textarea{
   width:100%;
-  padding:10px 12px;
-  margin-top:6px;
+  padding:8px 10px;
+  margin-top:4px;
   border:1px solid #2C323D;
   border-radius:7px;
-  font-size:15px;
+  font-size:16px;
   color:#E6E9EF;
   background:#101318;
   transition:border-color .15s ease;
   font-family:inherit;
+}
+input[type="date"]{
+  color-scheme:dark;
+  min-height:40px;
+  min-width:0;
 }
 textarea{
   resize:none;
@@ -87,6 +93,7 @@ textarea{
 }
 input[type="text"]:focus,
 input[type="number"]:focus,
+input[type="date"]:focus,
 textarea:focus{
   outline:none;
   border-color:#2196f3;
@@ -94,25 +101,25 @@ textarea:focus{
 }
 input[type="file"]{
   width:100%;
-  font-size:14px;
-  padding:10px;
+  font-size:13px;
+  padding:8px;
   border:1px dashed #2C323D;
   border-radius:7px;
   background:#101318;
   color:#9AA3B2;
 }
 #fileName{
-  font-size:13px;
+  font-size:12px;
   color:#9AA3B2;
-  margin:8px 0 0;
+  margin:4px 0 0;
 }
 .hasil{
   background:#262B34;
   color:#FFFFFF;
-  padding:18px 20px;
+  padding:12px 14px;
   border-radius:10px;
-  line-height:1.75;
-  font-size:14px;
+  line-height:1.5;
+  font-size:12.5px;
   border:1px solid #262B34;
 }
 .hasil strong{
@@ -120,19 +127,19 @@ input[type="file"]{
   font-weight:600;
 }
 .hasil strong:last-child{
-  margin-top:8px;
-  padding-top:10px;
+  margin-top:6px;
+  padding-top:8px;
   border-top:1px solid rgba(255,255,255,.15);
-  font-size:15px;
+  font-size:13.5px;
   color:#6FE0A6;
 }
 button{
   width:100%;
-  padding:13px;
-  margin-top:10px;
+  padding:11px 4px;
+  margin-top:0;
   border:none;
   border-radius:7px;
-  font-size:15px;
+  font-size:14px;
   font-weight:600;
   cursor:pointer;
   transition:opacity .15s ease;
@@ -186,8 +193,6 @@ button:not(:disabled):active{opacity:.8}
   justify-content:center;
   z-index:2;
 }
-#btnPrevPage{left:6px}
-#btnNextPage{right:6px}
 .nav-btn:disabled{opacity:.3;cursor:not-allowed}
 #previewCanvas{
   width:100%;
@@ -201,7 +206,19 @@ button:not(:disabled):active{opacity:.8}
   text-align:center;
   font-size:13px;
   color:#9AA3B2;
-  margin:12px 0 0;
+  margin:0;
+  min-width:108px;
+}
+.page-nav{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+}
+.page-nav .nav-btn{
+  position:static;
+  transform:none;
 }
 .toggle-group{
   display:flex;
@@ -242,17 +259,81 @@ button:not(:disabled):active{opacity:.8}
   min-width:64px;
   text-align:center;
 }
+#btnTutup{
+  background:#262B34;
+  color:#E6E9EF;
+  margin-top:12px;
+}
+#pager{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  touch-action:pan-y;
+}
+#track{
+  display:flex;
+  width:200%;
+  height:100%;
+  transition:transform .32s cubic-bezier(.22,.8,.3,1);
+  will-change:transform;
+}
+.pane{
+  width:50%;
+  height:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+.pane-inner{
+  max-width:480px;
+  margin:0 auto;
+  padding:12px 12px 36px;
+}
+#dots{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:10px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  z-index:5;
+  pointer-events:none;
+}
+#dots span{
+  width:7px;
+  height:7px;
+  border-radius:4px;
+  background:#3A414D;
+  transition:background .2s ease,width .2s ease;
+  pointer-events:auto;
+  cursor:pointer;
+}
+#dots span.on{
+  background:#2196f3;
+  width:18px;
+}
+.row2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.row2 + .row2{margin-top:10px}
+.row2 > div{min-width:0}
+.btn-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
 @media (min-width:600px){
-  body{
-    max-width:680px;
-    padding:44px 32px 72px;
-  }
-  .card{padding:28px}
-  h2{font-size:15px}
-  #previewCanvas{max-height:720px;width:auto}
+  .pane-inner{max-width:680px;padding-top:32px}
+  .card{padding:22px}
+  h2{font-size:14px}
 }
 @media (min-width:900px){
-  body{max-width:760px}
+  .pane-inner{max-width:760px}
 }
 </style>
 </head>
@@ -260,30 +341,81 @@ button:not(:disabled):active{opacity:.8}
 
 
 
-<div class="card">
-  <h2>Upload File PDF</h2>
-  <input type="file" id="pdfFile" accept="application/pdf">
-  <p id="fileName"></p>
-</div>
+<div id="pager"><div id="track">
+<section class="pane" id="paneForm"><div class="pane-inner">
 
 <div class="card">
-  <h2>Nama File Hasil Edit</h2>
+  <h2>File PDF</h2>
+  <input type="file" id="pdfFile" accept="application/pdf">
+  <p id="fileName"></p>
+  <label style="margin-top:8px">Nama File Hasil Edit</label>
   <textarea id="namaFile" rows="1">hasil-edit.pdf</textarea>
 </div>
 
-<div class="card" id="pdfPreviewCard" style="display:none">
-  <h2>Pratinjau PDF</h2>
-  <div class="preview-wrap">
-    <button type="button" class="nav-btn" id="btnPrevPage" aria-label="Halaman sebelumnya">‹</button>
-    <canvas id="previewCanvas"></canvas>
-    <button type="button" class="nav-btn" id="btnNextPage" aria-label="Halaman berikutnya">›</button>
+<div class="card">
+  <h2>Data Laporan</h2>
+  <div class="row2">
+    <div>
+      <label>Omset Transaksi (Rp)</label>
+      <input type="text" id="omsetKotorManual" inputmode="numeric" value="">
+    </div>
+    <div>
+      <label>Modal (Rp)</label>
+      <input type="text" id="MODALManual" inputmode="numeric" value="">
+    </div>
   </div>
-  <p class="page-info" id="pageInfo"></p>
+  <div class="row2">
+    <div>
+      <label>Kuota API (Rp)</label>
+      <input type="number" id="kuotaApi" value="70">
+    </div>
+    <div>
+      <label>Total Transaksi</label>
+      <input type="number" id="totalTransaksi" value="">
+    </div>
+  </div>
+  <div style="margin-top:10px">
+    <label>Pendapatan Kotor (Rp)</label>
+    <input type="text" id="pendapatanKotor" inputmode="numeric" value="">
+  </div>
+  <div class="row2" style="margin-top:10px">
+    <div>
+      <label>Penarikan PG (Rp)</label>
+      <input type="text" id="penarikanPG" inputmode="numeric" value="" placeholder="Opsional">
+    </div>
+    <div>
+      <label>Tanggal Penarikan PG</label>
+      <input type="date" id="tglPG">
+    </div>
+  </div>
 </div>
 
-<div class="card">
-  <h2>Posisi Hasil Edit</h2>
-  <label>Penempatan</label>
+<div class="hasil" id="hasil"></div>
+
+<div class="btn-row">
+  <button id="btnLihatHasil" disabled>Lihat</button>
+  <button id="btnDownload" disabled>Download</button>
+  <button id="btnShare" disabled>Share Drive</button>
+</div>
+<div id="status"></div>
+
+</div></section>
+
+<section class="pane" id="panePreview"><div class="pane-inner">
+<div class="card" id="pdfPreviewCard">
+  <h2>Pratinjau PDF</h2>
+  <div class="preview-wrap">
+    <canvas id="previewCanvas"></canvas>
+  </div>
+  <div class="page-nav">
+    <button type="button" class="nav-btn" id="btnFirstPage" aria-label="Halaman pertama">«</button>
+    <button type="button" class="nav-btn" id="btnPrevPage" aria-label="Halaman sebelumnya">‹</button>
+    <span class="page-info" id="pageInfo">Belum ada pratinjau</span>
+    <button type="button" class="nav-btn" id="btnNextPage" aria-label="Halaman berikutnya">›</button>
+    <button type="button" class="nav-btn" id="btnLastPage" aria-label="Halaman terakhir">»</button>
+  </div>
+
+  <label style="margin-top:12px">Penempatan</label>
   <div class="toggle-group">
     <button type="button" class="toggle-btn active" id="btnModeBaru">Halaman Baru</button>
     <button type="button" class="toggle-btn" id="btnModeTimpa">Halaman Terakhir</button>
@@ -294,35 +426,13 @@ button:not(:disabled):active{opacity:.8}
     <span id="offsetInfo">0 px</span>
     <button type="button" class="nav-btn" id="btnGeserBawah" aria-label="Geser ke bawah">▼</button>
   </div>
+  <button type="button" id="btnTutup">‹ Kembali ke Form</button>
 </div>
+</div></section>
 
-<div class="card">
-  <h2>OMSET TRANSAKSI & MODAL</h2>
-  <label>OMSET TRANSAKSI (Rp)</label>
-  <input type="text" id="omsetKotorManual" inputmode="numeric" value="">
+</div></div>
 
-  <label>MODAL (Rp)</label>
-  <input type="text" id="MODALManual" inputmode="numeric" value="">
-</div>
-
-<div class="card">
-  <h2>Form Kalkulasi</h2>
-  <label>Kuota API (Rp)</label>
-  <input type="number" id="kuotaApi" value="70">
-
-  <label>Total Transaksi</label>
-  <input type="number" id="totalTransaksi" value="">
-
-  <label>Pendapatan Kotor (Rp)</label>
-  <input type="text" id="pendapatanKotor" inputmode="numeric" value="">
-</div>
-
-<div class="hasil" id="hasil"></div>
-
-<button id="btnLihatHasil" disabled>Lihat Hasil Edit</button>
-<button id="btnDownload" disabled>Download PDF Hasil Edit</button>
-<button id="btnShare" disabled>Share ke Google Drive</button>
-<div id="status"></div>
+<div id="dots"><span class="on" id="dot0"></span><span id="dot1"></span></div>
 
 <script>
 function rp(n){
@@ -356,13 +466,36 @@ document.getElementById('MODALManual').addEventListener('input', function(e){
   e.target.setSelectionRange(pos, pos);
 });
 
+document.getElementById('penarikanPG').addEventListener('input', function(e){
+  const posDariKanan = e.target.value.length - e.target.selectionStart;
+  e.target.value = formatRibuan(e.target.value);
+  const pos = e.target.value.length - posDariKanan;
+  e.target.setSelectionRange(pos, pos);
+});
+
+(function(){
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  document.getElementById('tglPG').value = d.getFullYear() + "-" + mm + "-" + dd;
+})();
+
+function tanggalPG(){
+  const v = document.getElementById('tglPG').value;
+  if(!v) return "";
+  const parts = v.split("-");
+  return parts[2] + "/" + parts[1] + "/" + parts[0];
+}
+
 function angka(){
   return {
     kuota: parseFloat(document.getElementById('kuotaApi').value) || 0,
     trx: parseFloat(document.getElementById('totalTransaksi').value) || 0,
     kotor: parseFloat(document.getElementById('pendapatanKotor').value.replace(/\D/g, "")) || 0,
     omsetManual: parseFloat(document.getElementById('omsetKotorManual').value.replace(/\D/g, "")) || 0,
-    MODALManual: parseFloat(document.getElementById('MODALManual').value.replace(/\D/g, "")) || 0
+    MODALManual: parseFloat(document.getElementById('MODALManual').value.replace(/\D/g, "")) || 0,
+    penarikan: parseFloat(document.getElementById('penarikanPG').value.replace(/\D/g, "")) || 0,
+    tglPG: tanggalPG()
   };
 }
 
@@ -471,7 +604,7 @@ function terbilangRupiah(n){
 async function editPdf(){
   if(!uploadedBytes){ document.getElementById('status').innerText = "Upload PDF dulu."; return null; }
 
-  const {kuota, trx, kotor, omsetManual, MODALManual} = angka();
+  const {kuota, trx, kotor, omsetManual, MODALManual, penarikan, tglPG} = angka();
   const biayaKuota = kuota * trx;
   const bersih = kotor - biayaKuota;
 
@@ -488,40 +621,93 @@ async function editPdf(){
 
   const blue = rgb(33/255,150/255,243/255);
   const darkBlue = rgb(13/255,71/255,161/255);
-  const green = rgb(46/255,125/255,50/255);
+  const green = rgb(48/255,199/255,49/255);
+  const purple = rgb(106/255,27/255,154/255);
   const white = rgb(1,1,1);
+  const textDark = rgb(30/255,41/255,59/255);
+  const rowLight = rgb(245/255,247/255,250/255);
+  const borderGray = rgb(215/255,221/255,230/255);
+  const labelBlue = rgb(190/255,208/255,240/255);
+  
   const margin = 30;
   const boxW = width - margin*2;
   const halfW = (boxW - 8) / 2;
-  const topRowY = startY + 40;
+  const pad = 12;
 
-  page.drawRectangle({x:margin, y:topRowY, width:halfW, height:30, color:darkBlue});
-  page.drawText(
-    "OMSET TRANSAKSI : " + rp(omsetManual),
-    {x:margin+8, y:topRowY+11, size:13, font:fontBold, color:white});
+  function teksKanan(text, rightX, y, size, f, color){
+    const w = f.widthOfTextAtSize(text, size);
+    page.drawText(text, {x:rightX - w, y:y, size:size, font:f, color:color});
+  }
 
-  page.drawRectangle({x:margin+halfW+8, y:topRowY, width:halfW, height:30, color:darkBlue});
-  page.drawText(
-    "MODAL : " + rp(MODALManual),
-    {x:margin+halfW+8+8, y:topRowY+11, size:13, font:fontBold, color:white});
+  // ===== Baris atas: Omset Transaksi & Modal =====
+  const topY = startY + 36;
 
-  page.drawRectangle({x:margin, y:startY, width:boxW, height:30, color:blue});
-  page.drawText(
-    "Kuota API : " + rp(kuota) + "/trx    Total Transaksi : " + trx + "    Total keseluruhan : " + rp(kuota) + " x " + trx + " = " + rp(biayaKuota),
-    {x:margin+8, y:startY+11, size:12, font:fontBold, color:white});
+  page.drawRectangle({x:margin, y:topY, width:halfW, height:36, color:darkBlue});
+  page.drawText("OMSET TRANSAKSI",
+    {x:margin+pad, y:topY+23, size:8, font:fontBold, color:labelBlue});
+  page.drawText(rp(omsetManual),
+    {x:margin+pad, y:topY+8, size:14, font:fontBold, color:white});
 
-  page.drawRectangle({x:margin, y:startY-36, width:boxW, height:30, color:blue});
-  page.drawText(
-    "Pendapatan Kotor : " + rp(kotor) + " dikurangi Biaya Kuota API " + rp(biayaKuota) + " = " + rp(bersih),
-    {x:margin+8, y:startY-25, size:12, font:fontBold, color:white});
+  page.drawRectangle({x:margin+halfW+8, y:topY, width:halfW, height:36, color:darkBlue});
+  page.drawText("MODAL",
+    {x:margin+halfW+8+pad, y:topY+23, size:8, font:fontBold, color:labelBlue});
+  page.drawText(rp(MODALManual),
+    {x:margin+halfW+8+pad, y:topY+8, size:14, font:fontBold, color:white});
 
-  page.drawRectangle({x:margin, y:startY-94, width:boxW, height:52, color:green});
-  page.drawText(
-    "Total Keseluruhan Pendapatan Bersih dikurangi Kuota API : " + rp(bersih),
-    {x:margin+8, y:startY-60, size:14, font:fontBold, color:white});
-  page.drawText(
-    "(" + terbilangRupiah(bersih) + ".)",
-    {x:margin+8, y:startY-80, size:13, font:font, color:white});
+  // ===== Tabel rincian perhitungan =====
+  const rowH = 20;
+  const tableTop = startY + 28;
+
+  page.drawRectangle({x:margin, y:tableTop-rowH, width:boxW, height:rowH, color:blue});
+  page.drawText("RINCIAN PERHITUNGAN",
+    {x:margin+pad, y:tableTop-rowH+6, size:9, font:fontBold, color:white});
+
+  const rows = [
+    ["Kuota API per Transaksi", rp(kuota)],
+    ["Total Transaksi", String(trx)],
+    ["Biaya Kuota API (" + rp(kuota) + " x " + trx + ")", rp(biayaKuota)],
+    ["Pendapatan Kotor", rp(kotor)]
+  ];
+
+  rows.forEach(function(r, i){
+    const ry = tableTop - rowH*(i+2);
+    page.drawRectangle({
+      x:margin, y:ry, width:boxW, height:rowH,
+      color: (i % 2 === 0) ? rowLight : white,
+      borderColor:borderGray, borderWidth:0.5
+    });
+    page.drawText(r[0], {x:margin+pad, y:ry+6, size:10, font:font, color:textDark});
+    teksKanan(r[1], margin+boxW-pad, ry+6, 10, fontBold, textDark);
+  });
+
+  // ===== KHUSUS: Penarikan Payment Gateway (opsional, masih dalam tabel) =====
+  let extra = 0;
+  if(penarikan > 0){
+    extra = rowH * 2;
+    const hy = tableTop - rowH*6;
+    page.drawRectangle({x:margin, y:hy, width:boxW, height:rowH, color:blue});
+    page.drawText(tglPG ? "Penarikan dana PG di tanggal " + tglPG : "Penarikan dana PG",
+      {x:margin+pad, y:hy+6, size:9, font:fontBold, color:white});
+
+    const ry2 = tableTop - rowH*7;
+    page.drawRectangle({
+      x:margin, y:ry2, width:boxW, height:rowH,
+      color:white, borderColor:borderGray, borderWidth:0.5
+    });
+    page.drawText("Penarikan Payment Gateway", {x:margin+pad, y:ry2+6, size:10, font:font, color:textDark});
+    teksKanan(rp(penarikan), margin+boxW-pad, ry2+6, 10, fontBold, textDark);
+  }
+
+  // ===== Kotak total pendapatan bersih =====
+  const gy = startY - 134 - extra;
+  page.drawRectangle({x:margin, y:gy, width:boxW, height:54, color:green});
+  page.drawText("TOTAL PENDAPATAN BERSIH (SETELAH BIAYA KUOTA API)",
+    {x:margin+pad, y:gy+40, size:9, font:fontBold, color:white});
+  page.drawText(rp(bersih),
+    {x:margin+pad, y:gy+19, size:18, font:fontBold, color:white});
+  page.drawText("(" + terbilangRupiah(bersih) + ".)",
+    {x:margin+pad, y:gy+6, size:8.5, font:font, color:white});
+
 
   const bytes = await pdfDoc.save();
   return bytes;
@@ -602,7 +788,8 @@ async function renderPreviewPage(num){
   const ctx = canvas.getContext('2d');
   const container = canvas.parentElement;
   const baseViewport = page.getViewport({scale:1});
-  const targetWidth = container.clientWidth - 16;
+  const maxH = window.innerHeight * 0.42;
+  const targetWidth = Math.min(container.clientWidth - 16, maxH * baseViewport.width / baseViewport.height);
   const scale = targetWidth > 0 ? targetWidth / baseViewport.width : 1;
   const viewport = page.getViewport({scale:scale});
   const outputScale = window.devicePixelRatio || 1;
@@ -613,15 +800,15 @@ async function renderPreviewPage(num){
   const transform = outputScale !== 1 ? [outputScale,0,0,outputScale,0,0] : null;
   await page.render({canvasContext: ctx, viewport: viewport, transform: transform}).promise;
   document.getElementById('pageInfo').innerText = "Halaman " + num + " dari " + previewTotalPages;
+  document.getElementById('btnFirstPage').disabled = num <= 1;
   document.getElementById('btnPrevPage').disabled = num <= 1;
   document.getElementById('btnNextPage').disabled = num >= previewTotalPages;
+  document.getElementById('btnLastPage').disabled = num >= previewTotalPages;
 }
 
 document.getElementById('pdfFile').addEventListener('change', function(e){
   const f = e.target.files[0];
-  const previewCard = document.getElementById('pdfPreviewCard');
   if(!f){
-    previewCard.style.display = "none";
     previewDoc = null;
     return;
   }
@@ -631,8 +818,6 @@ document.getElementById('pdfFile').addEventListener('change', function(e){
     previewDoc = await pdfjsLib.getDocument({data: typedArray}).promise;
     previewTotalPages = previewDoc.numPages;
     previewPageNum = 1;
-    previewCard.style.display = "block";
-    renderPreviewPage(previewPageNum);
   };
   previewReader.readAsArrayBuffer(f);
 });
@@ -640,6 +825,20 @@ document.getElementById('pdfFile').addEventListener('change', function(e){
 document.getElementById('btnPrevPage').addEventListener('click', function(){
   if(previewPageNum > 1){
     previewPageNum--;
+    renderPreviewPage(previewPageNum);
+  }
+});
+
+document.getElementById('btnFirstPage').addEventListener('click', function(){
+  if(previewPageNum !== 1){
+    previewPageNum = 1;
+    renderPreviewPage(previewPageNum);
+  }
+});
+
+document.getElementById('btnLastPage').addEventListener('click', function(){
+  if(previewPageNum !== previewTotalPages){
+    previewPageNum = previewTotalPages;
     renderPreviewPage(previewPageNum);
   }
 });
@@ -660,18 +859,82 @@ async function tampilkanPratinjau(doScroll){
   previewDoc = await pdfjsLib.getDocument({data: typedArray}).promise;
   previewTotalPages = previewDoc.numPages;
   previewPageNum = previewTotalPages;
-  const previewCard = document.getElementById('pdfPreviewCard');
-  previewCard.style.display = "block";
   await renderPreviewPage(previewPageNum);
-  if(doScroll){
-    previewCard.scrollIntoView({behavior:"smooth", block:"center"});
-  }
   status.innerText = "Menampilkan pratinjau hasil edit.";
 }
 
-document.getElementById('btnLihatHasil').addEventListener('click', function(){
-  tampilkanPratinjau(true);
-});
+// ===== Geser kiri-kanan antar halaman (Form <-> Pratinjau) =====
+let paneIdx = 0;
+const trackEl = document.getElementById('track');
+const pagerEl = document.getElementById('pager');
+
+function setPane(i){
+  paneIdx = i;
+  trackEl.style.transition = '';
+  trackEl.style.transform = 'translate3d(' + (-i * 50) + '%,0,0)';
+  document.getElementById('dot0').classList.toggle('on', i === 0);
+  document.getElementById('dot1').classList.toggle('on', i === 1);
+}
+
+function goPane(i){
+  setPane(i);
+  if(i === 1){
+    if(uploadedBytes){
+      document.getElementById('pageInfo').innerText = "Memuat pratinjau...";
+      tampilkanPratinjau(false);
+    } else {
+      document.getElementById('pageInfo').innerText = "Upload PDF dulu";
+    }
+  }
+}
+
+let tx0 = 0, ty0 = 0, t0 = 0, dragging = false, locked = false, dxNow = 0;
+
+pagerEl.addEventListener('touchstart', function(e){
+  if(e.touches.length !== 1) return;
+  tx0 = e.touches[0].clientX;
+  ty0 = e.touches[0].clientY;
+  t0 = Date.now();
+  dragging = false;
+  locked = false;
+  dxNow = 0;
+}, {passive:true});
+
+pagerEl.addEventListener('touchmove', function(e){
+  if(e.touches.length !== 1) return;
+  const dx = e.touches[0].clientX - tx0;
+  const dy = e.touches[0].clientY - ty0;
+  if(!locked){
+    if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    locked = true;
+    dragging = Math.abs(dx) > Math.abs(dy);
+    if(dragging) trackEl.style.transition = 'none';
+  }
+  if(!dragging) return;
+  let d = dx;
+  if((paneIdx === 0 && d > 0) || (paneIdx === 1 && d < 0)) d = d * 0.25;
+  dxNow = d;
+  trackEl.style.transform = 'translate3d(calc(' + (-paneIdx * 50) + '% + ' + d + 'px),0,0)';
+}, {passive:true});
+
+function endDrag(){
+  if(!dragging) return;
+  dragging = false;
+  const w = pagerEl.clientWidth;
+  const v = Math.abs(dxNow) / ((Date.now() - t0) || 1);
+  let next = paneIdx;
+  if(Math.abs(dxNow) > w * 0.22 || (v > 0.5 && Math.abs(dxNow) > 30)){
+    next = dxNow < 0 ? 1 : 0;
+  }
+  if(next !== paneIdx) goPane(next); else setPane(paneIdx);
+}
+pagerEl.addEventListener('touchend', endDrag);
+pagerEl.addEventListener('touchcancel', endDrag);
+
+document.getElementById('dot0').addEventListener('click', function(){ goPane(0); });
+document.getElementById('dot1').addEventListener('click', function(){ goPane(1); });
+document.getElementById('btnLihatHasil').addEventListener('click', function(){ goPane(1); });
+document.getElementById('btnTutup').addEventListener('click', function(){ goPane(0); });
 
 function autoResizeNamaFile(){
   const ta = document.getElementById('namaFile');
