@@ -428,7 +428,13 @@ button:not(:disabled):active{opacity:.8}
   </div>
   <button type="button" id="btnTutup">‹ Kembali ke Form</button>
 </div>
+<div class="btn-row">
+  <button id="btnLihatHasil" disabled>Lihat</button>
+  <button id="btnDownload" disabled>Download</button>
+  <button id="btnShare" disabled>Share Drive</button>
+</div>
 </div></section>
+
 
 </div></div>
 
@@ -680,7 +686,7 @@ async function editPdf(){
     teksKanan(r[1], margin+boxW-pad, ry+6, 10, fontBold, textDark);
   });
 
-  // ===== KHUSUS: Penarikan Payment Gateway (opsional, masih dalam tabel) =====
+  // ===== KHUSUS: Biaya Admin | Penarikan Payment Gateway (opsional, masih dalam tabel) =====
   let extra = 0;
   if(penarikan > 0){
     extra = rowH * 2;
@@ -694,7 +700,7 @@ async function editPdf(){
       x:margin, y:ry2, width:boxW, height:rowH,
       color:white, borderColor:borderGray, borderWidth:0.5
     });
-    page.drawText("Penarikan Payment Gateway", {x:margin+pad, y:ry2+6, size:10, font:font, color:textDark});
+    page.drawText("Biaya Admin | Penarikan Payment Gateway", {x:margin+pad, y:ry2+6, size:10, font:font, color:textDark});
     teksKanan(rp(penarikan), margin+boxW-pad, ry2+6, 10, fontBold, textDark);
   }
 
