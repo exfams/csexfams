@@ -196,6 +196,7 @@ button:not(:disabled):active{opacity:.8}
 }
 .nav-btn:disabled{opacity:.3;cursor:not-allowed}
 #previewCanvas{
+  cursor:zoom-in;
   width:100%;
   max-width:100%;
   height:auto;
@@ -334,6 +335,62 @@ button:not(:disabled):active{opacity:.8}
   gap:8px;
   margin-top:10px;
 }
+.pane-inner.preview-inner{padding:8px 6px 36px}
+#pdfPreviewCard{padding:8px}
+.zoom-hint{
+  text-align:center;
+  font-size:11px;
+  color:#6B7585;
+  margin:6px 0 0;
+}
+#zoomView{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:50;
+  background:#0F1115;
+  flex-direction:column;
+}
+#zoomView.open{display:flex}
+#zoomBar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:8px;
+  border-bottom:1px solid #262B34;
+}
+#zoomBar .nav-btn{
+  position:static;
+  transform:none;
+  width:36px;
+  height:36px;
+}
+#zInfo{
+  font-size:13px;
+  color:#9AA3B2;
+  min-width:96px;
+  text-align:center;
+}
+#zClose{
+  width:auto;
+  padding:8px 14px;
+  margin-left:6px;
+  background:#262B34;
+  color:#E6E9EF;
+}
+#zoomScroll{
+  flex:1;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y pinch-zoom;
+  padding:8px;
+}
+#zoomCanvas{
+  display:block;
+  margin:0 auto;
+  background:#FFFFFF;
+}
 @media (min-width:600px){
   .pane-inner{max-width:680px;padding-top:32px}
   .card{padding:22px}
@@ -408,12 +465,13 @@ button:not(:disabled):active{opacity:.8}
 
 </div></section>
 
-<section class="pane" id="panePreview"><div class="pane-inner">
+<section class="pane" id="panePreview"><div class="pane-inner preview-inner">
 <div class="card" id="pdfPreviewCard">
   <h2>Pratinjau PDF</h2>
   <div class="preview-wrap">
     <canvas id="previewCanvas"></canvas>
   </div>
+  <p class="zoom-hint">Ketuk gambar untuk memperbesar</p>
   <div class="page-nav">
     <button type="button" class="nav-btn" id="btnFirstPage" aria-label="Halaman pertama">«</button>
     <button type="button" class="nav-btn" id="btnPrevPage" aria-label="Halaman sebelumnya">‹</button>
@@ -448,6 +506,18 @@ button:not(:disabled):active{opacity:.8}
 </div></div>
 
 <div id="dots"><span class="on" id="dot0"></span><span id="dot1"></span></div>
+
+<div id="zoomView">
+  <div id="zoomBar">
+    <button type="button" class="nav-btn" id="zFirst" aria-label="Halaman pertama">«</button>
+    <button type="button" class="nav-btn" id="zPrev" aria-label="Halaman sebelumnya">‹</button>
+    <span id="zInfo"></span>
+    <button type="button" class="nav-btn" id="zNext" aria-label="Halaman berikutnya">›</button>
+    <button type="button" class="nav-btn" id="zLast" aria-label="Halaman terakhir">»</button>
+    <button type="button" id="zClose">Tutup</button>
+  </div>
+  <div id="zoomScroll"><canvas id="zoomCanvas"></canvas></div>
+</div>
 
 <script>
 function rp(n){
@@ -821,8 +891,8 @@ async function renderPreviewPage(num){
   const ctx = canvas.getContext('2d');
   const container = canvas.parentElement;
   const baseViewport = page.getViewport({scale:1});
-  const maxH = window.innerHeight * 0.34;
-  const targetWidth = Math.min(container.clientWidth - 16, maxH * baseViewport.width / baseViewport.height);
+  const maxH = window.innerHeight * 110;
+  const targetWidth = Math.min(container.clientWidth - 2, maxH * baseViewport.width / baseViewport.height);
   const scale = targetWidth > 0 ? targetWidth / baseViewport.width : 1;
   const viewport = page.getViewport({scale:scale});
   const outputScale = window.devicePixelRatio || 1;
@@ -975,6 +1045,68 @@ document.getElementById('dot0').addEventListener('click', function(){ goPane(0);
 document.getElementById('dot1').addEventListener('click', function(){ goPane(1); });
 document.getElementById('btnLihatHasil').addEventListener('click', function(){ goPane(1); });
 document.getElementById('btnTutup').addEventListener('click', function(){ goPane(0); });
+
+// ===== Perbesar pratinjau (ketuk gambar) =====
+const zoomView = document.getElementById('zoomView');
+let zoomRendering = false;
+let zoomPending = false;
+
+async function renderZoomPage(num){
+  if(!previewDoc) return;
+  if(zoomRendering){ zoomPending = true; return; }
+  zoomRendering = true;
+  try{
+    const page = await previewDoc.getPage(num);
+    const canvas = document.getElementById('zoomCanvas');
+    const box = document.getElementById('zoomScroll');
+    const base = page.getViewport({scale:1});
+    const targetW = Math.max(box.clientWidth - 16, 200);
+    const viewport = page.getViewport({scale: targetW / base.width});
+    const out = Math.max(window.devicePixelRatio || 1, 2) * 1.5;
+    canvas.width = Math.floor(viewport.width * out);
+    canvas.height = Math.floor(viewport.height * out);
+    canvas.style.width = Math.floor(viewport.width) + "px";
+    canvas.style.height = Math.floor(viewport.height) + "px";
+    await page.render({
+      canvasContext: canvas.getContext('2d'),
+      viewport: viewport,
+      transform: [out,0,0,out,0,0]
+    }).promise;
+    box.scrollTop = 0;
+    document.getElementById('zInfo').innerText = "Halaman " + num + " dari " + previewTotalPages;
+    document.getElementById('zFirst').disabled = num <= 1;
+    document.getElementById('zPrev').disabled = num <= 1;
+    document.getElementById('zNext').disabled = num >= previewTotalPages;
+    document.getElementById('zLast').disabled = num >= previewTotalPages;
+  } finally {
+    zoomRendering = false;
+    if(zoomPending){
+      zoomPending = false;
+      renderZoomPage(previewPageNum);
+    }
+  }
+}
+
+function zoomKe(n){
+  n = Math.max(1, Math.min(previewTotalPages, n));
+  if(n === previewPageNum) return;
+  previewPageNum = n;
+  renderZoomPage(n);
+}
+
+document.getElementById('previewCanvas').addEventListener('click', function(){
+  if(!previewDoc) return;
+  zoomView.classList.add('open');
+  renderZoomPage(previewPageNum);
+});
+document.getElementById('zFirst').addEventListener('click', function(){ zoomKe(1); });
+document.getElementById('zPrev').addEventListener('click', function(){ zoomKe(previewPageNum - 1); });
+document.getElementById('zNext').addEventListener('click', function(){ zoomKe(previewPageNum + 1); });
+document.getElementById('zLast').addEventListener('click', function(){ zoomKe(previewTotalPages); });
+document.getElementById('zClose').addEventListener('click', function(){
+  zoomView.classList.remove('open');
+  renderPreviewPage(previewPageNum);
+});
 
 function autoResizeNamaFile(){
   const ta = document.getElementById('namaFile');
