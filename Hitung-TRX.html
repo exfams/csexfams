@@ -391,6 +391,111 @@ button:not(:disabled):active{opacity:.8}
   margin:0 auto;
   background:#FFFFFF;
 }
+.btn-edit{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  margin-top:12px;
+  background:transparent;
+  color:#2196f3;
+  border:1px solid #2196f3;
+}
+.btn-edit .material-symbols-outlined{font-size:18px}
+#editView{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:60;
+  background:#0F1115;
+  flex-direction:column;
+}
+#editView.open{display:flex}
+#editBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom:1px solid #262B34;
+}
+.edit-title{
+  font-size:14px;
+  font-weight:600;
+  color:#E6E9EF;
+}
+#eClose{
+  width:auto;
+  padding:8px 14px;
+  background:#262B34;
+  color:#E6E9EF;
+}
+#editBody{
+  flex:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:12px;
+  width:100%;
+  max-width:680px;
+  margin:0 auto;
+}
+#eCari{margin-bottom:10px}
+#eRekap{margin:10px 0}
+.e-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:#181B21;
+  border:1px solid #262B34;
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:8px;
+  font-size:13px;
+  color:#E6E9EF;
+}
+.e-item.edited{border-color:#2E7D4F}
+.e-item.warn{border-color:#B7791F}
+.e-info{
+  min-width:0;
+  line-height:1.5;
+  word-break:break-word;
+}
+.e-info span{
+  font-size:12px;
+  color:#9AA3B2;
+}
+.e-item.edited .e-info span{color:#6FE0A6}
+.e-item.warn .e-info span{color:#F2B34C}
+.e-pencil{
+  width:40px;
+  height:40px;
+  padding:0;
+  flex:none;
+  border-radius:50%;
+  background:transparent;
+  color:#2196f3;
+  border:1px solid #2C323D;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.e-pencil .material-symbols-outlined{font-size:20px}
+.e-empty{
+  text-align:center;
+  font-size:13px;
+  color:#9AA3B2;
+  margin:16px 0;
+}
+#eSimpan{
+  background:#2196f3;
+  color:#FFFFFF;
+}
+#eBatal,
+#eReset{
+  background:#262B34;
+  color:#E6E9EF;
+}
+#eReset{margin-top:8px}
 @media (min-width:600px){
   .pane-inner{max-width:680px;padding-top:32px}
   .card{padding:22px}
@@ -491,6 +596,9 @@ button:not(:disabled):active{opacity:.8}
     <span id="offsetInfo">0 px</span>
     <button type="button" class="nav-btn" id="btnGeserBawah" aria-label="Geser ke bawah">▼</button>
   </div>
+  <button type="button" class="btn-edit" id="btnEditTeks">
+    <span class="material-symbols-outlined">edit</span> Edit Teks PDF
+  </button>
   <button type="button" id="btnTutup">‹ Kembali ke Form</button>
 </div>
 
@@ -517,6 +625,38 @@ button:not(:disabled):active{opacity:.8}
     <button type="button" id="zClose">Tutup</button>
   </div>
   <div id="zoomScroll"><canvas id="zoomCanvas"></canvas></div>
+</div>
+
+<div id="editView">
+  <div id="editBar">
+    <span class="edit-title">Edit Teks PDF</span>
+    <button type="button" id="eClose">Selesai</button>
+  </div>
+  <div id="editBody">
+    <input type="text" id="eCari" placeholder="Cari No / nama produk (mis. 227)">
+
+    <div class="card" id="eForm" style="display:none">
+      <h2 id="eFormTitle"></h2>
+      <div class="row2">
+        <div>
+          <label>Total Transaksi (Rp)</label>
+          <input type="text" id="eTotal" inputmode="numeric">
+        </div>
+        <div>
+          <label>Modal (Rp)</label>
+          <input type="text" id="eModal" inputmode="numeric">
+        </div>
+      </div>
+      <div class="btn-row2">
+        <button type="button" id="eSimpan">Simpan Edit</button>
+        <button type="button" id="eBatal">Batal</button>
+      </div>
+      <button type="button" id="eReset">Kembalikan ke Nilai Asli</button>
+    </div>
+
+    <div class="hasil" id="eRekap"></div>
+    <div id="eList"></div>
+  </div>
 </div>
 
 <script>
@@ -708,6 +848,8 @@ async function editPdf(){
   const pdfDoc = await PDFDocument.load(uploadedBytes);
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  await terapkanEditTeks(pdfDoc, font, fontBold, rgb);
 
   const lastPage = pdfDoc.getPage(pdfDoc.getPageCount()-1);
   const {width, height} = lastPage.getSize();
@@ -1115,6 +1257,411 @@ function autoResizeNamaFile(){
 }
 document.getElementById('namaFile').addEventListener('input', autoResizeNamaFile);
 window.addEventListener('load', autoResizeNamaFile);
+</script>
+
+<script>
+// ===== Edit Teks PDF (ikon pensil) =====
+let origDoc = null;
+let parsePromise = null;
+let rowsData = {};
+let totalsInfo = null;
+let totalsAktif = null;
+let editMap = {};
+let editDirty = false;
+let editNoAktif = null;
+let lastEditPage = 0;
+
+function angkaDari(str){
+  return parseInt(String(str).replace(/\D/g, ""), 10) || 0;
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+  });
+}
+
+function mkItem(o){
+  return {str:o.str, val:angkaDari(o.str), x:o.x, y:o.y, w:o.w, size:o.size, page:o.page};
+}
+
+async function ekstrakPdf(doc){
+  rowsData = {};
+  totalsInfo = null;
+  totalsAktif = null;
+
+  for(let p = 1; p <= doc.numPages; p++){
+    const pg = await doc.getPage(p);
+    const tc = await pg.getTextContent();
+    const W = pg.view[2] - pg.view[0];
+    const items = tc.items
+      .filter(function(i){ return i.str && i.str.trim(); })
+      .map(function(i){
+        return {
+          str: i.str.trim(),
+          x: i.transform[4],
+          y: i.transform[5],
+          w: i.width,
+          size: Math.hypot(i.transform[2], i.transform[3]) || i.height || 8,
+          page: p - 1
+        };
+      });
+
+    const isRp = function(s){ return /^Rp[\d.]+$/.test(s); };
+    const sebaris = function(o){
+      return items
+        .filter(function(i){ return Math.abs(i.y - o.y) < 3; })
+        .sort(function(a, b){ return a.x - b.x; });
+    };
+
+    items.forEach(function(it){
+      if(!/^\d+$/.test(it.str) || it.x > W * 0.15) return;
+      const baris = sebaris(it);
+      const rpItems = baris.filter(function(i){ return isRp(i.str); });
+      if(baris.length < 6 || rpItems.length < 2) return;
+      rowsData[it.str] = {
+        no: parseInt(it.str, 10),
+        page: p - 1,
+        nama: baris.slice(3, baris.length - 3).map(function(i){ return i.str; }).join(" "),
+        total: mkItem(rpItems[rpItems.length - 2]),
+        modal: mkItem(rpItems[rpItems.length - 1])
+      };
+    });
+
+    const lSampai = items.find(function(i){ return /^Total transaksi sampai/i.test(i.str); });
+    const lKes = items.find(function(i){ return /^Total Transaksi keseluruhan/i.test(i.str); });
+    const lUntung = items.find(function(i){ return /^Total Keuntungan/i.test(i.str); });
+
+    if(lSampai && lKes && lUntung){
+      const dua = function(l){
+        const r = sebaris(l).filter(function(i){ return i.x > l.x && isRp(i.str); });
+        return r.length >= 2
+          ? {total: mkItem(r[r.length - 2]), modal: mkItem(r[r.length - 1])}
+          : null;
+      };
+      const a = dua(lSampai);
+      const b = dua(lKes);
+      const barisU = sebaris(lUntung).filter(function(i){ return i.x > lUntung.x; });
+      const formula = barisU.find(function(i){
+        return /^Rp[\d.]+\s*-\s*Rp[\d.]+\s*=?$/.test(i.str);
+      });
+      const hasil = barisU.filter(function(i){ return isRp(i.str); }).pop();
+      if(a && b && formula && hasil){
+        totalsInfo = {sampai:a, kes:b, formula:mkItem(formula), hasil:mkItem(hasil)};
+      }
+    }
+  }
+
+  if(totalsInfo){
+    const t = totalsInfo.sampai.total.val;
+    const m = totalsInfo.sampai.modal.val;
+    totalsAktif = {total:t, modal:m, untung:t - m};
+  }
+}
+
+function hitungTotalBaru(){
+  if(!totalsInfo) return null;
+  let dT = 0, dM = 0;
+  Object.keys(editMap).forEach(function(no){
+    const r = rowsData[no];
+    const e = editMap[no];
+    if(!r) return;
+    dT += e.total - r.total.val;
+    dM += e.modal - r.modal.val;
+  });
+  const t = totalsInfo.sampai.total.val + dT;
+  const m = totalsInfo.sampai.modal.val + dM;
+  return {total:t, modal:m, untung:t - m, dT:dT, dM:dM};
+}
+
+function daftarPerubahan(){
+  const out = [];
+  Object.keys(editMap).forEach(function(no){
+    const r = rowsData[no];
+    const e = editMap[no];
+    if(!r) return;
+    if(e.total !== r.total.val){
+      out.push(Object.assign({}, r.total, {newStr:rp(e.total), align:'right', bold:false, white:false}));
+    }
+    if(e.modal !== r.modal.val){
+      out.push(Object.assign({}, r.modal, {newStr:rp(e.modal), align:'right', bold:false, white:false}));
+    }
+  });
+
+  const t = hitungTotalBaru();
+  if(out.length && t){
+    const I = totalsInfo;
+    [I.sampai, I.kes].forEach(function(b){
+      out.push(Object.assign({}, b.total, {newStr:rp(b.total.val + t.dT), align:'right', bold:true, white:true}));
+      out.push(Object.assign({}, b.modal, {newStr:rp(b.modal.val + t.dM), align:'right', bold:true, white:true}));
+    });
+    out.push(Object.assign({}, I.formula, {
+      newStr: rp(I.kes.total.val + t.dT) + " - " + rp(I.kes.modal.val + t.dM) + " =",
+      align:'center', bold:true, white:true
+    }));
+    out.push(Object.assign({}, I.hasil, {newStr:rp(t.untung), align:'right', bold:true, white:true}));
+  }
+  return out;
+}
+
+async function terapkanEditTeks(pdfDoc, font, fontBold, rgb){
+  const daftar = daftarPerubahan();
+  if(!daftar.length || !origDoc) return;
+
+  const perHal = {};
+  daftar.forEach(function(c){
+    (perHal[c.page] = perHal[c.page] || []).push(c);
+  });
+
+  for(const key of Object.keys(perHal)){
+    const pi = parseInt(key, 10);
+    const page = pdfDoc.getPage(pi);
+    const op = await origDoc.getPage(pi + 1);
+    const vp = op.getViewport({scale:2});
+    const cv = document.createElement('canvas');
+    cv.width = Math.floor(vp.width);
+    cv.height = Math.floor(vp.height);
+    const ctx = cv.getContext('2d', {willReadFrequently:true});
+    await op.render({canvasContext:ctx, viewport:vp}).promise;
+
+    perHal[key].forEach(function(c){
+      const f = c.bold ? fontBold : font;
+      const size = c.size;
+      const newW = f.widthOfTextAtSize(c.newStr, size);
+      const nx = c.align === 'center'
+        ? (c.x + c.w / 2 - newW / 2)
+        : (c.x + c.w - newW);
+      const kiri = Math.min(c.x, nx) - 1.5;
+      const kanan = Math.max(c.x + c.w, nx + newW) + 1.5;
+
+      let bg = [1, 1, 1];
+      try{
+        const pt = vp.convertToViewportPoint(c.x - 2, c.y + size * 0.3);
+        const d = ctx.getImageData(
+          Math.max(0, Math.round(pt[0])),
+          Math.max(0, Math.round(pt[1])),
+          1, 1
+        ).data;
+        bg = [d[0] / 255, d[1] / 255, d[2] / 255];
+      }catch(err){}
+
+      page.drawRectangle({
+        x:kiri,
+        y:c.y - size * 0.28,
+        width:kanan - kiri,
+        height:size * 1.15,
+        color:rgb(bg[0], bg[1], bg[2])
+      });
+      page.drawText(c.newStr, {
+        x:nx,
+        y:c.y,
+        size:size,
+        font:f,
+        color: c.white ? rgb(1, 1, 1) : rgb(0, 0, 0)
+      });
+    });
+  }
+}
+
+function sinkronForm(lama, baru){
+  [['omsetKotorManual','total'], ['MODALManual','modal'], ['pendapatanKotor','untung']].forEach(function(p){
+    const el = document.getElementById(p[0]);
+    const cur = el.value.replace(/\D/g, "");
+    if(cur !== "" && cur === String(Math.max(0, lama[p[1]]))){
+      el.value = formatRibuan(String(Math.max(0, baru[p[1]])));
+    }
+  });
+  hitung();
+}
+
+function renderRekap(){
+  const el = document.getElementById('eRekap');
+  const n = Object.keys(editMap).length;
+  if(!totalsInfo){
+    el.innerHTML = "<div>Total di PDF tidak terbaca, jadi total tidak dihitung ulang.</div>";
+    return;
+  }
+  const I = totalsInfo;
+  const t = hitungTotalBaru();
+  const untungAsli = I.sampai.total.val - I.sampai.modal.val;
+  el.innerHTML =
+    "<div>Baris diubah : " + n + "</div>" +
+    "<div>Total Transaksi : " + rp(I.sampai.total.val) + " → " + rp(t.total) + "</div>" +
+    "<div>Total Modal : " + rp(I.sampai.modal.val) + " → " + rp(t.modal) + "</div>" +
+    "<div>Total Keuntungan : " + rp(untungAsli) + " → " + rp(t.untung) + "</div>";
+}
+
+function renderDaftarEdit(){
+  const q = document.getElementById('eCari').value.trim().toLowerCase();
+  const box = document.getElementById('eList');
+  let list = Object.keys(rowsData)
+    .map(function(k){ return rowsData[k]; })
+    .sort(function(a, b){ return a.no - b.no; });
+
+  if(q){
+    list = list.filter(function(r){
+      return String(r.no) === q || r.nama.toLowerCase().indexOf(q) !== -1;
+    });
+  } else {
+    list = list.filter(function(r){ return editMap[r.no] || r.modal.val === 0; });
+  }
+
+  box.innerHTML = "";
+  if(!list.length){
+    const p = document.createElement('p');
+    p.className = 'e-empty';
+    p.textContent = q ? "Tidak ditemukan." : "Ketik No atau nama produk untuk mencari baris.";
+    box.appendChild(p);
+    return;
+  }
+
+  list.slice(0, 50).forEach(function(r){
+    const e = editMap[r.no];
+    const tot = e ? e.total : r.total.val;
+    const mod = e ? e.modal : r.modal.val;
+    const warn = !e && r.modal.val === 0;
+    const div = document.createElement('div');
+    div.className = 'e-item' + (e ? ' edited' : '') + (warn ? ' warn' : '');
+    div.innerHTML =
+      '<div class="e-info"><b>No ' + r.no + '</b> · ' + esc(r.nama) +
+      '<br><span>Total ' + rp(tot) + ' · Modal ' + rp(mod) +
+      (e ? ' · diubah' : (warn ? ' · modal Rp0, cek' : '')) + '</span></div>' +
+      '<button type="button" class="e-pencil" data-no="' + r.no + '" aria-label="Edit">' +
+      '<span class="material-symbols-outlined">edit</span></button>';
+    box.appendChild(div);
+  });
+}
+
+function bukaForm(no){
+  const r = rowsData[no];
+  if(!r) return;
+  editNoAktif = no;
+  const e = editMap[no];
+  document.getElementById('eFormTitle').innerText = "Edit No " + r.no + " · " + r.nama;
+  document.getElementById('eTotal').value = formatRibuan(String(e ? e.total : r.total.val));
+  document.getElementById('eModal').value = formatRibuan(String(e ? e.modal : r.modal.val));
+  document.getElementById('eReset').style.display = e ? 'block' : 'none';
+  document.getElementById('eForm').style.display = 'block';
+  document.getElementById('editBody').scrollTop = 0;
+}
+
+function tutupForm(){
+  editNoAktif = null;
+  document.getElementById('eForm').style.display = 'none';
+}
+
+function perbaruiSetelahEdit(){
+  const t = hitungTotalBaru();
+  if(t && totalsAktif){
+    sinkronForm(totalsAktif, t);
+    totalsAktif = {total:t.total, modal:t.modal, untung:t.untung};
+  }
+  renderDaftarEdit();
+  renderRekap();
+}
+
+async function bukaEditor(){
+  if(!parsePromise){
+    statusEl().innerText = "Upload PDF dulu.";
+    return;
+  }
+  statusEl().innerText = "Membaca teks PDF...";
+  await parsePromise;
+  if(!Object.keys(rowsData).length){
+    statusEl().innerText = "Teks baris transaksi tidak terbaca dari PDF ini.";
+    return;
+  }
+  statusEl().innerText = "";
+  document.getElementById('eCari').value = "";
+  tutupForm();
+  renderDaftarEdit();
+  renderRekap();
+  document.getElementById('editView').classList.add('open');
+}
+
+function pasangFormatRibuan(id){
+  document.getElementById(id).addEventListener('input', function(e){
+    const posDariKanan = e.target.value.length - e.target.selectionStart;
+    e.target.value = formatRibuan(e.target.value);
+    const pos = e.target.value.length - posDariKanan;
+    e.target.setSelectionRange(pos, pos);
+  });
+}
+pasangFormatRibuan('eTotal');
+pasangFormatRibuan('eModal');
+
+document.getElementById('pdfFile').addEventListener('change', function(e){
+  const f = e.target.files[0];
+  origDoc = null;
+  rowsData = {};
+  totalsInfo = null;
+  totalsAktif = null;
+  editMap = {};
+  editDirty = false;
+  if(!f){
+    parsePromise = null;
+    return;
+  }
+  parsePromise = new Promise(function(resolve){
+    const rd = new FileReader();
+    rd.onload = async function(ev){
+      try{
+        origDoc = await pdfjsLib.getDocument({data: new Uint8Array(ev.target.result)}).promise;
+        await ekstrakPdf(origDoc);
+      }catch(err){
+        console.error(err);
+      }
+      resolve();
+    };
+    rd.readAsArrayBuffer(f);
+  });
+});
+
+document.getElementById('btnEditTeks').addEventListener('click', bukaEditor);
+document.getElementById('eCari').addEventListener('input', renderDaftarEdit);
+
+document.getElementById('eList').addEventListener('click', function(ev){
+  const b = ev.target.closest('.e-pencil');
+  if(b) bukaForm(b.getAttribute('data-no'));
+});
+
+document.getElementById('eSimpan').addEventListener('click', function(){
+  const r = rowsData[editNoAktif];
+  if(!r) return;
+  const tot = angkaDari(document.getElementById('eTotal').value);
+  const mod = angkaDari(document.getElementById('eModal').value);
+  if(tot === r.total.val && mod === r.modal.val){
+    delete editMap[editNoAktif];
+  } else {
+    editMap[editNoAktif] = {total:tot, modal:mod};
+  }
+  editDirty = true;
+  lastEditPage = r.page;
+  tutupForm();
+  perbaruiSetelahEdit();
+});
+
+document.getElementById('eReset').addEventListener('click', function(){
+  const r = rowsData[editNoAktif];
+  if(!r) return;
+  delete editMap[editNoAktif];
+  editDirty = true;
+  lastEditPage = r.page;
+  tutupForm();
+  perbaruiSetelahEdit();
+});
+
+document.getElementById('eBatal').addEventListener('click', tutupForm);
+
+document.getElementById('eClose').addEventListener('click', function(){
+  document.getElementById('editView').classList.remove('open');
+  if(editDirty){
+    editDirty = false;
+    previewPageNum = lastEditPage + 1;
+    previewShown = true;
+    tampilkanPratinjau(true);
+  }
+});
 </script>
 
 </body>
