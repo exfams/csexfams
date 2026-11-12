@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layanan Maintenance</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap');
+    * 
+    {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'gabarito', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+     -webkit-tap-highlight-color: transparent; /* Hilangkan efek tap Android */
+      user-select: none;           /* Nonaktifkan seleksi teks */
+      -webkit-user-select: none;   /* Safari/Chrome */
+      -ms-user-select: none;       /* Internet Explorer */
+      -moz-user-select: none;      /* Firefox */
+      -webkit-touch-callout: none; /* Nonaktifkan menu pop-up saat tap di HP */
+    }
+
+    /* Tidak ada highlight ketika user tahan dan block teks */
+  *::selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  /* Matikan drag image/text */
+  img, a, span, div, p {
+    -webkit-user-drag: none;
+    pointer-events: auto;
+  }
+
+    .main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .content {
+      text-align: center;
+      max-width: 360px;
+      width: 100%;
+    }
+
+    .content img {
+      width: 240px;
+      border-radius: 5%;
+      margin-bottom: -20px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    p {
+      font-size: 15px;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    .btn-remind {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 2px solid #6495ED;
+      background-color: #fff;
+      color: #6495ED;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .btn-remind:hover {
+      background-color: #6495ED;
+      color: #fff;
+    }
+
+    .btn-remind svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .footer {
+      border-top: 1px solid #e0e0e0;
+      background-color: #f3f4f5;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .btn-close {
+      display: block;
+      width: 100%;
+      background-color: #6495ED;
+      color: #fff;
+      padding: 14px 0;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .btn-close:hover {
+      background-color: #2570fc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main">
+    <div class="content">
+      <img src="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/img_20260801_064927.webp" alt="Ilustrasi" /><br><br>
+
+      <h2>Fitur Dalam Pengembangan</h2>
+      <p><b>Rabu 05 - 06 Agustus 2026</b><br>Dalam rangka peningkatan sistem layanan dan keamanan transaksi, <b>QRIS MerchantPay tidak dapat diakses selama proses berlangsung.</b><br><br>Kami himbau untuk tidak menggunakan QRIS MerchantPay selama proses Maintenance selesai, Beresiko saldo tidak dapat diproses.</p>
+    </div>
+  </div>
+<div id="imgOverlay" class="img-overlay">
+  <div class="img-box">
+    <button class="close-btn" onclick="closeOverlay()">✕</button>
+    <img src="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/1000619648.webp" alt="Maintenance">
+  </div>
+</div>
+
+<style>
+.img-overlay{
+    position:fixed;
+    inset:0;
+    background:#2196f3;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    z-index:999999;
+}
+
+.img-box{
+    position:relative;
+    max-width:320px;
+    width:100;
+}
+
+.img-box img{
+    width:100%;
+    display:block;
+    border-radius:16px;
+    filter: drop-shadow(20px 10px 50px rgba(0, 0, 0, 0.164));
+
+}
+
+.close-btn{
+    position:absolute;
+    top:-40px;
+    right:5px;
+    width:35px;
+    height:34px;
+    border:none;
+    border-radius:50%;
+    background:rgba(0, 0, 0, 0.216);
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.close-btn:hover{
+    background:rgba(0,0,0,.8);
+}
+</style>
+
+<script>
+function closeOverlay(){
+    document.getElementById("imgOverlay").style.display="none";
+}
+</script>
+
+</body>
+</html>
