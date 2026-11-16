@@ -267,6 +267,7 @@ const dbAbsen = firebase.database();
 /* ===== Notifikasi ntfy ===== */
 const NTFY_SERVER = 'https://ntfy.sh';
 const NTFY_TOPIC  = 'absen-ky-fm-x90812m25qwrwuiw23';
+const NTFY_CLICK  = 'https://exfams.web.id/db-absen';
 
 function kirimNtfy({ title, message, tags, priority, click }){
   try{
@@ -279,7 +280,7 @@ function kirimNtfy({ title, message, tags, priority, click }){
         message: message || '',
         tags: tags || ['white_check_mark'],
         priority: priority || 3,
-        click: click || undefined
+        click: click || NTFY_CLICK
       })
     }).catch(err => console.error('ntfy gagal:', err));
   }catch(err){
