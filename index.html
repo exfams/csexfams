@@ -723,14 +723,65 @@
     if (cc === 3) window.location.href = 'list.html';
   });
 
-  // Block devtools
-  document.addEventListener('contextmenu', e => e.preventDefault());
-  document.addEventListener('keydown', e => {
-    const k = e.key.toUpperCase();
-    if (k === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && ['U','S','P'].includes(k))) {
-      e.preventDefault();
+  // Block devtools & view source
+  (function() {
+    const blokir = () => {
+      document.documentElement.innerHTML = '<body style="margin:0;background:#fff;"></body>';
+    };
+
+    // Klik kanan, seleksi, drag, copy, cut
+    document.addEventListener('contextmenu', e => e.preventDefault(), true);
+    document.addEventListener('dragstart', e => e.preventDefault(), true);
+    document.addEventListener('selectstart', e => {
+      if (!e.target.closest || !e.target.closest('.phone-num')) e.preventDefault();
+    }, true);
+    ['copy', 'cut'].forEach(ev => {
+      document.addEventListener(ev, e => {
+        const sel = window.getSelection();
+        const dalamNomor = sel && sel.anchorNode && sel.anchorNode.parentElement &&
+                           sel.anchorNode.parentElement.closest('.phone-num');
+        if (!dalamNomor) e.preventDefault();
+      }, true);
+    });
+
+    // Shortcut keyboard (Windows/Linux + Mac)
+    document.addEventListener('keydown', e => {
+      const k = (e.key || '').toUpperCase();
+      const ctrl = e.ctrlKey || e.metaKey;
+      const tutup =
+        k === 'F12' ||
+        (ctrl && e.shiftKey && ['I','J','C','K','M'].includes(k)) ||
+        (e.metaKey && e.altKey && ['I','J','C','U'].includes(k)) ||
+        (ctrl && ['U','S','P'].includes(k));
+      if (tutup) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, true);
+
+    // Deteksi DevTools terbuka (jendela docked)
+    const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (!touch) {
+      setInterval(() => {
+        const lebar = window.outerWidth - window.innerWidth > 160;
+        const tinggi = window.outerHeight - window.innerHeight > 160;
+        if (lebar || tinggi) blokir();
+      }, 1000);
     }
-  }, true);
+
+    // Deteksi DevTools via debugger timing
+    setInterval(() => {
+      const t = performance.now();
+      (function(){}).constructor('debugger')();
+      if (performance.now() - t > 120) blokir();
+    }, 1500);
+
+    // Deteksi console dibuka
+    const el = new Image();
+    Object.defineProperty(el, 'id', { get: function() { blokir(); } });
+    setInterval(() => { console.log(el); console.clear(); }, 2000);
+  })();
 </script>
 
 <!--Start of Tawk.to Script-->
