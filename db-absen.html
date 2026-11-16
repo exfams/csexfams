@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin Absensi</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+:root{--blue:#2196f3;--blue-dark:#1769aa;--ink:#16324a;--muted:#6b7f90;--line:#dbe7f1;--bg:#f2f7fc;--red:#e5484d;--green:#2e9e4f;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;}
+
+/* Header */
+.hero{background:var(--blue);color:#fff;padding:14px 16px;}
+.hero-in{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.logo{width:42px;height:42px;border-radius:10px;background:#fff;padding:4px;object-fit:contain;flex-shrink:0;}
+.brand h1{font-size:16px;margin:0;line-height:1.2;}
+.brand small{display:block;font-size:12px;opacity:.9;margin-top:2px;}
+.clock{text-align:right;flex-shrink:0;}
+.clock b{display:block;font-size:20px;font-variant-numeric:tabular-nums;}
+.clock span{font-size:11.5px;opacity:.95;}
+
+/* Konten */
+.wrap{max-width:1000px;margin:0 auto;padding:12px 12px 30px;}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;}
+.tabs{display:flex;gap:6px;margin-bottom:10px;}
+.tab{flex:1;padding:10px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;color:var(--blue-dark);font-family:inherit;}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.bar input,.bar select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;color:var(--ink);font-family:inherit;}
+.bar input:focus,.bar select:focus{outline:2px solid var(--blue);outline-offset:0;}
+.bar input[type=text]{grid-column:1 / -1;}
+.info{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted);}
+.info b{background:#e3f2fd;color:var(--blue-dark);padding:3px 10px;border-radius:20px;font-size:13px;}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:6px;}
+.dot.on{background:var(--green);}
+
+/* Tabel */
+.box{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid #edf2f7;white-space:nowrap;}
+th{background:#e8f3fd;color:var(--blue-dark);font-size:12px;text-transform:uppercase;letter-spacing:.04em;}
+tbody tr:hover{background:#f6fbff;}
+td.link{max-width:260px;overflow:hidden;text-overflow:ellipsis;}
+td a{color:var(--blue-dark);font-weight:600;text-decoration:none;}
+.kosong{padding:28px 16px;text-align:center;color:var(--muted);}
+.sisa{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
+
+/* Views TikTok */
+.views-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);}
+.btn-views{padding:8px 12px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;}
+.btn-views:disabled{opacity:.5;cursor:not-allowed;}
+.btn-riwayat-views{padding:8px 14px;border:none;border-radius:8px;background:#e8f3fd;color:var(--blue-dark);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:6px;}
+.v-angka{display:block;font-weight:800;font-size:14px;}
+.v-info{display:block;font-size:11px;font-weight:700;margin-top:2px;}
+.v-naik{color:var(--green);}
+.v-tetap{color:var(--red);}
+.v-baru{color:var(--muted);font-weight:400;}
+
+/* Laporan views */
+.rk{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;}
+.rk h4{margin:0 0 10px;font-size:15px;color:var(--blue-dark);}
+.rk-stat{display:flex;gap:8px;margin-bottom:6px;}
+.rk-stat div{flex:1;background:#f2f7fc;border:1px solid var(--line);border-radius:8px;padding:8px 4px;text-align:center;}
+.rk-stat b{display:block;font-size:20px;}
+.rk-stat span{font-size:11px;color:var(--muted);}
+.rk-judul{margin:12px 0 2px;font-size:12px;font-weight:800;padding:5px 10px;border-radius:6px;display:inline-block;color:#fff;}
+.rk-judul.k1{background:var(--green);}
+.rk-judul.k5{background:var(--blue);}
+.rk-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e3edf5;font-size:12.5px;}
+.rk-item:last-child{border-bottom:none;}
+.rk-item a{display:block;color:var(--blue-dark);font-weight:600;text-decoration:none;word-break:break-all;margin-top:2px;}
+.rk-v{font-weight:800;font-size:14px;flex-shrink:0;}
+.rk-kosong{font-size:12.5px;color:var(--muted);padding-top:8px;}
+
+/* Tombol */
+.btn-hapus,.btn-pulih{padding:8px 14px;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-hapus{background:var(--red);}
+.btn-pulih{background:var(--green);margin-right:6px;}
+.btn-hapus:active,.btn-pulih:active{opacity:.8;}
+.btn-hapus:disabled,.btn-pulih:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Popup */
+.pop{position:fixed;inset:0;background:rgba(10,30,50,.6);display:none;align-items:center;justify-content:center;padding:18px;z-index:999;}
+.pop.show{display:flex;}
+.pop-box{background:#fff;border-radius:14px;padding:22px 18px 16px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto;text-align:center;}
+.pop-ic{width:50px;height:50px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;background:var(--blue);}
+.pop-ic.bahaya{background:var(--red);}
+.pop-ic.sukses{background:var(--green);}
+.pop-box h3{margin:0 0 6px;font-size:17px;}
+.pop-pesan{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.pop-rows{background:#f2f7fc;border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:left;font-size:12.5px;margin-bottom:14px;}
+.pop-rows div{display:flex;gap:8px;padding:3px 0;}
+.pop-rows span{color:var(--muted);min-width:48px;flex-shrink:0;}
+.pop-rows b{word-break:break-all;font-weight:600;}
+.pop-aksi{display:flex;gap:8px;}
+.pop-aksi button{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pb-batal{background:#e6eef6;color:var(--muted);}
+.pb-ok{background:var(--blue);color:#fff;}
+.pb-ok.merah{background:var(--red);}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:1000;max-width:90%;text-align:center;}
+.toast.show{opacity:1;}
+
+/* Mobile Android: baris tabel jadi kartu ringkas, tanpa geser */
+@media (max-width:720px){
+  .hero{padding:10px 12px;}
+  .logo{width:36px;height:36px;}
+  .brand h1{font-size:14px;}
+  .brand small{font-size:11px;}
+  .clock b{font-size:16px;}
+  .clock span{font-size:10.5px;}
+  .wrap{padding:10px 10px 24px;}
+  .panel{padding:10px;margin-bottom:10px;}
+  .box{background:transparent;border:none;border-radius:0;overflow:visible;}
+  table,thead,tbody,tr,td{display:block;width:100%;}
+  thead{display:none;}
+  tbody tr{background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:10px;padding:4px 12px;margin-bottom:10px;}
+  tbody tr:hover{background:#fff;}
+  td{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:6px 0;border-bottom:1px dashed #e3edf5;white-space:normal;text-align:right;font-size:13px;}
+  td::before{content:attr(data-label);font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;text-align:left;flex-shrink:0;padding-top:2px;}
+  td[data-label="No"]{display:none;}
+  td.link{max-width:none;word-break:break-all;overflow:visible;text-overflow:clip;}
+  td.aksi{border-bottom:none;justify-content:flex-end;gap:8px;padding:8px 0 6px;}
+  td.aksi::before{display:none;}
+  td.aksi button{flex:1;margin:0;padding:10px;}
+  td.kosong{display:block;text-align:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:24px 16px;}
+  td.kosong::before{display:none;}
+  .sisa{text-align:right;}
+}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-in">
+    <div class="brand">
+      <img class="logo" src="https://fmgaming0.wordpress.com/wp-content/uploads/2025/11/logo-fm.webp" alt="FM" onerror="this.style.display='none'">
+      <div>
+        <h1>Dashboard Absensi</h1>
+        <small>Exfams Jurnal</small>
+      </div>
+    </div>
+    <div class="clock"><b id="jam">--:--:--</b><span id="tgl"></span></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="tabs">
+      <button type="button" class="tab active" id="tab-absensi" onclick="gantiTab('absensi')">Absensi</button>
+      <button type="button" class="tab" id="tab-hapus" onclick="gantiTab('hapus')">Riwayat Hapus</button>
+      <button type="button" class="tab" id="tab-laporan" onclick="gantiTab('laporan')">Laporan Views</button>
+    </div>
+
+    <div class="bar">
+      <input type="date" id="f-tanggal">
+      <input type="month" id="f-bulan" style="display:none;grid-column:1 / -1;">
+      <select id="f-mode">
+        <option value="tanggal">Per tanggal</option>
+        <option value="semua">Semua tanggal</option>
+      </select>
+      <input type="text" id="f-cari" placeholder="Cari nama / akun...">
+    </div>
+
+    <div class="info">
+      <div><span class="dot" id="dot"></span><span id="status">Menghubungkan...</span></div>
+      <div>Total: <b id="total">0</b></div>
+    </div>
+
+    <div class="views-bar" id="views-bar">
+      <span id="views-status">Views dicek otomatis tiap 1 jam</span>
+      <button type="button" class="btn-views" id="btn-views" onclick="cekSemuaViews(true)">Cek Views</button>
+    </div>
+  </div>
+
+  <div class="box" id="box-absensi">
+    <table>
+      <thead>
+        <tr><th>No</th><th>Tanggal</th><th>Jam Kirim</th><th>Nama</th><th>Akun</th><th>Link</th><th>Views</th><th></th>Aksi</th></tr>
+      </thead>
+      <tbody id="isi"></tbody>
+    </table>
+  </div>
+
+  <div class="box" id="box-hapus" style="display:none;">
+    <table>
+      <thead>
+        <tr><th>No</th><th>Dihapus Pada</th><th>Nama</th><th>Akun</th><th>Link</th><th>Waktu Kirim Asli</th><th>Aksi</th></tr>
+      </thead>
+      <tbody id="isi-hapus"></tbody>
+    </table>
+  </div>
+
+  <div id="box-laporan" style="display:none;">
+    <div id="laporan-list"></div>
+  </div>
+
+</div>
+
+<!-- Popup & notifikasi -->
+<div class="pop" id="pop">
+  <div class="pop-box">
+    <div class="pop-ic" id="pop-ic">?</div>
+    <h3 id="pop-judul"></h3>
+    <div class="pop-pesan" id="pop-pesan"></div>
+    <div class="pop-rows" id="pop-rows"></div>
+    <div class="pop-aksi">
+      <button type="button" class="pb-batal" id="pop-batal">Batal</button>
+      <button type="button" class="pb-ok" id="pop-ok">Ya</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA9PKKQblLdzBNW-wO9pPHij9C7VRa7izI",
+  authDomain: "absen-ky-fm.firebaseapp.com",
+  databaseURL: "https://absen-ky-fm-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "absen-ky-fm",
+  storageBucket: "absen-ky-fm.firebasestorage.app",
+  messagingSenderId: "660563083464",
+  appId: "1:660563083464:web:84d5f8fea4cec588ba25fd"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const p2 = n => String(n).padStart(2, '0');
+let semuaData = [];
+
+function hariIniISO(){
+  const d = new Date();
+  return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+}
+function formatTanggal(iso){
+  if(!iso || String(iso).split('-').length !== 3) return '-';
+  const [y, m, d] = String(iso).split('-');
+  return `${parseInt(d)} ${BULAN[parseInt(m) - 1]} ${y}`;
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ===== Popup & notifikasi (pengganti alert/confirm) ===== */
+function bukaPopup(opt){
+  return new Promise(resolve => {
+    const pop = document.getElementById('pop');
+    const ic = document.getElementById('pop-ic');
+    const btnOk = document.getElementById('pop-ok');
+    const btnBatal = document.getElementById('pop-batal');
+    const rowsEl = document.getElementById('pop-rows');
+    const tipe = opt.tipe || 'info';
+
+    ic.className = 'pop-ic ' + tipe;
+    ic.textContent = tipe === 'bahaya' ? '!' : (tipe === 'sukses' ? '✓' : '?');
+    document.getElementById('pop-judul').textContent = opt.judul || '';
+    document.getElementById('pop-pesan').textContent = opt.pesan || '';
+    document.getElementById('pop-pesan').style.display = opt.pesan ? '' : 'none';
+
+    if(opt.rows && opt.rows.length){
+      rowsEl.innerHTML = opt.rows.map(x => `<div><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join('');
+      rowsEl.style.display = '';
+    }else{
+      rowsEl.style.display = 'none';
+    }
+
+    btnOk.textContent = opt.ok || 'Ya';
+    btnOk.className = 'pb-ok' + (opt.merah ? ' merah' : '');
+    btnBatal.style.display = opt.batal === false ? 'none' : '';
+
+    const tutup = hasil => {
+      pop.classList.remove('show');
+      btnOk.onclick = null; btnBatal.onclick = null; pop.onclick = null;
+      resolve(hasil);
+    };
+    btnOk.onclick = () => tutup(true);
+    btnBatal.onclick = () => tutup(false);
+    pop.onclick = e => { if(e.target === pop) tutup(false); };
+    pop.classList.add('show');
+  });
+}
+function popupKonfirmasi(judul, pesan, rows, teksOk, merah){
+  return bukaPopup({ judul, pesan, rows, ok: teksOk || 'Ya', merah: !!merah, tipe: merah ? 'bahaya' : 'info' });
+}
+function popupInfo(judul, pesan){
+  return bukaPopup({ judul, pesan, ok: 'Mengerti', batal: false, tipe: 'bahaya' });
+}
+let timerToast = null;
+function toast(teks){
+  const el = document.getElementById('toast');
+  el.textContent = teks;
+  el.classList.add('show');
+  clearTimeout(timerToast);
+  timerToast = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* Jam & tanggal sekarang */
+function updateJam(){
+  const d = new Date();
+  document.getElementById('jam').textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
+  document.getElementById('tgl').textContent = formatTanggal(hariIniISO());
+}
+setInterval(updateJam, 1000);
+updateJam();
+
+const MARKER = 'STATE_ABSEN_TIKTOK_V1::';
+const MASA_SIMPAN_MS = 7 * 24 * 60 * 60 * 1000;
+let semuaHapus = [];
+let tabAktif = 'absensi';
+
+/* Harus sama persis dengan fungsi di form */
+function kunciNama(nama){
+  return String(nama || '').toLowerCase().trim().replace(/[.#$\[\]\/\s]+/g, '_') || 'anon';
+}
+function formatWaktuTs(ts){
+  const d = new Date(ts);
+  return `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}, ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
+}
+
+/* Pindah tab */
+function gantiTab(nama){
+  tabAktif = nama;
+  ['absensi', 'hapus', 'laporan'].forEach(n => {
+    document.getElementById('tab-' + n).classList.toggle('active', n === nama);
+    document.getElementById('box-' + n).style.display = n === nama ? '' : 'none';
+  });
+  document.getElementById('f-tanggal').style.display = nama === 'absensi' ? '' : 'none';
+  document.getElementById('f-mode').style.display = nama === 'absensi' ? '' : 'none';
+  document.getElementById('f-bulan').style.display = nama === 'laporan' ? '' : 'none';
+  document.getElementById('views-bar').style.display = nama === 'hapus' ? 'none' : '';
+  render();
+}
+
+/* Render tabel */
+function render(){
+  const mode = document.getElementById('f-mode').value;
+  const tgl = document.getElementById('f-tanggal').value;
+  const cari = document.getElementById('f-cari').value.trim().toLowerCase();
+
+  /* Tab absensi */
+  const hasil = semuaData.filter(r => {
+    if(mode === 'tanggal' && r.tanggal !== tgl) return false;
+    if(cari && !((r.nama || '') + ' ' + (r.akun || '')).toLowerCase().includes(cari)) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('isi');
+  if(!hasil.length){
+    tbody.innerHTML = '<tr><td colspan="8" class="kosong">Belum ada data absensi.</td></tr>';
+  }else{
+    tbody.innerHTML = hasil.map((r, i) =>
+      `<tr>
+        <td data-label="No">${i + 1}</td>
+        <td data-label="Tanggal">${esc(formatTanggal(r.tanggal))}</td>
+        <td data-label="Jam Kirim"><b>${esc(r.jam)}</b></td>
+        <td data-label="Nama">${esc(r.nama)}</td>
+        <td data-label="Akun">${esc(r.akun)}</td>
+        <td data-label="Link" class="link"><a href="${esc(r.link)}" target="_blank" rel="noopener">${esc(r.link)}</a></td>
+        <td data-label="Views">${htmlViews(r)}</td>
+        <td class="aksi">
+          <button type="button" class="btn-riwayat-views" data-key="${esc(r._key)}">Riwayat</button>
+          <button type="button" class="btn-hapus" data-key="${esc(r._key)}">Hapus</button>
+        </td>
+      </tr>`
+    ).join('');
+  }
+
+  /* Tab riwayat hapus */
+  const hasilHapus = semuaHapus.filter(r =>
+    !cari || ((r.nama || '') + ' ' + (r.akun || '')).toLowerCase().includes(cari)
+  );
+  const tbodyHapus = document.getElementById('isi-hapus');
+  if(!hasilHapus.length){
+    tbodyHapus.innerHTML = '<tr><td colspan="7" class="kosong">Belum ada riwayat hapus.</td></tr>';
+  }else{
+    tbodyHapus.innerHTML = hasilHapus.map((r, i) => {
+      const sisaHari = Math.max(0, Math.ceil((r.hapus_ts + MASA_SIMPAN_MS - Date.now()) / 86400000));
+      return `<tr>
+        <td data-label="No">${i + 1}</td>
+        <td data-label="Dihapus Pada"><b>${esc(formatWaktuTs(r.hapus_ts))}</b><span class="sisa">Terhapus otomatis ${sisaHari} hari lagi</span></td>
+        <td data-label="Nama">${esc(r.nama)}</td>
+        <td data-label="Akun">${esc(r.akun)}</td>
+        <td data-label="Link" class="link"><a href="${esc(r.link)}" target="_blank" rel="noopener">${esc(r.link)}</a></td>
+        <td data-label="Kirim Asli">${esc(formatTanggal(r.tanggal))}, ${esc(r.jam)}</td>
+        <td class="aksi">
+          <button type="button" class="btn-pulih" data-key="${esc(r._key)}">Pulihkan</button>
+          <button type="button" class="btn-hapus btn-permanen" data-key="${esc(r._key)}">Hapus Permanen</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  let total = tabAktif === 'absensi' ? hasil.length : hasilHapus.length;
+  if(tabAktif === 'laporan') total = renderLaporan();
+  document.getElementById('total').textContent = total;
+}
+
+/* Hapus absensi: hapus data + catat riwayat + buka kunci form karyawan */
+async function hapusAbsen(key, tombol){
+  const r = semuaData.find(x => x._key === key);
+  if(!r) return;
+  const yakin = await popupKonfirmasi(
+    'Hapus absensi ini?',
+    'Karyawan bisa mengisi ulang link ini.',
+    [['Nama', r.nama], ['Akun', r.akun], ['Link', r.link]],
+    'Ya, Hapus',
+    true
+  );
+  if(!yakin) return;
+
+  tombol.disabled = true;
+  const d = new Date();
+  const logKey = db.ref('riwayat_hapus').push().key;
+  const upd = {};
+  upd['absensi/' + key] = null;
+  Object.keys(viewsData).forEach(vk => {
+    if(vk.indexOf(key + '~') === 0) upd['views/' + vk] = null;
+  });
+  upd['riwayat_hapus/' + logKey] = {
+    nama: r.nama || '-',
+    platform: r.platform || '-',
+    akun: r.akun || '-',
+    jadwal: r.jadwal || '-',
+    link: r.link || '-',
+    nomor: r.nomor || 0,
+    tanggal: r.tanggal || hariIniISO(),
+    jam: r.jam || '-',
+    hapus_ts: d.getTime()
+  };
+
+  try{
+    await db.ref().update(upd);
+  }catch(err){
+    tombol.disabled = false;
+    popupInfo('Gagal menghapus', (err && err.message) || 'koneksi gagal');
+    return;
+  }
+  try{
+    await bukaKunciKaryawan(r);
+  }catch(err){
+    console.error('Gagal membuka kunci form karyawan:', err);
+  }
+  toast('Absensi dihapus, tercatat di Riwayat Hapus');
+}
+
+/* Hapus link & status selesai di state karyawan supaya form-nya bisa diisi ulang */
+function bukaKunciKaryawan(r){
+  const [y, m, d] = String(r.tanggal).split('-');
+  const bulanKey = `absen-${y}-${m}`;
+  const hari = parseInt(d);
+
+  return db.ref('state/' + kunciNama(r.nama)).transaction(cur => {
+    if(typeof cur !== 'string' || !cur.startsWith(MARKER)) return cur;
+    let obj;
+    try{ obj = JSON.parse(cur.slice(MARKER.length)); }catch(err){ return cur; }
+
+    if(obj.month === bulanKey && obj.data && obj.data[String(hari)]){
+      const e = obj.data[String(hari)];
+      if(e.links) delete e.links[r.nomor];
+      e.posting = false;
+      delete e.posting_waktu;
+      e.t = Date.now();
+    }else if(obj.hist && Array.isArray(obj.hist[bulanKey])){
+      obj.hist[bulanKey] = obj.hist[bulanKey].filter(x => x !== hari);
+    }
+    return MARKER + JSON.stringify(obj);
+  });
+}
+
+document.getElementById('isi').addEventListener('click', e => {
+  const btnRiwayat = e.target.closest('.btn-riwayat-views');
+  if(btnRiwayat){ lihatRiwayatViews(btnRiwayat.dataset.key); return; }
+  const tombol = e.target.closest('.btn-hapus');
+  if(tombol) hapusAbsen(tombol.dataset.key, tombol);
+});
+
+/* =========================================================
+   DETEKSI VIEWS TIKTOK
+   Data views tiap link disimpan per jam di: views/<kunci absensi>/<timestamp>
+========================================================= */
+const HARI_PANTAU = 2;                    // link hari ini + kemarin ikut dipantau
+const JEDA_VIEWS_MS = 60 * 60 * 1000;     // dicek ulang tiap 1 jam
+let viewsData = {};
+let sedangCekViews = false;
+let viewsAwalJalan = false;
+let timerRender = null;
+
+function renderTunda(){
+  clearTimeout(timerRender);
+  timerRender = setTimeout(render, 150);
+}
+function tunggu(ms){ return new Promise(r => setTimeout(r, ms)); }
+function fmtAngka(n){ return Number(n || 0).toLocaleString('id-ID'); }
+function fmtJamTs(ts){
+  const d = new Date(ts);
+  return `${p2(d.getDate())}/${p2(d.getMonth() + 1)} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+}
+
+/* Daftar snapshot views satu link, urut dari lama ke baru */
+function hashLink(s){
+  let h = 5381;
+  const t = String(s || '');
+  for(let i = 0; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+/* Kunci views = kunci absensi + sidik link, jadi kalau link diganti data views link lama tetap tersimpan */
+function kunciViews(r){ return r._key + '~' + hashLink(r.link); }
+
+function snapUrut(vk){
+  const o = viewsData[vk];
+  if(!o) return [];
+  return Object.keys(o).filter(k => /^\d+$/.test(k)).map(k => Object.assign({ ts: Number(k) }, o[k])).sort((a, b) => a.ts - b.ts);
+}
+
+/* Tampilan views di tabel: angka terakhir + naik/tidak naik dibanding pengecekan sebelumnya */
+function htmlViews(r){
+  const s = snapUrut(kunciViews(r));
+  if(!s.length) return '<span class="v-info v-baru">Belum dicek</span>';
+  const a = s[s.length - 1];
+  const b = s[s.length - 2];
+  let info;
+  if(!b){
+    info = '<span class="v-info v-baru">Pengecekan pertama</span>';
+  }else{
+    const d = a.v - b.v;
+    if(d > 0) info = `<span class="v-info v-naik">▲ +${fmtAngka(d)}</span>`;
+    else if(d < 0) info = `<span class="v-info v-tetap">▼ ${fmtAngka(d)}</span>`;
+    else info = '<span class="v-info v-tetap">Tidak naik</span>';
+  }
+  return `<span class="v-angka">${fmtAngka(a.v)}</span>${info}<span class="v-info v-baru">dicek ${fmtJamTs(a.ts)}</span>`;
+}
+
+/* Ambil statistik video dari API TikTok (tikwm), dicoba langsung lalu lewat proxy */
+async function ambilViewsTikTok(url){
+  const sumber = [
+    `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?${encodeURIComponent('https://www.tikwm.com/api/?url=' + url)}`
+  ];
+  for(let percobaan = 0; percobaan < 2; percobaan++){
+    for(const u of sumber){
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 12000);
+      try{
+        const res = await fetch(u, { signal: ctrl.signal });
+        if(!res.ok) continue;
+        const j = await res.json();
+        if(j && j.code === 0 && j.data){
+          const d = j.data;
+          return {
+            v: Number(d.play_count) || 0,
+            l: Number(d.digg_count) || 0,
+            c: Number(d.comment_count) || 0,
+            s: Number(d.share_count) || 0
+          };
+        }
+      }catch(err){
+      }finally{
+        clearTimeout(timer);
+      }
+    }
+    await tunggu(1800);
+  }
+  return null;
+}
+
+/* Link yang dipantau: hari ini + kemarin */
+function targetViews(){
+  const b = new Date();
+  b.setDate(b.getDate() - (HARI_PANTAU - 1));
+  const minISO = `${b.getFullYear()}-${p2(b.getMonth() + 1)}-${p2(b.getDate())}`;
+  return semuaData.filter(r => r.link && /tiktok\.com/i.test(r.link) && r.tanggal >= minISO);
+}
+
+/* Cek views semua link. manual=true: paksa semua. Otomatis: hanya yang terakhir dicek >= 1 jam lalu */
+async function cekSemuaViews(manual){
+  const btn = document.getElementById('btn-views');
+  const statusEl = document.getElementById('views-status');
+  if(sedangCekViews){
+    if(manual) toast('Pengecekan views masih berjalan');
+    return;
+  }
+  const sekarang = Date.now();
+  let daftar = targetViews();
+  if(!manual){
+    daftar = daftar.filter(r => {
+      const s = snapUrut(kunciViews(r));
+      return !s.length || sekarang - s[s.length - 1].ts >= JEDA_VIEWS_MS - 60000;
+    });
+  }
+  if(!daftar.length){
+    if(manual) toast('Belum ada link yang perlu dicek');
+    return;
+  }
+
+  sedangCekViews = true;
+  btn.disabled = true;
+  let ok = 0, gagal = 0;
+
+  for(let i = 0; i < daftar.length; i++){
+    const r = daftar[i];
+    statusEl.textContent = `Mengecek views ${i + 1}/${daftar.length}...`;
+    const hasil = await ambilViewsTikTok(r.link);
+    const masihAda = semuaData.some(x => x._key === r._key && x.link === r.link);
+    if(!masihAda){
+      await tunggu(1500);
+      continue;
+    }
+    if(hasil){
+      try{
+        const vk = kunciViews(r);
+        const upd = {};
+        upd[`views/${vk}/_meta`] = { nama: r.nama || '-', akun: r.akun || '-', link: r.link, tanggal: r.tanggal, nomor: r.nomor || 0 };
+        upd[`views/${vk}/${Date.now()}`] = hasil;
+        await db.ref().update(upd);
+        ok++;
+      }catch(err){
+        gagal++;
+      }
+    }else{
+      gagal++;
+    }
+    await tunggu(1500); // API gratis dibatasi 1 permintaan per detik
+  }
+
+  sedangCekViews = false;
+  btn.disabled = false;
+  statusEl.textContent = `Terakhir dicek ${fmtJamTs(Date.now())} · berhasil ${ok}${gagal ? ', gagal ' + gagal : ''}`;
+  if(manual) toast(gagal ? `Views diperbarui ${ok}, gagal ${gagal}` : `Views ${ok} link diperbarui`);
+}
+
+/* Popup riwayat views per jam satu link */
+function lihatRiwayatViews(key){
+  const r = semuaData.find(x => x._key === key);
+  if(!r) return;
+  const s = snapUrut(kunciViews(r));
+  if(!s.length){
+    bukaPopup({ judul: 'Belum ada data views', pesan: 'Klik tombol Cek Views untuk mengambil data.', ok: 'Tutup', batal: false, tipe: 'info' });
+    return;
+  }
+  const rows = s.map((x, i) => {
+    const d = i > 0 ? x.v - s[i - 1].v : null;
+    const ket = d === null ? ' (awal)' : (d > 0 ? ` (+${fmtAngka(d)})` : (d === 0 ? ' (tidak naik)' : ` (${fmtAngka(d)})`));
+    return [fmtJamTs(x.ts), `${fmtAngka(x.v)} views${ket}`];
+  }).reverse().slice(0, 30);
+  bukaPopup({ judul: 'Riwayat Views', pesan: `${r.nama} · ${r.akun}`, rows: rows, ok: 'Tutup', batal: false, tipe: 'sukses' });
+}
+
+/* ===== Laporan bulanan: video yang tembus 500 dan 1K+ views per akun ===== */
+const BATAS_500 = 500;
+const BATAS_1K = 1000;
+
+function dataLaporan(bulan, cari){
+  const hasil = {};
+  semuaData.forEach(r => {
+    if(!r.link || !/tiktok\.com/i.test(r.link)) return;
+    if(String(r.tanggal || '').slice(0, 7) !== bulan) return;
+    if(cari && !((r.nama || '') + ' ' + (r.akun || '')).toLowerCase().includes(cari)) return;
+    const s = snapUrut(kunciViews(r));
+    if(!s.length) return;
+    const akun = r.akun || '-';
+    if(!hasil[akun]) hasil[akun] = [];
+    hasil[akun].push({
+      nama: r.nama || '-',
+      tanggal: r.tanggal,
+      link: r.link || '-',
+      views: Math.max.apply(null, s.map(x => x.v))
+    });
+  });
+  return hasil;
+}
+
+function renderLaporan(){
+  const bulan = document.getElementById('f-bulan').value || hariIniISO().slice(0, 7);
+  const cari = document.getElementById('f-cari').value.trim().toLowerCase();
+  const data = dataLaporan(bulan, cari);
+  const akunList = Object.keys(data).sort();
+  const el = document.getElementById('laporan-list');
+
+  if(!akunList.length){
+    el.innerHTML = '<div class="kosong rk">Belum ada data views untuk bulan ini. Klik Cek Views dulu.</div>';
+    return 0;
+  }
+
+  let totalLolos = 0;
+  el.innerHTML = akunList.map(akun => {
+    const arr = data[akun].slice().sort((a, b) => b.views - a.views);
+    const k1 = arr.filter(x => x.views >= BATAS_1K);
+    const k5 = arr.filter(x => x.views >= BATAS_500 && x.views < BATAS_1K);
+    totalLolos += k1.length + k5.length;
+    const item = x =>
+      `<div class="rk-item">
+        <div><b>${esc(x.nama)}</b><span class="sisa">${esc(formatTanggal(x.tanggal))}</span><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.link)}</a></div>
+        <div class="rk-v">${fmtAngka(x.views)}</div>
+      </div>`;
+    return `<div class="rk">
+      <h4>${esc(akun)}</h4>
+      <div class="rk-stat">
+        <div><b>${arr.length}</b><span>Total video</span></div>
+        <div><b>${k5.length}</b><span>500 - 999</span></div>
+        <div><b>${k1.length}</b><span>1K+</span></div>
+      </div>
+      ${k1.length ? `<div class="rk-judul k1">1K+ views (${k1.length})</div>${k1.map(item).join('')}` : ''}
+      ${k5.length ? `<div class="rk-judul k5">500 - 999 views (${k5.length})</div>${k5.map(item).join('')}` : ''}
+      ${(!k1.length && !k5.length) ? '<div class="rk-kosong">Belum ada video yang tembus 500 views.</div>' : ''}
+    </div>`;
+  }).join('');
+  return totalLolos;
+}
+
+/* Data realtime: views */
+function setViews(snap){ viewsData[snap.key] = snap.val(); renderTunda(); }
+db.ref('views').on('child_added', setViews);
+db.ref('views').on('child_changed', setViews);
+db.ref('views').on('child_removed', snap => { delete viewsData[snap.key]; renderTunda(); });
+
+/* Cek otomatis: tiap 5 menit dicek apakah ada link yang sudah 1 jam belum diperbarui */
+setInterval(() => cekSemuaViews(false), 5 * 60 * 1000);
+
+/* Data realtime: absensi */
+db.ref('absensi').orderByChild('ts').limitToLast(1000).on('value', snap => {
+  const arr = [];
+  snap.forEach(c => { arr.push(Object.assign({ _key: c.key }, c.val())); });
+  semuaData = arr.reverse(); // terbaru di atas
+  render();
+  if(!viewsAwalJalan){
+    viewsAwalJalan = true;
+    setTimeout(() => cekSemuaViews(false), 5000);
+  }
+});
+
+/* ===== Riwayat hapus: pulihkan, hapus permanen, auto hapus 7 hari ===== */
+
+/* Pulihkan: kembalikan ke absensi + kembalikan link di state karyawan */
+async function pulihkanAbsen(key, tombol){
+  const r = semuaHapus.find(x => x._key === key);
+  if(!r) return;
+  const kunciAbsen = `${r.tanggal}_${r.nomor}_${kunciNama(r.nama)}`;
+
+  tombol.disabled = true;
+  try{
+    const ada = await db.ref('absensi/' + kunciAbsen).once('value');
+    if(ada.exists()){
+      tombol.disabled = false;
+      popupInfo('Tidak bisa dipulihkan', 'Karyawan sudah mengisi ulang link ini.');
+      return;
+    }
+  }catch(err){
+    tombol.disabled = false;
+    popupInfo('Gagal memeriksa data', (err && err.message) || 'koneksi gagal');
+    return;
+  }
+
+  const yakin = await popupKonfirmasi(
+    'Pulihkan absensi ini?',
+    'Data akan kembali ke tab Absensi.',
+    [['Nama', r.nama], ['Akun', r.akun], ['Link', r.link]],
+    'Ya, Pulihkan',
+    false
+  );
+  if(!yakin){
+    tombol.disabled = false;
+    return;
+  }
+
+  const jamPenuh = /^\d{2}:\d{2}:\d{2}$/.test(r.jam) ? r.jam : '00:00:00';
+  const ts = new Date(`${r.tanggal}T${jamPenuh}`).getTime() || Date.now();
+  const upd = {};
+  upd['absensi/' + kunciAbsen] = {
+    nama: r.nama || '-',
+    platform: r.platform || '-',
+    akun: r.akun || '-',
+    jadwal: r.jadwal || '-',
+    link: r.link || '-',
+    nomor: r.nomor || 0,
+    tanggal: r.tanggal,
+    jam: r.jam || '-',
+    ts: ts
+  };
+  upd['riwayat_hapus/' + key] = null;
+
+  try{
+    await db.ref().update(upd);
+  }catch(err){
+    tombol.disabled = false;
+    popupInfo('Gagal memulihkan', (err && err.message) || 'koneksi gagal');
+    return;
+  }
+  try{
+    await pulihkanStateKaryawan(r);
+  }catch(err){
+    console.error('Gagal memulihkan state karyawan:', err);
+  }
+  toast('Absensi berhasil dipulihkan');
+}
+
+/* Kembalikan link di state karyawan (status selesai ikut pulih kalau kelima link lengkap) */
+function pulihkanStateKaryawan(r){
+  const [y, m, d] = String(r.tanggal).split('-');
+  const bulanKey = `absen-${y}-${m}`;
+  const hari = String(parseInt(d));
+  const jamPendek = String(r.jam).slice(0, 5);
+
+  return db.ref('state/' + kunciNama(r.nama)).transaction(cur => {
+    if(typeof cur !== 'string' || !cur.startsWith(MARKER)) return cur;
+    let obj;
+    try{ obj = JSON.parse(cur.slice(MARKER.length)); }catch(err){ return cur; }
+    if(obj.month !== bulanKey) return cur;
+
+    if(!obj.data) obj.data = {};
+    if(!obj.data[hari]) obj.data[hari] = {};
+    const e = obj.data[hari];
+    if(!e.links) e.links = {};
+    e.links[r.nomor] = { nilai: r.link, jam: jamPendek };
+    if([1, 2, 3, 4, 5].every(n => e.links[n])){
+      e.posting = true;
+      e.posting_waktu = jamPendek;
+    }
+    e.t = Date.now();
+    return MARKER + JSON.stringify(obj);
+  });
+}
+
+/* Hapus permanen satu riwayat */
+async function hapusPermanen(key, tombol){
+  const r = semuaHapus.find(x => x._key === key);
+  if(!r) return;
+  const yakin = await popupKonfirmasi(
+    'Hapus permanen?',
+    'Data ini tidak bisa dipulihkan lagi.',
+    [['Nama', r.nama], ['Akun', r.akun], ['Link', r.link]],
+    'Ya, Hapus Permanen',
+    true
+  );
+  if(!yakin) return;
+  tombol.disabled = true;
+  try{
+    await db.ref('riwayat_hapus/' + key).remove();
+    toast('Dihapus permanen');
+  }catch(err){
+    tombol.disabled = false;
+    popupInfo('Gagal menghapus', (err && err.message) || 'koneksi gagal');
+  }
+}
+
+/* Auto hapus riwayat yang sudah lebih dari 7 hari */
+async function bersihkanKadaluarsa(){
+  try{
+    const batas = Date.now() - MASA_SIMPAN_MS;
+    const snap = await db.ref('riwayat_hapus').orderByChild('hapus_ts').endAt(batas).once('value');
+    const upd = {};
+    let ada = false;
+    snap.forEach(c => { upd['riwayat_hapus/' + c.key] = null; ada = true; });
+    if(ada) await db.ref().update(upd);
+  }catch(err){
+    console.error('Gagal membersihkan riwayat kadaluarsa:', err);
+  }
+}
+bersihkanKadaluarsa();
+setInterval(bersihkanKadaluarsa, 60 * 60 * 1000);
+setInterval(render, 60 * 60 * 1000);
+
+document.getElementById('isi-hapus').addEventListener('click', e => {
+  const btnPulih = e.target.closest('.btn-pulih');
+  if(btnPulih){ pulihkanAbsen(btnPulih.dataset.key, btnPulih); return; }
+  const btnPermanen = e.target.closest('.btn-permanen');
+  if(btnPermanen) hapusPermanen(btnPermanen.dataset.key, btnPermanen);
+});
+
+/* Data realtime: riwayat hapus */
+db.ref('riwayat_hapus').orderByChild('hapus_ts').limitToLast(500).on('value', snap => {
+  const arr = [];
+  snap.forEach(c => { arr.push(Object.assign({ _key: c.key }, c.val())); });
+  semuaHapus = arr.reverse(); // terbaru di atas
+  render();
+});
+
+/* Status koneksi */
+db.ref('.info/connected').on('value', s => {
+  const on = s.val() === true;
+  document.getElementById('dot').className = 'dot' + (on ? ' on' : '');
+  document.getElementById('status').textContent = on ? 'Realtime terhubung' : 'Terputus';
+});
+
+document.getElementById('f-tanggal').value = hariIniISO();
+document.getElementById('f-bulan').value = hariIniISO().slice(0, 7);
+document.getElementById('f-bulan').addEventListener('change', render);
+document.getElementById('f-tanggal').addEventListener('change', render);
+document.getElementById('f-mode').addEventListener('change', render);
+document.getElementById('f-cari').addEventListener('input', render);
+</script>
+</body>
+</html>
