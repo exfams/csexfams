@@ -60,7 +60,7 @@ pre{margin:0;padding:10px 12px;max-height:200px;overflow:auto;font:12px/1.5 ui-m
 <div class="msg" id="m1"></div>
 </div>
 <div id="out1" class="card hide">
-<button class="btn p" id="zip1"><svg class="i"><use href="#i-dl"/></svg>Unduh semua (.zip)</button>
+<div class="row" style="margin-top:0"><button class="btn p" id="all1"><svg class="i"><use href="#i-dl"/></svg>Unduh semua file</button><button class="btn" id="zip1"><svg class="i"><use href="#i-dl"/></svg>Unduh .zip</button></div>
 <div id="files1"></div>
 </div>
 </section>
@@ -139,8 +139,7 @@ function render1(){
   d.innerHTML='<div class="fh"><div class="n"><svg class="i"><use href="#i-file"/></svg>'+n+' <small>'+(t.length/1024).toFixed(1)+' KB</small></div><div class="row" style="margin:0"><button class="btn" data-a="c"><svg class="i"><use href="#i-cp"/></svg>Salin</button><button class="btn" data-a="d"><svg class="i"><use href="#i-dl"/></svg>Unduh</button></div></div><pre>'+esc(t)+'</pre>';
   d.querySelector('[data-a=c]').onclick=function(){copy(t,'m1')};
   d.querySelector('[data-a=d]').onclick=function(){
-   var ext=n.split('.').pop();
-   save(ext==='html'?n:n+'.txt',t,'m1');
+   save(n,t,'m1');
   };
   box.appendChild(d);
  });
@@ -160,6 +159,12 @@ $('zip1').onclick=function(){
  if(!window.JSZip){say('m1','ZIP gagal dimuat',1);return}
  var z=new JSZip();Object.keys(res1).forEach(function(n){z.file(n,res1[n])});
  z.generateAsync({type:'blob'}).then(function(b){save('web-terpisah.zip',b,'m1')});
+};
+
+$('all1').onclick=async function(){
+ var ks=Object.keys(res1);
+ for(var i=0;i<ks.length;i++){await save(ks[i],res1[ks[i]],'m1');await new Promise(function(r){setTimeout(r,350)})}
+ say('m1',ks.length+' file diunduh');
 };
 
 // ---------- MERGE ----------
@@ -222,12 +227,21 @@ function copy(t,id){
  try{navigator.clipboard.writeText(t).then(done,fallback)}catch(e){fallback()}
  function fallback(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){say(id,'Gagal menyalin',1)}a.remove()}
 }
+function localSave(name,data){
+ var ext=(name.split('.').pop()||'').toLowerCase();
+ var types={html:'text/html',css:'text/css',js:'text/javascript',zip:'application/zip'};
+ var blob=data instanceof Blob?data:new Blob([data],{type:(types[ext]||'text/plain')+';charset=utf-8'});
+ var u=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=u;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();
+ setTimeout(function(){a.remove();URL.revokeObjectURL(u)},1500);
+}
 async function save(name,data,id){
- try{
-  var d=window.claude&&await claude.use('downloads');
-  if(!d){say(id,'Unduh tidak tersedia, gunakan Salin',1);return}
-  await d.save({filename:name,data:data});say(id,name+' tersimpan');
- }catch(e){say(id,e&&e.code==='declined'?'Dibatalkan':'Gagal mengunduh, coba Salin',1)}
+ var d=null;
+ try{d=window.claude&&await claude.use('downloads')}catch(e){}
+ if(!d){localSave(name,data);say(id,name+' diunduh');return}
+ if(/\.(css|m?js)$/i.test(name))name+='.txt';
+ try{await d.save({filename:name,data:data});say(id,name+' tersimpan')}
+ catch(e){say(id,e&&e.code==='declined'?'Dibatalkan':'Gagal mengunduh, coba Salin',1)}
 }
 })();
 </script>
