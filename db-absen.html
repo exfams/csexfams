@@ -84,6 +84,15 @@ td a{color:var(--blue-dark);font-weight:600;text-decoration:none;}
 .rk-item a{display:block;color:var(--blue-dark);font-weight:600;text-decoration:none;word-break:break-all;margin-top:2px;}
 .rk-v{font-weight:800;font-size:14px;flex-shrink:0;}
 .rk-kosong{font-size:12.5px;color:var(--muted);padding-top:8px;}
+.rk-semua{margin-top:12px;border-top:1px solid var(--line);padding-top:6px;}
+.rk-semua summary{cursor:pointer;font-size:12.5px;font-weight:800;color:var(--blue-dark);padding:8px 0;}
+.thumb{display:flex;align-items:center;justify-content:center;width:72px;height:96px;flex-shrink:0;border-radius:8px;overflow:hidden;background:#dbe7f1;border:1px solid #9bbbd8;text-decoration:none;}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb-ket{font-size:10.5px;color:var(--muted);font-weight:400;text-align:center;padding:4px;word-break:normal;}
+.badge-v{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:800;color:#fff;vertical-align:middle;}
+.badge-v.b3{background:var(--green);}
+.badge-v.b2{background:var(--blue);}
+.badge-v.b1{background:#f59e0b;}
 
 /* Tombol */
 .btn-hapus,.btn-pulih{padding:8px 14px;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
@@ -496,7 +505,7 @@ document.getElementById('isi').addEventListener('click', e => {
    DETEKSI VIEWS TIKTOK
    Data views tiap link disimpan per jam di: views/<kunci absensi>/<timestamp>
 ========================================================= */
-const PARALEL_VIEWS = 3;                  // jumlah link dicek bersamaan (tetap diantre 1 request/detik)
+const PARALEL_VIEWS = 5;                  // jumlah link dicek bersamaan lewat Worker (API Clair)
 const SIMPAN_HEARTBEAT_MS = 30 * 60 * 1000; // views tidak berubah tetap dicatat tiap 30 menit
 
 /* Waktu pengecekan terakhir satu link (dari _meta.cek atau snapshot terakhir) */
@@ -558,48 +567,16 @@ function htmlViews(r){
   return `<span class="v-angka">${fmtAngka(a.v)}</span>${info}<span class="v-info v-baru">dicek ${fmtJamTs(terakhirCek(vk))}</span>`;
 }
 
-/* Ambil statistik video dari API TikTok (tikwm), dicoba langsung lalu lewat proxy */
-const SUMBER_API = [
-  url => `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent('https://www.tikwm.com/api/?url=' + url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.tikwm.com/api/?url=' + url)}`
-];
-/* Batas gratis tikwm = 1 permintaan/detik. Semua permintaan langsung diantre supaya tidak kena limit */
-let giliranTikwm = 0;
-async function antriTikwm(){
-  const sekarang = Date.now();
-  const mulai = Math.max(sekarang, giliranTikwm);
-  giliranTikwm = mulai + 1100;
-  if(mulai > sekarang) await tunggu(mulai - sekarang);
-}
+/* Ambil statistik video lewat Cloudflare Worker (API clair.im) */
+const WORKER_URL = 'https://acikiwir-piews-tt.famssspay.workers.dev'; // ganti dengan alamat Worker kamu
 
-/* Baca balasan tikwm. Mengembalikan null kalau gagal / kena limit */
-function bacaTikwm(teks){
-  try{
-    const j = JSON.parse(teks);
-    if(j && j.code === 0 && j.data){
-      const d = j.data;
-      return {
-        hasil: {
-          v: Number(d.play_count) || 0,
-          l: Number(d.digg_count) || 0,
-          c: Number(d.comment_count) || 0,
-          s: Number(d.share_count) || 0
-        }
-      };
-    }
-  }catch(err){
-  }
-  return null;
-}
-
-async function fetchTeks(u, ms){
+async function fetchJson(u, ms){
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
   try{
     const res = await fetch(u, { signal: ctrl.signal });
     if(!res.ok) return null;
-    return await res.text();
+    return await res.json();
   }catch(err){
     return null;
   }finally{
@@ -607,31 +584,20 @@ async function fetchTeks(u, ms){
   }
 }
 
-/* Cadangan: baca langsung halaman TikTok lewat proxy, ambil playCount */
-async function ambilViewsHalaman(url){
-  const t = await fetchTeks(`https://corsproxy.io/?${encodeURIComponent(url)}`, 9000);
-  if(!t) return null;
-  const m = t.match(/"playCount"\s*:\s*"?(\d+)/);
-  if(!m) return null;
-  const ambil = re => { const x = t.match(re); return x ? Number(x[1]) : 0; };
-  return {
-    v: Number(m[1]) || 0,
-    l: ambil(/"diggCount"\s*:\s*"?(\d+)/),
-    c: ambil(/"commentCount"\s*:\s*"?(\d+)/),
-    s: ambil(/"shareCount"\s*:\s*"?(\d+)/)
-  };
-}
-
 async function ambilViewsTikTok(url){
-  /* Urutan: langsung, proxy 1, langsung lagi, proxy 2, terakhir baca halaman TikTok */
-  const urutan = [0, 1, 0, 2];
-  for(const i of urutan){
-    if(i === 0) await antriTikwm();
-    const teks = await fetchTeks(SUMBER_API[i](url), i === 0 ? 7000 : 9000);
-    const h = teks ? bacaTikwm(teks) : null;
-    if(h) return h.hasil;
+  for(let i = 0; i < 2; i++){
+    const j = await fetchJson(`${WORKER_URL}/?url=${encodeURIComponent(url)}`, 45000);
+    if(j && j.ok){
+      return {
+        v: Number(j.v) || 0,
+        l: Number(j.l) || 0,
+        c: Number(j.c) || 0,
+        s: Number(j.s) || 0
+      };
+    }
+    await tunggu(1000);
   }
-  return await ambilViewsHalaman(url);
+  return null;
 }
 
 /* Link yang dicek: mode 'hari' = tanggal hari ini, mode 'bulan' = semua tanggal di bulan ini */
@@ -762,17 +728,23 @@ function dataLaporan(bulan, cari){
     if(String(r.tanggal || '').slice(0, 7) !== bulan) return;
     if(cari && !((r.nama || '') + ' ' + (r.akun || '')).toLowerCase().includes(cari)) return;
     const s = snapUrut(kunciViews(r));
-    if(!s.length) return;
     const akun = r.akun || '-';
     if(!hasil[akun]) hasil[akun] = [];
     hasil[akun].push({
       nama: r.nama || '-',
       tanggal: r.tanggal,
       link: r.link || '-',
-      views: Math.max.apply(null, s.map(x => x.v))
+      dicek: s.length > 0,
+      views: s.length ? Math.max.apply(null, s.map(x => x.v)) : 0
     });
   });
   return hasil;
+}
+
+/* Ambil id video dari link TikTok (untuk preview) */
+function idDariLink(link){
+  const m = String(link || '').match(/\/(?:video|photo)\/(\d+)/);
+  return m ? m[1] : '';
 }
 
 function renderLaporan(){
@@ -783,7 +755,7 @@ function renderLaporan(){
   const el = document.getElementById('laporan-list');
 
   if(!akunList.length){
-    el.innerHTML = '<div class="kosong rk">Belum ada data views untuk bulan ini. Klik Cek Views dulu.</div>';
+    el.innerHTML = '<div class="kosong rk">Belum ada video TikTok untuk bulan ini.</div>';
     return 0;
   }
 
@@ -792,11 +764,22 @@ function renderLaporan(){
     const arr = data[akun].slice().sort((a, b) => b.views - a.views);
     const k1 = arr.filter(x => x.views >= BATAS_1K);
     const k5 = arr.filter(x => x.views >= BATAS_500 && x.views < BATAS_1K);
+    const tingkat = v => v >= BATAS_1K ? 3 : (v >= BATAS_500 ? 2 : (v >= 100 ? 1 : 0));
+    const semua = data[akun].slice().sort((a, b) => {
+      if(b.views !== a.views) return b.views - a.views;
+      return String(b.tanggal).localeCompare(String(a.tanggal));
+    });
     totalLolos += k1.length + k5.length;
     const item = x =>
       `<div class="rk-item">
         <div><b>${esc(x.nama)}</b><span class="sisa">${esc(formatTanggal(x.tanggal))}</span><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.link)}</a></div>
         <div class="rk-v">${fmtAngka(x.views)}</div>
+      </div>`;
+    const itemSemua = x =>
+      `<div class="rk-item">
+        <a class="thumb" href="${esc(x.link)}" target="_blank" rel="noopener" data-link="${esc(x.link)}">${isiThumb(x.link)}</a>
+        <div style="min-width:0;flex:1;"><b>${esc(x.nama)}</b>${tingkat(x.views) ? `<span class="badge-v b${tingkat(x.views)}">${tingkat(x.views) === 3 ? '1K+' : (tingkat(x.views) === 2 ? '500+' : '100+')}</span>` : ''}<span class="sisa">${esc(formatTanggal(x.tanggal))}</span><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.link)}</a></div>
+        <div class="rk-v">${x.dicek ? fmtAngka(x.views) : '-'}</div>
       </div>`;
     return `<div class="rk">
       <h4>${esc(akun)}</h4>
@@ -808,10 +791,61 @@ function renderLaporan(){
       ${k1.length ? `<div class="rk-judul k1">1K+ views (${k1.length})</div>${k1.map(item).join('')}` : ''}
       ${k5.length ? `<div class="rk-judul k5">500 - 999 views (${k5.length})</div>${k5.map(item).join('')}` : ''}
       ${(!k1.length && !k5.length) ? '<div class="rk-kosong">Belum ada video yang tembus 500 views.</div>' : ''}
+      <details class="rk-semua" data-akun="${esc(akun)}"${bukaAkun[akun] ? ' open' : ''}>
+        <summary>Semua video bulan ini (${semua.length})</summary>
+        ${semua.map(itemSemua).join('')}
+      </details>
     </div>`;
   }).join('');
+  pantauThumb();
   return totalLolos;
 }
+
+/* Thumbnail video: dimuat otomatis lewat Worker (oEmbed TikTok), hanya saat terlihat di layar */
+const thumbCache = {};
+const thumbAntri = {};
+const bukaAkun = {};
+
+function isiThumb(link){
+  const c = thumbCache[link];
+  if(c && c !== 'gagal') return `<img src="${esc(c)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('Tidak tersedia'))">`;
+  return `<span class="thumb-ket">${c === 'gagal' ? 'Tidak tersedia' : 'Memuat...'}</span>`;
+}
+
+async function muatThumb(el){
+  const link = el.dataset.link;
+  if(thumbCache[link] || thumbAntri[link]) return;
+  thumbAntri[link] = true;
+  const j = await fetchJson(`${WORKER_URL}/?thumb=1&url=${encodeURIComponent(link)}`, 15000);
+  delete thumbAntri[link];
+  thumbCache[link] = (j && j.ok && j.thumb) ? j.thumb : 'gagal';
+  document.querySelectorAll('#laporan-list .thumb').forEach(a => {
+    if(a.dataset.link === link) a.innerHTML = isiThumb(link);
+  });
+}
+
+const obsThumb = ('IntersectionObserver' in window) ? new IntersectionObserver(list => {
+  list.forEach(en => {
+    if(en.isIntersecting){
+      obsThumb.unobserve(en.target);
+      muatThumb(en.target);
+    }
+  });
+}, { rootMargin: '200px' }) : null;
+
+function pantauThumb(){
+  document.querySelectorAll('#laporan-list .thumb').forEach(a => {
+    if(thumbCache[a.dataset.link]) return;
+    if(obsThumb) obsThumb.observe(a);
+    else muatThumb(a);
+  });
+}
+
+/* Ingat daftar akun yang sedang dibuka supaya tidak menutup sendiri saat data diperbarui */
+document.getElementById('laporan-list').addEventListener('toggle', e => {
+  const d = e.target;
+  if(d && d.classList && d.classList.contains('rk-semua')) bukaAkun[d.dataset.akun] = d.open;
+}, true);
 
 /* Data realtime: views */
 function setViews(snap){ viewsData[snap.key] = snap.val(); renderTunda(); }
