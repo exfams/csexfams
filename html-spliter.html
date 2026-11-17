@@ -100,22 +100,34 @@ $('t1').onclick=function(){tab(1)};$('t2').onclick=function(){tab(2)};
 
 // ---------- SPLIT ----------
 function split(html){
- var css=[],js=[],cssDone=false,jsDone=false;
- var out=html.replace(/<style\b([^>]*)>([\s\S]*?)<\/style>/gi,function(m,a,c){
-  css.push(c.replace(/^\n+|\s+$/g,''));
-  if(cssDone)return '';cssDone=true;return '<link rel="stylesheet" href="style.css">';
- });
- out=out.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi,function(m,a,c){
-  if(/\bsrc\s*=/i.test(a))return m;
-  if(/type\s*=\s*["']?(application\/(ld\+)?json|importmap|text\/template)/i.test(a))return m;
-  if(!c.trim())return m;
-  js.push(c.replace(/^\n+|\s+$/g,''));
-  if(jsDone)return '';jsDone=true;
-  var mod=/type\s*=\s*["']?module/i.test(a)?' type="module"':'';
-  return '<script src="script.js"'+mod+'><\/script>';
- });
- out=out.replace(/\n{3,}/g,'\n\n');
- var o={'index.html':out.trim()+'\n'};
+ var css=[],js=[],out='',last=0,cssRef=false;
+ var re=/<!--[\s\S]*?-->|<(style|script)\b([^>]*)>/gi,m;
+ while((m=re.exec(html))){
+  if(!m[1])continue;
+  var tag=m[1].toLowerCase(),attrs=m[2],cs=m.index+m[0].length;
+  var cre=new RegExp('</'+tag+'\\b','ig');cre.lastIndex=cs;
+  var cm=cre.exec(html);if(!cm)break;
+  var gt=html.indexOf('>',cm.index);if(gt<0)break;
+  var end=gt+1,body=html.slice(cs,cm.index);
+  var keep=!body.trim();
+  if(tag==='script'){
+   var t=(attrs.match(/type\s*=\s*["']?([^"'\s>]+)/i)||[])[1];
+   if(/\bsrc\s*=/i.test(attrs)||(t&&!/^(text|application)\/(java|ecma)script$/i.test(t)))keep=true;
+  }else if(/\bmedia\s*=/i.test(attrs))keep=true;
+  re.lastIndex=end;
+  if(keep)continue;
+  out+=html.slice(last,m.index);last=end;
+  var clean=body.replace(/^\s*\n/,'').replace(/\s+$/,'');
+  if(tag==='style'){css.push(clean);if(!cssRef){cssRef=true;out+='<link rel="stylesheet" href="style.css">'}}
+  else js.push(clean);
+ }
+ out+=html.slice(last);
+ if(js.length){
+  var tagJs='<script src="script.js"><\/script>',bi=out.search(/<\/body\s*>(?![\s\S]*<\/body\s*>)/i);
+  out=bi>=0?out.slice(0,bi)+tagJs+'\n'+out.slice(bi):out.replace(/\s*$/,'\n')+tagJs+'\n';
+ }
+ out=out.replace(/\n[ \t]*\n(?:[ \t]*\n)+/g,'\n\n');
+ var o={'index.html':out.replace(/\s+$/,'')+'\n'};
  if(css.length)o['style.css']=css.join('\n\n')+'\n';
  if(js.length)o['script.js']=js.join('\n\n')+'\n';
  return o;
@@ -124,7 +136,7 @@ function render1(){
  var box=$('files1');box.innerHTML='';
  Object.keys(res1).forEach(function(n){
   var t=res1[n],d=document.createElement('div');d.className='f';
-  d.innerHTML='<div class="fh"><div class="n"><svg class="i"><use href="#i-file"/></svg>'+n+' <small>'+(t.length/1024).toFixed(1)+' KB</small></div><div class="row" style="margin:0"><button class="btn" data-a="c"><svg class="i"><use href="#i-cp"/></svg>Salin</button><button class="btn" data-a="d"><svg class="i"><use href="#i-dl"/></svg>Unduh</button></div></div><pre>'+esc(t.slice(0,6000))+(t.length>6000?'\n…':'')+'</pre>';
+  d.innerHTML='<div class="fh"><div class="n"><svg class="i"><use href="#i-file"/></svg>'+n+' <small>'+(t.length/1024).toFixed(1)+' KB</small></div><div class="row" style="margin:0"><button class="btn" data-a="c"><svg class="i"><use href="#i-cp"/></svg>Salin</button><button class="btn" data-a="d"><svg class="i"><use href="#i-dl"/></svg>Unduh</button></div></div><pre>'+esc(t)+'</pre>';
   d.querySelector('[data-a=c]').onclick=function(){copy(t,'m1')};
   d.querySelector('[data-a=d]').onclick=function(){
    var ext=n.split('.').pop();
@@ -196,7 +208,7 @@ function merge(){
 }
 setupDrop($('d2'),$('i2'),function(fs){addFiles(fs)});
 $('go2').onclick=function(){
- try{merged=merge();$('pv2').textContent=merged.slice(0,8000)+(merged.length>8000?'\n…':'');
+ try{merged=merge();$('pv2').textContent=merged;
   $('out2').classList.remove('hide');say('m2','Digabung ('+(merged.length/1024).toFixed(1)+' KB)')}
  catch(e){say('m2',e.message,1)}
 };
