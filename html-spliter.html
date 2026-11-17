@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pemisah &amp; Penggabung HTML</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--soft:#eef0f4;--tx:#1f2430;--mu:#7b8394;--ac:#3b6cf6;--acs:#e6edff;--ok:#1f9d63;--er:#d64545;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161b;--card:#1c1f26;--soft:#262a33;--tx:#e7e9ee;--mu:#8b93a5;--ac:#6b93ff;--acs:#222a42;--ok:#4cc38a;--er:#f07178}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:20px 16px}
+.w{max-width:760px;margin:0 auto}
+h1{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;margin:0 0 18px}
+h1 .i{width:28px;height:28px;color:var(--ac)}
+.i{width:20px;height:20px;fill:currentColor;flex:none}
+.tabs{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:0;background:none;color:var(--mu);border-radius:9px;font:inherit;font-weight:600;cursor:pointer}
+.tabs button.on{background:var(--card);color:var(--ac)}
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px}
+.drop{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--soft);border-radius:12px;padding:30px 12px;text-align:center;color:var(--mu);cursor:pointer;transition:background .15s}
+.drop .i{width:36px;height:36px;color:var(--ac)}
+.drop b{color:var(--tx);font-weight:600}
+.drop.o,.drop:hover{background:var(--acs)}
+textarea{width:100%;min-height:96px;margin-top:10px;background:var(--soft);color:var(--tx);border:0;border-radius:10px;padding:12px;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;resize:vertical;outline:none}
+textarea:focus{box-shadow:0 0 0 2px var(--ac)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:0;background:var(--soft);color:var(--tx);border-radius:9px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.btn:hover{filter:brightness(.96)}
+.btn.p{background:var(--ac);color:#fff}
+.btn .i{width:18px;height:18px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.f{background:var(--soft);border-radius:10px;margin-top:10px;overflow:hidden}
+.fh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 8px 8px 12px;flex-wrap:wrap}
+.fh .n{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.fh .n .i{color:var(--ac)}.fh small{color:var(--mu);font-weight:400}
+.f .btn{background:var(--card)}
+pre{margin:0;padding:10px 12px;max-height:200px;overflow:auto;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;color:var(--tx)}
+.msg{display:flex;align-items:center;gap:6px;color:var(--ok);font-size:13px;margin-top:10px}
+.msg:empty{display:none}.msg.err{color:var(--er)}
+.list{margin:10px 0 0;padding:0;list-style:none;font-size:13px}
+.list li{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--soft);border-radius:8px;margin-top:6px}
+.list .i{width:18px;height:18px;color:var(--ac)}.list small{color:var(--mu);margin-left:auto}
+.list:empty{display:none}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-link" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></symbol><symbol id="i-cut" viewBox="0 0 24 24"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></symbol><symbol id="i-merge" viewBox="0 0 24 24"><path d="M17 20.41L18.41 19 15 15.59 13.59 17 17 20.41zM7.5 8H11v5.59L5.59 19 7 20.41l6-6V8h3.5L12 3.5 7.5 8z"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></symbol><symbol id="i-dl" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></symbol><symbol id="i-cp" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></symbol><symbol id="i-ok" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></symbol><symbol id="i-er" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></symbol><symbol id="i-rs" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></symbol></defs></svg>
+<div class="w">
+<h1><svg class="i"><use href="#i-link"/></svg>Pisah &amp; Gabung HTML</h1>
+<div class="tabs">
+<button id="t1" class="on"><svg class="i"><use href="#i-cut"/></svg>Pisah</button>
+<button id="t2"><svg class="i"><use href="#i-merge"/></svg>Gabung</button>
+</div>
+<section id="p1">
+<div class="card">
+<div class="drop" id="d1"><svg class="i"><use href="#i-up"/></svg><b>Drop file HTML</b>atau klik untuk pilih</div>
+<input type="file" id="i1" accept=".html,.htm,text/html" hidden>
+<textarea id="ta" placeholder="Atau tempel kode HTML"></textarea>
+<div class="row"><button class="btn p" id="go1"><svg class="i"><use href="#i-cut"/></svg>Pisahkan</button><button class="btn" id="clr1"><svg class="i"><use href="#i-rs"/></svg>Reset</button></div>
+<div class="msg" id="m1"></div>
+</div>
+<div id="out1" class="card hide">
+<button class="btn p" id="zip1"><svg class="i"><use href="#i-dl"/></svg>Unduh semua (.zip)</button>
+<div id="files1"></div>
+</div>
+</section>
+<section id="p2" class="hide">
+<div class="card">
+<div class="drop" id="d2"><svg class="i"><use href="#i-up"/></svg><b>Drop semua file</b>HTML, CSS, JS atau .zip</div>
+<input type="file" id="i2" multiple accept=".html,.htm,.css,.js,.mjs,.zip" hidden>
+<ul class="list" id="l2"></ul>
+<div class="row"><button class="btn p" id="go2"><svg class="i"><use href="#i-merge"/></svg>Gabungkan</button><button class="btn" id="clr2"><svg class="i"><use href="#i-rs"/></svg>Reset</button></div>
+<div class="msg" id="m2"></div>
+</div>
+<div id="out2" class="card hide">
+<div class="row" style="margin-top:0"><button class="btn p" id="dl2"><svg class="i"><use href="#i-dl"/></svg>Unduh index.html</button><button class="btn" id="cp2"><svg class="i"><use href="#i-cp"/></svg>Salin</button></div>
+<div class="f"><pre id="pv2"></pre></div>
+</div>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var res1={}, items2=[], merged='';
+function say(id,t,e){var m=$(id);m.className='msg'+(e?' err':'');if(!t){m.innerHTML='';return}m.innerHTML='<svg class="i"><use href="#i-'+(e?'er':'ok')+'"/></svg><span></span>';m.lastChild.textContent=t}
+function readText(f){return new Promise(function(r,j){var x=new FileReader();x.onload=function(){r(x.result)};x.onerror=j;x.readAsText(f)})}
+function esc(s){return s.replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function setupDrop(dz,inp,cb){
+ dz.onclick=function(){inp.click()};
+ inp.onchange=function(){cb([].slice.call(inp.files));inp.value=''};
+ ['dragenter','dragover'].forEach(function(e){dz.addEventListener(e,function(ev){ev.preventDefault();dz.classList.add('o')})});
+ ['dragleave','drop'].forEach(function(e){dz.addEventListener(e,function(ev){ev.preventDefault();dz.classList.remove('o')})});
+ dz.addEventListener('drop',function(ev){cb([].slice.call(ev.dataTransfer.files))});
+}
+// tabs
+function tab(n){$('p1').classList.toggle('hide',n!=1);$('p2').classList.toggle('hide',n!=2);$('t1').classList.toggle('on',n==1);$('t2').classList.toggle('on',n==2)}
+$('t1').onclick=function(){tab(1)};$('t2').onclick=function(){tab(2)};
+
+// ---------- SPLIT ----------
+function split(html){
+ var css=[],js=[],cssDone=false,jsDone=false;
+ var out=html.replace(/<style\b([^>]*)>([\s\S]*?)<\/style>/gi,function(m,a,c){
+  css.push(c.replace(/^\n+|\s+$/g,''));
+  if(cssDone)return '';cssDone=true;return '<link rel="stylesheet" href="style.css">';
+ });
+ out=out.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi,function(m,a,c){
+  if(/\bsrc\s*=/i.test(a))return m;
+  if(/type\s*=\s*["']?(application\/(ld\+)?json|importmap|text\/template)/i.test(a))return m;
+  if(!c.trim())return m;
+  js.push(c.replace(/^\n+|\s+$/g,''));
+  if(jsDone)return '';jsDone=true;
+  var mod=/type\s*=\s*["']?module/i.test(a)?' type="module"':'';
+  return '<script src="script.js"'+mod+'><\/script>';
+ });
+ out=out.replace(/\n{3,}/g,'\n\n');
+ var o={'index.html':out.trim()+'\n'};
+ if(css.length)o['style.css']=css.join('\n\n')+'\n';
+ if(js.length)o['script.js']=js.join('\n\n')+'\n';
+ return o;
+}
+function render1(){
+ var box=$('files1');box.innerHTML='';
+ Object.keys(res1).forEach(function(n){
+  var t=res1[n],d=document.createElement('div');d.className='f';
+  d.innerHTML='<div class="fh"><div class="n"><svg class="i"><use href="#i-file"/></svg>'+n+' <small>'+(t.length/1024).toFixed(1)+' KB</small></div><div class="row" style="margin:0"><button class="btn" data-a="c"><svg class="i"><use href="#i-cp"/></svg>Salin</button><button class="btn" data-a="d"><svg class="i"><use href="#i-dl"/></svg>Unduh</button></div></div><pre>'+esc(t.slice(0,6000))+(t.length>6000?'\n…':'')+'</pre>';
+  d.querySelector('[data-a=c]').onclick=function(){copy(t,'m1')};
+  d.querySelector('[data-a=d]').onclick=function(){
+   var ext=n.split('.').pop();
+   save(ext==='html'?n:n+'.txt',t,'m1');
+  };
+  box.appendChild(d);
+ });
+ $('out1').classList.remove('hide');
+}
+function doSplit(html){
+ if(!html.trim()){say('m1','Belum ada kode HTML',1);return}
+ res1=split(html);
+ var n=Object.keys(res1);
+ say('m1',n.length+' file dibuat');
+ render1();
+}
+setupDrop($('d1'),$('i1'),function(fs){if(!fs[0])return;readText(fs[0]).then(function(t){$('ta').value=t;doSplit(t)})});
+$('go1').onclick=function(){doSplit($('ta').value)};
+$('clr1').onclick=function(){$('ta').value='';res1={};$('out1').classList.add('hide');say('m1','')};
+$('zip1').onclick=function(){
+ if(!window.JSZip){say('m1','ZIP gagal dimuat',1);return}
+ var z=new JSZip();Object.keys(res1).forEach(function(n){z.file(n,res1[n])});
+ z.generateAsync({type:'blob'}).then(function(b){save('web-terpisah.zip',b,'m1')});
+};
+
+// ---------- MERGE ----------
+async function addFiles(fs){
+ for(var f of fs){
+  if(/\.zip$/i.test(f.name)&&window.JSZip){
+   try{var z=await JSZip.loadAsync(f);
+    for(var p of Object.keys(z.files)){var e=z.files[p];
+     if(e.dir||/(^|\/)(__MACOSX|\.)/.test(p))continue;
+     if(/\.(html?|css|m?js)$/i.test(p))items2.push({name:p.split('/').pop(),text:await e.async('string')});
+    }}catch(x){say('m2','ZIP tidak terbaca',1)}
+  }else if(/\.(html?|css|m?js)$/i.test(f.name)){
+   items2.push({name:f.name,text:await readText(f)});
+  }
+ }
+ // dedupe by name (latest wins)
+ var seen={};items2=items2.reverse().filter(function(i){if(seen[i.name])return false;seen[i.name]=1;return true}).reverse();
+ $('l2').innerHTML=items2.map(function(i){return '<li><svg class="i"><use href="#i-file"/></svg>'+esc(i.name)+'<small>'+(i.text.length/1024).toFixed(1)+' KB</small></li>'}).join('');
+}
+function merge(){
+ var h=items2.filter(function(i){return /\.html?$/i.test(i.name)});
+ if(!h.length)throw new Error('Butuh minimal 1 file HTML.');
+ var main=h.filter(function(i){return /^index\.html?$/i.test(i.name)})[0]||h[0];
+ var cssF=items2.filter(function(i){return /\.css$/i.test(i.name)}),jsF=items2.filter(function(i){return /\.m?js$/i.test(i.name)});
+ var used={};
+ function base(p){return p.split(/[?#]/)[0].split('/').pop()}
+ function find(arr,p){var b=base(p);return arr.filter(function(i){return i.name===b})[0]}
+ var out=main.text.replace(/<link\b[^>]*>/gi,function(m){
+  if(!/rel\s*=\s*["']?stylesheet/i.test(m))return m;
+  var hr=m.match(/href\s*=\s*["']([^"']+)["']/i);if(!hr||/^(https?:)?\/\//i.test(hr[1]))return m;
+  var f=find(cssF,hr[1]);if(!f)return m;used[f.name]=1;
+  return '<style>\n'+f.text.replace(/\s+$/,'')+'\n</style>';
+ });
+ out=out.replace(/<script\b([^>]*)>\s*<\/script>/gi,function(m,a){
+  var s=a.match(/src\s*=\s*["']([^"']+)["']/i);if(!s||/^(https?:)?\/\//i.test(s[1]))return m;
+  var f=find(jsF,s[1]);if(!f)return m;used[f.name]=1;
+  var at=a.replace(/\s*src\s*=\s*["'][^"']*["']/i,'').replace(/\s*\b(defer|async)\b/gi,'');
+  return '<script'+at+'>\n'+f.text.replace(/<\/script/gi,'<\\/script').replace(/\s+$/,'')+'\n<\/script>';
+ });
+ var xc=cssF.filter(function(i){return !used[i.name]}),xj=jsF.filter(function(i){return !used[i.name]});
+ if(xc.length){var s=xc.map(function(i){return '<style>\n'+i.text.trim()+'\n</style>'}).join('\n');
+  out=/<\/head>/i.test(out)?out.replace(/<\/head>/i,function(){return s+'\n</head>'}):s+'\n'+out}
+ if(xj.length){var s2=xj.map(function(i){return '<script>\n'+i.text.trim().replace(/<\/script/gi,'<\\/script')+'\n<\/script>'}).join('\n');
+  out=/<\/body>/i.test(out)?out.replace(/<\/body>/i,function(){return s2+'\n</body>'}):out+'\n'+s2}
+ return out;
+}
+setupDrop($('d2'),$('i2'),function(fs){addFiles(fs)});
+$('go2').onclick=function(){
+ try{merged=merge();$('pv2').textContent=merged.slice(0,8000)+(merged.length>8000?'\n…':'');
+  $('out2').classList.remove('hide');say('m2','Digabung ('+(merged.length/1024).toFixed(1)+' KB)')}
+ catch(e){say('m2',e.message,1)}
+};
+$('clr2').onclick=function(){items2=[];merged='';$('l2').innerHTML='';$('out2').classList.add('hide');say('m2','')};
+$('dl2').onclick=function(){save('index.html',merged,'m2')};
+$('cp2').onclick=function(){copy(merged,'m2')};
+
+// ---------- helpers ----------
+function copy(t,id){
+ var done=function(){say(id,'Tersalin')};
+ try{navigator.clipboard.writeText(t).then(done,fallback)}catch(e){fallback()}
+ function fallback(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){say(id,'Gagal menyalin',1)}a.remove()}
+}
+async function save(name,data,id){
+ try{
+  var d=window.claude&&await claude.use('downloads');
+  if(!d){say(id,'Unduh tidak tersedia, gunakan Salin',1);return}
+  await d.save({filename:name,data:data});say(id,name+' tersimpan');
+ }catch(e){say(id,e&&e.code==='declined'?'Dibatalkan':'Gagal mengunduh, coba Salin',1)}
+}
+})();
+</script>
+</body>
+</html>
