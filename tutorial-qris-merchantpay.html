@@ -9,39 +9,37 @@
 if (location.pathname.endsWith('.html')) {
     history.replaceState({}, '', location.pathname.replace('.html', ''));
 }
-
-const videoId = "Oa5HXdlreZk";
-const webUrl = "https://youtube.com/shorts/" + videoId + "?si=67m6CsrGapQqFEcw";
-
-// Fallback ke web jika aplikasi tidak terbuka
-const fallback = setTimeout(() => {
-    location.replace(webUrl);
-}, 10000);
-
-// Jika aplikasi berhasil terbuka, hentikan fallback
-window.addEventListener("blur", () => clearTimeout(fallback));
-document.addEventListener("visibilitychange", () => {
-    if (document.hidden) clearTimeout(fallback);
-});
-
-// Langsung buka aplikasi YouTube
-location.href =
-    "intent://shorts/" + videoId +
-    "#Intent;scheme=https;package=com.google.android.youtube;end";
 </script>
 
-<title>Redirecting...</title>
+<title>Video Tutorial</title>
 
 <style>
 html,body{
     margin:0;
     width:100%;
     height:100%;
-    background:#fff;
+    background:#000;
+    overflow:hidden;
+}
+iframe{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:0;
+    display:block;
 }
 </style>
 
 </head>
 <body>
+
+<iframe
+    src="https://www.youtube.com/embed/Oa5HXdlreZk?autoplay=1&mute=1&playsinline=1&loop=1&playlist=Oa5HXdlreZk&rel=0&modestbranding=1"
+    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+    allowfullscreen>
+</iframe>
+
 </body>
 </html>
