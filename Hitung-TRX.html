@@ -337,6 +337,25 @@ button:not(:disabled):active{opacity:.8}
 }
 .pane-inner.preview-inner{padding:8px 6px 36px}
 #pdfPreviewCard{padding:8px}
+#nominalPdfCard{display:none}
+.nom-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 0;
+  border-bottom:1px solid #262B34;
+  font-size:13px;
+}
+.nom-row:last-child{border-bottom:none}
+.nom-label{flex:1;color:#9AA3B2}
+.nom-val{font-weight:600;color:#E6E9EF}
+.nom-copy{
+  display:inline-flex;
+  align-items:center;
+  cursor:pointer;
+  color:#2196f3;
+}
+.nom-copy .material-symbols-outlined{font-size:19px}
 .zoom-hint{
   text-align:center;
   font-size:11px;
@@ -402,6 +421,25 @@ button:not(:disabled):active{opacity:.8}
   border:1px solid #2196f3;
 }
 .btn-edit .material-symbols-outlined{font-size:18px}
+.btn-clear{
+  position:fixed;
+  right:12px;
+  bottom:22px;
+  z-index:40;
+  width:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  margin:0;
+  padding:9px 12px;
+  border-radius:20px;
+  background:#181B21;
+  color:#F2706B;
+  border:1px solid #7A3330;
+  font-size:12px;
+}
+.btn-clear .material-symbols-outlined{font-size:18px}
 #editView{
   display:none;
   position:fixed;
@@ -602,6 +640,11 @@ button:not(:disabled):active{opacity:.8}
   <button type="button" id="btnTutup">‹ Kembali ke Form</button>
 </div>
 
+<div class="card" id="nominalPdfCard">
+  <h2>Nominal dari PDF</h2>
+  <div id="nominalPdfList"></div>
+</div>
+
 <div class="hasil" id="hasil2"></div>
 
 <div class="btn-row2">
@@ -614,6 +657,10 @@ button:not(:disabled):active{opacity:.8}
 </div></div>
 
 <div id="dots"><span class="on" id="dot0"></span><span id="dot1"></span></div>
+
+<button type="button" class="btn-clear" id="btnClearAll">
+  <span class="material-symbols-outlined">delete_sweep</span> Clear All
+</button>
 
 <div id="zoomView">
   <div id="zoomBar">
@@ -1491,6 +1538,40 @@ function renderRekap(){
     "<div>Total Keuntungan : " + rp(untungAsli) + " → " + rp(t.untung) + "</div>";
 }
 
+function renderNominalPdf(){
+  const box = document.getElementById('nominalPdfCard');
+  const list = document.getElementById('nominalPdfList');
+  if(!totalsInfo){
+    box.style.display = 'none';
+    list.innerHTML = "";
+    return;
+  }
+  const t = hitungTotalBaru();
+  const items = [
+    ["Total Transaksi", t.total],
+    ["Total Modal", t.modal],
+    ["Total Keuntungan", t.untung]
+  ];
+  list.innerHTML = items.map(function(it){
+    return '<div class="nom-row">' +
+      '<span class="nom-label">' + it[0] + '</span>' +
+      '<span class="nom-val">' + rp(it[1]) + '</span>' +
+      '<span class="nom-copy" data-nominal="' + it[1] + '"><span class="material-symbols-outlined">content_copy</span></span>' +
+      '</div>';
+  }).join("");
+  box.style.display = 'block';
+}
+
+document.getElementById('nominalPdfList').addEventListener('click', function(ev){
+  const b = ev.target.closest('.nom-copy');
+  if(!b) return;
+  const icon = b.querySelector('.material-symbols-outlined');
+  navigator.clipboard.writeText(rp(Number(b.getAttribute('data-nominal')))).then(function(){
+    icon.textContent = 'check';
+    setTimeout(function(){ icon.textContent = 'content_copy'; }, 1500);
+  });
+});
+
 function renderDaftarEdit(){
   const q = document.getElementById('eCari').value.trim().toLowerCase();
   const box = document.getElementById('eList');
@@ -1558,6 +1639,7 @@ function perbaruiSetelahEdit(){
   }
   renderDaftarEdit();
   renderRekap();
+  renderNominalPdf();
 }
 
 async function bukaEditor(){
@@ -1598,6 +1680,7 @@ document.getElementById('pdfFile').addEventListener('change', function(e){
   totalsAktif = null;
   editMap = {};
   editDirty = false;
+  renderNominalPdf();
   if(!f){
     parsePromise = null;
     return;
@@ -1608,6 +1691,7 @@ document.getElementById('pdfFile').addEventListener('change', function(e){
       try{
         origDoc = await pdfjsLib.getDocument({data: new Uint8Array(ev.target.result)}).promise;
         await ekstrakPdf(origDoc);
+        renderNominalPdf();
       }catch(err){
         console.error(err);
       }
@@ -1652,6 +1736,77 @@ document.getElementById('eReset').addEventListener('click', function(){
 });
 
 document.getElementById('eBatal').addEventListener('click', tutupForm);
+
+function clearAll(){
+  // Tutup tampilan zoom & edit
+  document.getElementById('zoomView').classList.remove('open');
+  document.getElementById('editView').classList.remove('open');
+
+  // Reset form
+  document.getElementById('pdfFile').value = "";
+  document.getElementById('fileName').innerText = "";
+  document.getElementById('namaFile').value = namaFileKemarin();
+  autoResizeNamaFile();
+  ['omsetKotorManual','MODALManual','totalTransaksi','pendapatanKotor','penarikanPG'].forEach(function(id){
+    document.getElementById(id).value = "";
+  });
+  document.getElementById('kuotaApi').value = "70";
+  const d = new Date();
+  document.getElementById('tglPG').value = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+  // Reset penempatan & posisi
+  posisiMode = 'baru';
+  document.getElementById('btnModeBaru').classList.add('active');
+  document.getElementById('btnModeTimpa').classList.remove('active');
+  offsetY = 0;
+  document.getElementById('offsetInfo').innerText = "0 px";
+
+  // Reset data PDF & pratinjau
+  uploadedBytes = null;
+  previewDoc = null;
+  previewPageNum = 1;
+  previewTotalPages = 0;
+  previewShown = false;
+  ['previewCanvas','zoomCanvas'].forEach(function(id){
+    const c = document.getElementById(id);
+    c.width = 0;
+    c.height = 0;
+    c.style.width = "";
+    c.style.height = "";
+  });
+  document.getElementById('pageInfo').innerText = "Belum ada pratinjau";
+  document.getElementById('zInfo').innerText = "";
+  ['btnFirstPage','btnPrevPage','btnNextPage','btnLastPage'].forEach(function(id){
+    document.getElementById(id).disabled = true;
+  });
+
+  // Reset data edit teks
+  origDoc = null;
+  parsePromise = null;
+  rowsData = {};
+  totalsInfo = null;
+  totalsAktif = null;
+  editMap = {};
+  editDirty = false;
+  editNoAktif = null;
+  lastEditPage = 0;
+  document.getElementById('eCari').value = "";
+  document.getElementById('eList').innerHTML = "";
+  document.getElementById('eRekap').innerHTML = "";
+  tutupForm();
+
+  // Reset tombol & status
+  ['btnLihatHasil','btnDownload','btnShare','btnDownload2','btnShare2'].forEach(function(id){
+    document.getElementById(id).disabled = true;
+  });
+  statusEl().innerText = "";
+
+  hitung();
+  renderNominalPdf();
+  setPane(0);
+}
+
+document.getElementById('btnClearAll').addEventListener('click', clearAll);
 
 document.getElementById('eClose').addEventListener('click', function(){
   document.getElementById('editView').classList.remove('open');
