@@ -7,13 +7,77 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
-:root{--blue:#2196f3;--blue-dark:#1769aa;--ink:#16324a;--muted:#6b7f90;--line:#dbe7f1;--bg:#f2f7fc;--red:#e5484d;--green:#2e9e4f;}
+/* =========================================================
+   1. VARIABEL (ubah warna / gradasi / bayangan di sini saja)
+========================================================= */
+:root{
+  /* Warna dasar */
+  --blue:#2196f3;
+  --blue-dark:#1769aa;
+  --ink:#16324a;
+  --muted:#6b7f90;
+  --line:#dbe7f1;
+  --bg:#f2f7fc;
+  --red:#e5484d;
+  --green:#2e9e4f;
+
+  /* Warna border */
+  --border-1:#8fb4d6;
+  --border-2:#7da2c4;
+  --border-3:#9bbbd8;
+
+  /* Warna flat */
+  --g-bg:#eaf4fc;
+  --g-hero:#2196f3;
+  --g-panel:#ffffff;
+  --g-card:#ffffff;
+  --g-stat:#f2f7fc;
+  --g-popup:#ffffff;
+  --g-row-mobile:#ffffff;
+  --g-blue:#2196f3;
+  --g-light:#f2f7fc;
+  --g-light-hover:#e3f2fd;
+  --g-thead-title:#2196f3;
+  --g-thead-col:#64b5f6;
+  --g-red:#e5484d;
+  --g-green:#2e9e4f;
+
+  /* Bayangan */
+  --sh-btn:none;
+  --sh-btn-blue:none;
+  --sh-card:0 1px 4px rgba(0,0,0,.1);
+  --sh-panel:0 1px 4px rgba(0,0,0,.1);
+  --sh-box:0 1px 4px rgba(0,0,0,.1);
+  --sh-input:none;
+  --sh-thead:none;
+
+  /* Bayangan teks */
+  --ts-blue:none;
+}
+
+/* =========================================================
+   2. DASAR
+========================================================= */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
-body{background:linear-gradient(180deg,#bcd9f2 0%,#d9ebf9 40%,#eaf4fc 100%) fixed;color:var(--ink);font-family:'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;}
+body{
+  background:var(--g-bg) fixed;
+  color:var(--ink);
+  font-family:'Segoe UI',Roboto,Arial,sans-serif;
+  min-height:100vh;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:12px 12px 30px;}
 
-/* Header */
-.hero{background:linear-gradient(180deg,#7cc2f5 0%,#3b9de6 48%,#1c82d4 50%,#3aa6ee 100%);color:#fff;padding:14px 16px;border-bottom:1px solid #0f5da3;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 3px 8px rgba(0,60,120,.35);text-shadow:0 1px 2px rgba(0,40,90,.6);}
+/* =========================================================
+   3. HEADER
+========================================================= */
+.hero{
+  background:var(--g-hero);
+  color:#fff;
+  padding:14px 16px;
+  border-bottom:1px solid var(--blue-dark);
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
 .hero-in{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .logo{width:42px;height:42px;border-radius:10px;background:#fff;padding:4px;object-fit:contain;flex-shrink:0;}
@@ -23,28 +87,99 @@ body{background:linear-gradient(180deg,#bcd9f2 0%,#d9ebf9 40%,#eaf4fc 100%) fixe
 .clock b{display:block;font-size:20px;font-variant-numeric:tabular-nums;}
 .clock span{font-size:11.5px;opacity:.95;}
 
-/* Konten */
-.wrap{max-width:1000px;margin:0 auto;padding:12px 12px 30px;}
-.panel{background:linear-gradient(180deg,#ffffff 0%,#f1f7fd 100%);border:1px solid #8fb4d6;border-radius:8px;padding:12px;margin-bottom:12px;box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px rgba(255,255,255,.6),0 3px 8px rgba(30,80,130,.3);}
+/* =========================================================
+   4. PANEL, TAB, FILTER, INFO
+========================================================= */
+.panel{
+  background:var(--g-panel);
+  border:1px solid var(--border-1);
+  border-radius:8px;
+  padding:12px;
+  margin-bottom:12px;
+  box-shadow:var(--sh-panel);
+}
+
+/* Tab */
 .tabs{display:flex;gap:6px;margin-bottom:10px;}
-.tab{flex:1;padding:10px 8px;border:1px solid #7da2c4;border-radius:6px;background:linear-gradient(180deg,#fdfeff 0%,#e9f2fa 48%,#d3e3f2 50%,#e6f0f9 100%);font-size:13px;font-weight:700;cursor:pointer;color:#1a4f80;font-family:inherit;box-shadow:inset 0 1px 0 #fff,0 1px 3px rgba(0,50,100,.3);}
-.tab:hover{background:linear-gradient(180deg,#f4fbff 0%,#d6edfc 48%,#b5dcf7 50%,#cfeafc 100%);border-color:#3c9ad8;}
-.tab.active{background:linear-gradient(180deg,#8dcbf5 0%,#4aa8ea 48%,#1f86d6 50%,#46a9ee 100%);border-color:#1769aa;color:#fff;text-shadow:0 1px 2px rgba(0,40,90,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 3px rgba(0,50,110,.4);}
+.tab{
+  flex:1;
+  padding:10px 8px;
+  border:1px solid var(--border-2);
+  border-radius:6px;
+  background:var(--g-light);
+  font-size:13px;
+  font-weight:700;
+  font-family:inherit;
+  color:#1a4f80;
+  cursor:pointer;
+  box-shadow:var(--sh-btn);
+}
+.tab:hover{background:var(--g-light-hover);border-color:#3c9ad8;}
+.tab.active{
+  background:var(--blue);
+  border-color:var(--blue-dark);
+  color:#fff;
+}
+
+/* Filter */
 .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.bar input,.bar select{width:100%;padding:10px 12px;border:1px solid #8fb4d6;border-top-color:#6d93b8;border-radius:5px;font-size:14px;background:#fff;color:var(--ink);font-family:inherit;box-shadow:inset 0 2px 3px rgba(0,50,100,.18);}
+.bar input,.bar select{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid var(--border-1);
+  border-top-color:#6d93b8;
+  border-radius:5px;
+  font-size:14px;
+  font-family:inherit;
+  background:#fff;
+  color:var(--ink);
+  box-shadow:var(--sh-input);
+}
 .bar input:focus,.bar select:focus{outline:2px solid var(--blue);outline-offset:0;}
 .bar input[type=text]{grid-column:1 / -1;}
+
+/* Info status */
 .info{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted);}
 .info b{background:#e3f2fd;color:var(--blue-dark);padding:3px 10px;border-radius:20px;font-size:13px;}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:6px;}
 .dot.on{background:var(--green);}
 
-/* Tabel */
-.box{background:#fff;border:1px solid #7da2c4;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 4px 10px rgba(20,70,120,.35);}
+/* =========================================================
+   5. TABEL
+========================================================= */
+.box{
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:var(--sh-box);
+}
 table{width:100%;border-collapse:collapse;font-size:14px;}
 th,td{padding:11px 14px;text-align:center;border:1px solid #e0e0e0;white-space:nowrap;color:#000;}
-thead tr.judul-tabel th{background:linear-gradient(180deg,#5db5f2 0%,#1f8ddb 48%,#0a6fc0 50%,#2b97e3 100%);color:#fff;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;border:1px solid #0a5da3;padding:12px;text-shadow:0 1px 2px rgba(0,40,90,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.55);}
-thead tr.kolom th{background:linear-gradient(180deg,#a6defc 0%,#6cc6f7 48%,#43b2f0 50%,#6fcbf8 100%);color:#fff;font-size:14px;font-weight:700;text-transform:none;letter-spacing:0;border:1px solid #2f98d6;text-shadow:0 1px 1px rgba(0,60,110,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);}
+
+/* Judul tabel */
+thead tr.judul-tabel th{
+  background:var(--g-thead-title);
+  color:#fff;
+  font-size:15px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  border:1px solid var(--blue-dark);
+  padding:12px;
+}
+/* Nama kolom */
+thead tr.kolom th{
+  background:var(--g-thead-col);
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  text-transform:none;
+  letter-spacing:0;
+  border:1px solid #42a5f5;
+}
+
+/* Baris */
 tbody tr:nth-child(odd){background:#fafafa;}
 tbody tr:nth-child(even){background:#fff;}
 tbody tr:hover{background:#f1f9ff;}
@@ -53,92 +188,261 @@ td a{color:var(--blue-dark);font-weight:600;text-decoration:none;}
 .kosong{padding:28px 16px;text-align:center;color:var(--muted);}
 .sisa{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
 
-/* Views TikTok */
-.views-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);}
-.btn-views{padding:8px 12px;border:1px solid #1769aa;border-radius:6px;background:linear-gradient(180deg,#8dcbf5 0%,#4aa8ea 48%,#1f86d6 50%,#46a9ee 100%);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;text-shadow:0 1px 2px rgba(0,40,90,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 3px rgba(0,50,100,.35);}
+/* =========================================================
+   6. TOMBOL
+========================================================= */
+/* Hapus & Pulihkan */
+.btn-hapus,.btn-pulih{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  color:#fff;
+  font-size:12.5px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+}
+.btn-hapus{
+  background:var(--red);
+  border:none;
+}
+.btn-pulih{
+  background:var(--green);
+  border:none;
+  margin-right:6px;
+}
+.btn-hapus:active,.btn-pulih:active{opacity:.8;}
+.btn-hapus:disabled,.btn-pulih:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Riwayat views */
+.btn-riwayat-views{
+  padding:8px 14px;
+  border:1px solid var(--border-2);
+  border-radius:6px;
+  background:var(--g-light);
+  color:#1a4f80;
+  font-size:12.5px;
+  font-weight:700;
+  font-family:inherit;
+  margin-right:6px;
+  cursor:pointer;
+  box-shadow:var(--sh-btn);
+}
+.btn-riwayat-views:active{box-shadow:inset 0 2px 4px rgba(0,50,100,.35);}
+
+/* =========================================================
+   7. VIEWS TIKTOK
+========================================================= */
+.views-bar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid var(--line);
+  font-size:12px;
+  color:var(--muted);
+}
+.views-btns{display:flex;gap:6px;flex-shrink:0;}
+.btn-views{
+  padding:8px 12px;
+  border:1px solid var(--blue-dark);
+  border-radius:6px;
+  background:var(--g-blue);
+  color:#fff;
+  font-size:12.5px;
+  font-weight:700;
+  font-family:inherit;
+  flex-shrink:0;
+  cursor:pointer;
+  text-shadow:var(--ts-blue);
+  box-shadow:var(--sh-btn-blue);
+}
 .btn-views:hover:not(:disabled){filter:brightness(1.1);}
 .btn-views:active:not(:disabled){box-shadow:inset 0 2px 4px rgba(0,40,90,.5);}
 .btn-views:disabled{opacity:.5;cursor:not-allowed;}
-.views-btns{display:flex;gap:6px;flex-shrink:0;}
-.views-bar{flex-wrap:wrap;}
-.btn-riwayat-views{padding:8px 14px;border:1px solid #7da2c4;border-radius:6px;background:linear-gradient(180deg,#fdfeff 0%,#e9f2fa 48%,#d3e3f2 50%,#e6f0f9 100%);color:#1a4f80;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:6px;box-shadow:inset 0 1px 0 #fff,0 1px 3px rgba(0,50,100,.3);}
-.btn-riwayat-views:active{box-shadow:inset 0 2px 4px rgba(0,50,100,.35);}
+
+/* Angka views di tabel */
 .v-angka{display:block;font-weight:800;font-size:14px;}
 .v-info{display:block;font-size:11px;font-weight:700;margin-top:2px;}
 .v-naik{color:var(--green);}
 .v-tetap{color:var(--red);}
 .v-baru{color:var(--muted);font-weight:400;}
 
-/* Laporan views */
-.rk{background:linear-gradient(180deg,#ffffff 0%,#eef6fc 100%);border:1px solid #7da2c4;border-radius:8px;padding:12px;margin-bottom:10px;box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(20,70,120,.3);}
+/* =========================================================
+   8. LAPORAN VIEWS
+========================================================= */
+.rk{
+  background:var(--g-card);
+  border:1px solid var(--border-2);
+  border-radius:8px;
+  padding:12px;
+  margin-bottom:10px;
+  box-shadow:var(--sh-card);
+}
 .rk h4{margin:0 0 10px;font-size:15px;color:var(--blue-dark);}
+
+/* Kotak statistik */
 .rk-stat{display:flex;gap:8px;margin-bottom:6px;}
-.rk-stat div{flex:1;background:linear-gradient(180deg,#ffffff 0%,#e3eef8 100%);border:1px solid #9bbbd8;border-radius:6px;padding:8px 4px;text-align:center;box-shadow:inset 0 1px 0 #fff,0 1px 3px rgba(0,50,100,.2);}
+.rk-stat div{
+  flex:1;
+  background:var(--g-stat);
+  border:1px solid var(--border-3);
+  border-radius:6px;
+  padding:8px 4px;
+  text-align:center;
+  box-shadow:var(--sh-btn);
+}
 .rk-stat b{display:block;font-size:20px;}
 .rk-stat span{font-size:11px;color:var(--muted);}
+
+/* Judul kategori */
 .rk-judul{margin:12px 0 2px;font-size:12px;font-weight:800;padding:5px 10px;border-radius:6px;display:inline-block;color:#fff;}
 .rk-judul.k1{background:var(--green);}
 .rk-judul.k5{background:var(--blue);}
+
+/* Daftar video */
 .rk-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e3edf5;font-size:12.5px;}
 .rk-item:last-child{border-bottom:none;}
 .rk-item a{display:block;color:var(--blue-dark);font-weight:600;text-decoration:none;word-break:break-all;margin-top:2px;}
 .rk-v{font-weight:800;font-size:14px;flex-shrink:0;}
 .rk-kosong{font-size:12.5px;color:var(--muted);padding-top:8px;}
+
+/* Semua video (dropdown) */
 .rk-semua{margin-top:12px;border-top:1px solid var(--line);padding-top:6px;}
 .rk-semua summary{cursor:pointer;font-size:12.5px;font-weight:800;color:var(--blue-dark);padding:8px 0;}
-.thumb{display:flex;align-items:center;justify-content:center;width:72px;height:96px;flex-shrink:0;border-radius:8px;overflow:hidden;background:#dbe7f1;border:1px solid #9bbbd8;text-decoration:none;}
+
+/* Thumbnail */
+.thumb{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:72px;
+  height:96px;
+  flex-shrink:0;
+  border-radius:8px;
+  overflow:hidden;
+  background:var(--line);
+  border:1px solid var(--border-3);
+  text-decoration:none;
+}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .thumb-ket{font-size:10.5px;color:var(--muted);font-weight:400;text-align:center;padding:4px;word-break:normal;}
+
+/* Badge 100+ / 500+ / 1K+ */
 .badge-v{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:800;color:#fff;vertical-align:middle;}
 .badge-v.b3{background:var(--green);}
 .badge-v.b2{background:var(--blue);}
 .badge-v.b1{background:#f59e0b;}
 
-/* Tombol */
-.btn-hapus,.btn-pulih{padding:8px 14px;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
-.btn-hapus{background:linear-gradient(180deg,#f5a3a3 0%,#e86363 48%,#cf2a2a 50%,#e55454 100%);border:1px solid #a31d1d;text-shadow:0 1px 2px rgba(90,0,0,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 3px rgba(100,0,0,.35);}
-.btn-pulih{background:linear-gradient(180deg,#a5e3a5 0%,#5cc15c 48%,#2e9e2e 50%,#52bb52 100%);border:1px solid #1f7a1f;margin-right:6px;text-shadow:0 1px 2px rgba(0,60,0,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 3px rgba(0,70,0,.35);}
-.btn-hapus:active,.btn-pulih:active{opacity:.8;}
-.btn-hapus:disabled,.btn-pulih:disabled{opacity:.5;cursor:not-allowed;}
-
-/* Popup */
+/* =========================================================
+   9. POPUP & TOAST
+========================================================= */
 .pop{position:fixed;inset:0;background:rgba(10,30,50,.6);display:none;align-items:center;justify-content:center;padding:18px;z-index:999;}
 .pop.show{display:flex;}
-.pop-box{background:linear-gradient(180deg,#ffffff 0%,#eaf3fb 100%);border:1px solid #5f8db8;border-radius:10px;padding:22px 18px 16px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto;text-align:center;box-shadow:inset 0 1px 0 #fff,0 10px 30px rgba(0,30,70,.55);}
+.pop-box{
+  background:var(--g-popup);
+  border:1px solid #5f8db8;
+  border-radius:10px;
+  padding:22px 18px 16px;
+  width:100%;
+  max-width:360px;
+  max-height:90vh;
+  overflow-y:auto;
+  text-align:center;
+  box-shadow:inset 0 1px 0 #fff,0 10px 30px rgba(0,30,70,.55);
+}
 .pop-ic{width:50px;height:50px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;background:var(--blue);}
 .pop-ic.bahaya{background:var(--red);}
 .pop-ic.sukses{background:var(--green);}
 .pop-box h3{margin:0 0 6px;font-size:17px;}
 .pop-pesan{font-size:13px;color:var(--muted);margin-bottom:12px;}
-.pop-rows{background:#f2f7fc;border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:left;font-size:12.5px;margin-bottom:14px;}
+.pop-rows{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:left;font-size:12.5px;margin-bottom:14px;}
 .pop-rows div{display:flex;gap:8px;padding:3px 0;}
 .pop-rows span{color:var(--muted);min-width:48px;flex-shrink:0;}
 .pop-rows b{word-break:break-all;font-weight:600;}
 .pop-aksi{display:flex;gap:8px;}
-.pop-aksi button{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pop-aksi button{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
 .pb-batal{background:#e6eef6;color:var(--muted);}
 .pb-ok{background:var(--blue);color:#fff;}
 .pb-ok.merah{background:var(--red);}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:1000;max-width:90%;text-align:center;}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%);
+  background:var(--ink);
+  color:#fff;
+  padding:11px 18px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+  max-width:90%;
+  text-align:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s;
+  z-index:1000;
+}
 .toast.show{opacity:1;}
 
-/* Mobile Android: baris tabel jadi kartu ringkas, tanpa geser */
+/* =========================================================
+   10. MOBILE (baris tabel jadi kartu ringkas)
+========================================================= */
 @media (max-width:720px){
+  /* Header */
   .hero{padding:10px 12px;}
   .logo{width:36px;height:36px;}
   .brand h1{font-size:14px;}
   .brand small{font-size:11px;}
   .clock b{font-size:16px;}
   .clock span{font-size:10.5px;}
+
+  /* Konten */
   .wrap{padding:10px 10px 24px;}
   .panel{padding:10px;margin-bottom:10px;}
   .box{background:transparent;border:none;border-radius:0;overflow:visible;}
+
+  /* Tabel -> kartu */
   table,thead,tbody,tr,td{display:block;width:100%;}
   thead{display:none;}
-  tbody tr,tbody tr:nth-child(odd),tbody tr:nth-child(even),tbody tr:hover{background:linear-gradient(180deg,#ffffff 0%,#f3f8fd 55%,#e4eef8 100%);}
-  tbody tr{border:1px solid #7da2c4;border-top:3px solid #3b9de6;border-radius:8px;padding:4px 12px;margin-bottom:12px;box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px rgba(255,255,255,.7),0 4px 8px rgba(20,70,120,.35);}
-  td{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:6px 0;border:none;border-bottom:1px dashed #e3edf5;white-space:normal;text-align:right;font-size:13px;}
-  td::before{content:attr(data-label);font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;text-align:left;flex-shrink:0;padding-top:2px;}
+  tbody tr,
+  tbody tr:nth-child(odd),
+  tbody tr:nth-child(even),
+  tbody tr:hover{background:var(--g-row-mobile);}
+  tbody tr{
+    border:1px solid var(--border-2);
+    border-top:3px solid var(--blue);
+    border-radius:8px;
+    padding:4px 12px;
+    margin-bottom:12px;
+    box-shadow:0 1px 4px rgba(0,0,0,.1);
+  }
+  td{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    padding:6px 0;
+    border:none;
+    border-bottom:1px dashed #e3edf5;
+    white-space:normal;
+    text-align:right;
+    font-size:13px;
+  }
+  td::before{
+    content:attr(data-label);
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--muted);
+    text-transform:uppercase;
+    text-align:left;
+    flex-shrink:0;
+    padding-top:2px;
+  }
   td[data-label="No"]{display:none;}
   td.link{max-width:none;word-break:break-all;overflow:visible;text-overflow:clip;}
   td.aksi{border-bottom:none;justify-content:flex-end;gap:8px;padding:8px 0 6px;}
@@ -829,11 +1133,14 @@ async function fetchTeksThumb(u, ms){
 /* Cari alamat gambar cover di dalam HTML / JSON halaman TikTok */
 function cariThumbDiHtml(t){
   const pola = [
+    /"thumbnail_url"\s*:\s*"([^"]+)"/,
     /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
     /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
-    /"thumbnail_url"\s*:\s*"([^"]+)"/,
+    /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
     /"originCover"\s*:\s*"([^"]+)"/,
-    /"cover"\s*:\s*"(https?:[^"]+)"/
+    /"dynamicCover"\s*:\s*"([^"]+)"/,
+    /"cover"\s*:\s*"(https?:[^"]+)"/,
+    /"thumbnailUrl"\s*:\s*\[\s*"([^"]+)"/
   ];
   for(const re of pola){
     const m = String(t || '').match(re);
@@ -846,19 +1153,27 @@ function cariThumbDiHtml(t){
 }
 
 async function ambilThumbBrowser(link){
-  /* Utama: lewat Worker (tanpa Clair) */
-  const j = await fetchJson(`${WORKER_URL}/?thumb=1&url=${encodeURIComponent(link)}`, 20000);
-  if(j && j.ok && j.thumb) return j.thumb;
+  /* Link bersih tanpa parameter tambahan (berlaku untuk video maupun foto) */
+  const bersih = String(link || '').split('?')[0].split('#')[0].replace(/\/+$/, '');
 
-  /* Cadangan: proxy publik */
-  const oembed = 'https://www.tiktok.com/oembed?url=' + encodeURIComponent(link);
+  /* Utama: lewat Worker (link bersih dulu, lalu link asli) */
+  const daftarLink = bersih === link ? [link] : [bersih, link];
+  for(const l of daftarLink){
+    const j = await fetchJson(`${WORKER_URL}/?thumb=1&url=${encodeURIComponent(l)}`, 20000);
+    if(j && j.ok && j.thumb) return j.thumb;
+  }
+
+  /* Cadangan: oEmbed TikTok + proxy publik (oEmbed mendukung video dan foto) */
+  const oembed = 'https://www.tiktok.com/oembed?url=' + encodeURIComponent(bersih);
   const sumber = [
     oembed,
     'https://corsproxy.io/?' + encodeURIComponent(oembed),
-    'https://corsproxy.io/?' + encodeURIComponent(link),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(link),
-    'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(link),
-    'https://thingproxy.freeboard.io/fetch/' + link
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(oembed),
+    'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(oembed),
+    'https://corsproxy.io/?' + encodeURIComponent(bersih),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(bersih),
+    'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(bersih),
+    'https://thingproxy.freeboard.io/fetch/' + bersih
   ];
   for(const u of sumber){
     const teks = await fetchTeksThumb(u, 12000);
